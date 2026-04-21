@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerClient } from "@/lib/supabase/server";
+import { cookies } from "next/headers";
+import { createClient } from "@/utils/supabase/server";
 import type { SearchResult } from "@/types/share";
 
 /** Clamp an integer between min and max, returning default on failure. */
@@ -38,7 +39,8 @@ export async function GET(request: NextRequest) {
   const offset = (page - 1) * limit;
 
   try {
-    const supabase = createServerClient();
+    const cookieStore = await cookies();
+    const supabase = createClient(cookieStore);
     const { data, error } = await supabase.rpc("search_shares", {
       query_term: q,
       result_limit: limit,

@@ -5,7 +5,8 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { createServerClient } from "@/lib/supabase/server";
+import { cookies } from "next/headers";
+import { createClient } from "@/utils/supabase/server";
 
 const STORAGE_BUCKET = "html-files";
 
@@ -34,7 +35,8 @@ export async function DELETE(
       );
     }
 
-    const supabase = createServerClient();
+    const cookieStore = await cookies();
+    const supabase = createClient(cookieStore);
 
     // Lookup share by slug
     const { data: share, error: lookupError } = await supabase

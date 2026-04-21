@@ -7,7 +7,8 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "crypto";
-import { createServerClient } from "@/lib/supabase/server";
+import { cookies } from "next/headers";
+import { createClient } from "@/utils/supabase/server";
 import { generateSlug, generateDeleteToken } from "@/lib/nanoid";
 import { extractTextFromHtml } from "@/lib/extract-text";
 import { checkRateLimit } from "@/lib/rate-limit";
@@ -102,7 +103,8 @@ export async function POST(request: NextRequest) {
     const storagePath = `${storageUuid}.html`;
 
     // Upload to Supabase Storage
-    const supabase = createServerClient();
+    const cookieStore = await cookies();
+    const supabase = createClient(cookieStore);
     const { error: uploadError } = await supabase.storage
       .from(STORAGE_BUCKET)
       .upload(storagePath, htmlContent, {

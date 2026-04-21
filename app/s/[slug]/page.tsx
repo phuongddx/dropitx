@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import { createServerClient } from "@/lib/supabase/server";
+import { cookies } from "next/headers";
+import { createClient } from "@/utils/supabase/server";
 import { HtmlViewer } from "@/components/html-viewer";
 import {
   Card,
@@ -40,7 +41,8 @@ function formatUploadDate(dateStr: string): string {
 
 export default async function SharePage({ params }: SharePageProps) {
   const { slug } = await params;
-  const supabase = createServerClient();
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
 
   // Lookup share by slug
   const { data: share, error: fetchError } = await supabase
