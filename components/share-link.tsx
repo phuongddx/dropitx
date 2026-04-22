@@ -1,10 +1,5 @@
 "use client";
 
-/**
- * ShareLink — displays the shareable URL after a successful upload.
- * Provides copy-to-clipboard for the share link and shows the delete link once.
- */
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -32,22 +27,19 @@ export function ShareLink({ result }: ShareLinkProps) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Fallback: select text in the input for manual copy
       const input = document.getElementById("share-url-input") as HTMLInputElement;
       input?.select();
     }
   };
 
   return (
-    <Card>
+    <Card className="animate-slide-up">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Check className="size-4 text-green-600" />
+        <CardTitle className="flex items-center gap-2 text-base">
+          <Check className="size-4 text-green-600 dark:text-green-400" />
           File shared successfully
         </CardTitle>
-        <CardDescription>
-          {result.filename}
-        </CardDescription>
+        <CardDescription>{result.filename}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         {/* Shareable URL */}
@@ -60,13 +52,14 @@ export function ShareLink({ result }: ShareLinkProps) {
           />
           <Button
             type="button"
-            variant="outline"
+            variant={copied ? "default" : "outline"}
             size="icon"
             onClick={handleCopy}
             aria-label="Copy share link"
+            className="shrink-0"
           >
             {copied ? (
-              <Check className="size-4 text-green-600" />
+              <Check className="size-4" />
             ) : (
               <Copy className="size-4" />
             )}
@@ -77,21 +70,29 @@ export function ShareLink({ result }: ShareLinkProps) {
             rel="noopener noreferrer"
             aria-label="Open share link"
           >
-            <Button type="button" variant="outline" size="icon">
+            <Button type="button" variant="outline" size="icon" className="shrink-0">
               <ExternalLink className="size-4" />
             </Button>
           </a>
         </div>
 
-        {/* Delete link — shown once */}
+        {/* Inline copied feedback */}
+        {copied && (
+          <p className="text-xs text-green-600 dark:text-green-400 animate-fade-in">
+            Link copied to clipboard
+          </p>
+        )}
+
+        {/* Delete link */}
         {deleteShown && (
-          <div className="rounded-lg border border-amber-300 bg-amber-50 p-3 dark:border-amber-700 dark:bg-amber-950/30">
-            <div className="mb-2 flex items-center gap-2 text-sm font-medium text-amber-800 dark:text-amber-300">
+          <div className="rounded-lg border border-amber-200/60 bg-amber-50/50 p-3 dark:border-amber-800/30 dark:bg-amber-950/20 transition-colors">
+            <div className="mb-2 flex items-center gap-2 text-sm font-medium text-amber-700 dark:text-amber-400">
               <AlertTriangle className="size-4 shrink-0" />
               Save this delete link — it will not be shown again
             </div>
             <div className="flex items-center gap-2">
               <Input
+                id="delete-url-input"
                 value={`${deleteUrl}`}
                 readOnly
                 className="font-mono text-xs"
@@ -119,7 +120,7 @@ export function ShareLink({ result }: ShareLinkProps) {
               type="button"
               variant="ghost"
               size="xs"
-              className="mt-2 text-amber-700 dark:text-amber-400"
+              className="mt-2 text-amber-600 dark:text-amber-400"
               onClick={() => setDeleteShown(false)}
             >
               <Trash2 className="size-3" />

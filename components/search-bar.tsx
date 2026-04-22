@@ -1,16 +1,12 @@
 "use client";
 
-// NOTE: Import and render this component on the home page (app/page.tsx)
-// as <SearchBar compact /> inside a div with mt-8 max-w-2xl mx-auto
-
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
+import { Search, X } from "lucide-react";
 
 interface SearchBarProps {
-  /** Pre-fill the input (e.g. from URL query param) */
   initialValue?: string;
-  /** Compact mode for inline home-page usage */
   compact?: boolean;
 }
 
@@ -19,7 +15,6 @@ export function SearchBar({ initialValue = "", compact = false }: SearchBarProps
   const [value, setValue] = useState(initialValue);
   const timerRef = useRef<ReturnType<typeof setTimeout>>(null);
 
-  // Sync if initialValue changes externally (e.g. browser back/forward)
   useEffect(() => {
     setValue(initialValue);
   }, [initialValue]);
@@ -59,7 +54,6 @@ export function SearchBar({ initialValue = "", compact = false }: SearchBarProps
     if (timerRef.current) clearTimeout(timerRef.current);
   }, []);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
@@ -67,47 +61,29 @@ export function SearchBar({ initialValue = "", compact = false }: SearchBarProps
   }, []);
 
   return (
-    <div className={`relative ${compact ? "max-w-md" : "max-w-xl"} mx-auto w-full`}>
-      {/* Search icon */}
-      <svg
-        className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={2}
-        stroke="currentColor"
-      >
-        <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-      </svg>
+    <div
+      className={`relative ${compact ? "max-w-md" : "max-w-xl"} mx-auto w-full transition-shadow duration-200 focus-within:shadow-[0_0_0_2px_rgba(37,99,235,0.15)] focus-within:rounded-lg`}
+    >
+      <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
 
       <Input
         type="text"
         value={value}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        placeholder="Search shared HTML files..."
-        aria-label="Search shared HTML files"
+        placeholder="Search shared files..."
+        aria-label="Search shared files"
         className={compact ? "h-9 pl-9 text-sm" : "h-11 pl-9 text-base"}
       />
 
-      {/* Clear button */}
       {value.length > 0 && (
         <button
           type="button"
           onClick={handleClear}
           aria-label="Clear search"
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors duration-150 cursor-pointer"
         >
-          <svg
-            className="size-4"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2}
-            stroke="currentColor"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-          </svg>
+          <X className="size-4" />
         </button>
       )}
     </div>

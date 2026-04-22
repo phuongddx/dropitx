@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
+import { Search, FileText } from "lucide-react";
 import type { SearchResult } from "@/types/share";
 
 interface SearchResultsProps {
@@ -9,7 +10,6 @@ interface SearchResultsProps {
   isLoading: boolean;
 }
 
-/** Format an ISO date string as a relative time (e.g. "3 days ago"). */
 function relativeTime(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
   const seconds = Math.floor(diff / 1000);
@@ -25,20 +25,46 @@ function relativeTime(iso: string): string {
   return `${Math.floor(months / 12)}y ago`;
 }
 
-/** Truncate text to a max length with ellipsis. */
 function truncate(text: string, max: number): string {
   if (text.length <= max) return text;
   return text.slice(0, max).trimEnd() + "\u2026";
 }
 
+function getFileExtension(filename: string) {
+  const ext = filename.split(".").pop()?.toLowerCase();
+  if (ext === "md") return { icon: <FileText className="size-4 text-violet-500" />, label: "MD" };
+  return { icon: <FileText className="size-4 text-blue-500" />, label: "HTML" };
+}
+
 function SkeletonCard() {
   return (
-    <Card size="sm">
+    <Card size="sm" className="hover:translate-y-0">
       <CardContent>
-        <div className="space-y-2">
-          <div className="h-4 w-2/3 animate-pulse rounded bg-muted" />
-          <div className="h-3 w-full animate-pulse rounded bg-muted" />
-          <div className="h-3 w-1/3 animate-pulse rounded bg-muted" />
+        <div className="space-y-2.5">
+          <div
+            className="h-4 w-2/3 rounded-md animate-shimmer"
+            style={{
+              background:
+                "linear-gradient(90deg, var(--muted) 25%, var(--muted-foreground)/10 50%, var(--muted) 75%)",
+              backgroundSize: "200% 100%",
+            }}
+          />
+          <div
+            className="h-3 w-full rounded-md animate-shimmer"
+            style={{
+              background:
+                "linear-gradient(90deg, var(--muted) 25%, var(--muted-foreground)/10 50%, var(--muted) 75%)",
+              backgroundSize: "200% 100%",
+            }}
+          />
+          <div
+            className="h-3 w-1/3 rounded-md animate-shimmer"
+            style={{
+              background:
+                "linear-gradient(90deg, var(--muted) 25%, var(--muted-foreground)/10 50%, var(--muted) 75%)",
+              backgroundSize: "200% 100%",
+            }}
+          />
         </div>
       </CardContent>
     </Card>
@@ -47,19 +73,10 @@ function SkeletonCard() {
 
 function EmptyState() {
   return (
-    <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
-      <svg
-        className="mb-4 size-12"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={1.5}
-        stroke="currentColor"
-      >
-        <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-      </svg>
+    <div className="flex flex-col items-center justify-center py-20 text-muted-foreground animate-fade-in">
+      <Search className="mb-4 size-12 opacity-30" />
       <p className="text-lg font-medium">No results found</p>
-      <p className="text-sm">Try a different search term</p>
+      <p className="mt-1 text-sm">Try different keywords or check spelling</p>
     </div>
   );
 }
@@ -81,27 +98,44 @@ export function SearchResults({ results, isLoading }: SearchResultsProps) {
 
   return (
     <div className="space-y-3">
-      {results.map((r) => (
-        <Card key={r.slug} size="sm">
-          <CardContent>
-            <Link
-              href={`/s/${r.slug}`}
-              className="font-medium text-foreground hover:underline"
-            >
-              {r.filename}
+      {results.map((r) => {
+        const fileInfo = getFileExtension(r.filename);
+        return (
+          <Card
+            key={r.slug}
+            size="sm"
+            className="transition-all duration-200 hover:shadow-sm hover:-translate-y-0.5 cursor-pointer group/card"
+          >
+            <CardContent>
+              <Link
+                href={`/s/${r.slug}`}
+                className="flex items-start gap-3"
+              >
+                <div className="mt-0.5 shrink-0">{fileInfo.icon}</div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-foreground group-hover/card:text-primary transition-colors truncate">
+                      {r.filename}
+                    </span>
+                    <span className="shrink-0 text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">
+                      {fileInfo.label}
+                    </span>
+                  </div>
+                {r.snippet && (
+                  <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
+                    {truncate(r.snippet, 200)}
+                  </p>
+                )}
+                <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
+                  <span>{relativeTime(r.created_at)}</span>
+                  <span>{r.view_count} view{r.view_count !== 1 ? "s" : ""}</span>
+                </div>
+              </div>
             </Link>
-            {r.snippet && (
-              <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
-                {truncate(r.snippet, 200)}
-              </p>
-            )}
-            <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
-              <span>{relativeTime(r.created_at)}</span>
-              <span>{r.view_count} view{r.view_count !== 1 ? "s" : ""}</span>
-            </div>
           </CardContent>
         </Card>
-      ))}
+        );
+      })}
     </div>
   );
 }

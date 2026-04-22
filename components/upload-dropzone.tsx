@@ -1,10 +1,5 @@
 "use client";
 
-/**
- * UploadDropzone — drag-and-drop or click-to-browse HTML file upload widget.
- * Uses react-dropzone with visual states: idle, dragging, uploading, success, error.
- */
-
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Card, CardContent } from "@/components/ui/card";
@@ -24,7 +19,7 @@ interface UploadDropzoneProps {
 
 type UploadState = "idle" | "dragging" | "uploading" | "success" | "error";
 
-const MAX_SIZE = 50 * 1024 * 1024; // 50 MB
+const MAX_SIZE = 50 * 1024 * 1024;
 
 export function UploadDropzone({ onUploadSuccess }: UploadDropzoneProps) {
   const [state, setState] = useState<UploadState>("idle");
@@ -89,18 +84,23 @@ export function UploadDropzone({ onUploadSuccess }: UploadDropzoneProps) {
   });
 
   const stateIcon = () => {
+    const base = "size-10 transition-all duration-200";
     switch (state) {
       case "uploading":
-        return <Loader2 className="size-10 animate-spin text-muted-foreground" />;
+        return <Loader2 className={`${base} animate-spin text-primary`} />;
       case "success":
-        return <CheckCircle2 className="size-10 text-green-600" />;
+        return (
+          <div className="animate-scale-in">
+            <CheckCircle2 className={`${base} text-green-600 dark:text-green-400`} />
+          </div>
+        );
       case "error":
-        return <XCircle className="size-10 text-destructive" />;
+        return <XCircle className={`${base} text-destructive`} />;
       default:
         return dragActive ? (
-          <FileUp className="size-10 text-primary" />
+          <FileUp className={`${base} text-primary scale-110`} />
         ) : (
-          <Upload className="size-10 text-muted-foreground" />
+          <Upload className={`${base} text-muted-foreground`} />
         );
     }
   };
@@ -115,33 +115,62 @@ export function UploadDropzone({ onUploadSuccess }: UploadDropzoneProps) {
         return errorMessage;
       default:
         return dragActive
-          ? "Drop your HTML or Markdown file here"
-          : "Drag & drop an HTML or Markdown file here, or click to browse";
+          ? "Drop your file here"
+          : "Drag & drop an HTML or Markdown file, or click to browse";
     }
   };
 
+  const cardClasses = [
+    "cursor-pointer transition-all duration-200",
+    state === "idle" && !dragActive
+      ? "border-dashed border-2 border-muted-foreground/25 hover:border-primary/50 hover:bg-primary/[0.02]"
+      : "",
+    dragActive
+      ? "border-primary border-2 ring-2 ring-primary/20 bg-primary/[0.03] scale-[1.02]"
+      : "",
+    state === "error"
+      ? "border-destructive/50 border-2 bg-destructive/[0.02]"
+      : "",
+    state === "success"
+      ? "border-green-500/50 border-2 bg-green-50 dark:bg-green-950/20"
+      : "",
+    state === "uploading"
+      ? "border-primary/30 border-2 cursor-wait"
+      : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <Card
-      {...getRootProps()}
-      className={`cursor-pointer transition-colors ${
-        dragActive
-          ? "border-primary bg-primary/5"
-          : state === "error"
-            ? "border-destructive"
-            : state === "success"
-              ? "border-green-600"
-              : "hover:border-ring"
-      }`}
-    >
-      <CardContent className="flex flex-col items-center justify-center gap-4 py-12">
-        {stateIcon()}
+    <Card {...getRootProps()} className={cardClasses}>
+      <CardContent className="flex flex-col items-center justify-center gap-5 py-14">
+        {/* Shimmer overlay while uploading */}
+        {state === "uploading" && (
+          <div
+            className="absolute inset-0 rounded-xl animate-shimmer pointer-events-none"
+            style={{
+              background:
+                "linear-gradient(90deg, transparent 0%, rgba(37,99,235,0.06) 50%, transparent 100%)",
+              backgroundSize: "200% 100%",
+            }}
+            aria-hidden="true"
+          />
+        )}
+
+        <div className="relative">{stateIcon()}</div>
+
         <p
-          className={`text-center text-sm ${
-            state === "error" ? "text-destructive" : "text-muted-foreground"
+          className={`text-center text-sm transition-colors duration-200 ${
+            state === "error"
+              ? "text-destructive"
+              : state === "uploading"
+                ? "text-primary/70"
+                : "text-muted-foreground"
           }`}
         >
           {stateText()}
         </p>
+
         {state === "idle" && (
           <Button
             type="button"

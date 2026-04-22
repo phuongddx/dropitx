@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { FileCode, FileText, Eye, Clock, Calendar } from "lucide-react";
 import type { Share } from "@/types/share";
 
 interface SharePageProps {
@@ -41,12 +42,17 @@ function formatUploadDate(dateStr: string): string {
   });
 }
 
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
 export default async function SharePage({ params }: SharePageProps) {
   const { slug } = await params;
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
 
-  // Lookup share by slug
   const { data: share, error: fetchError } = await supabase
     .from("shares")
     .select("*")
@@ -57,18 +63,15 @@ export default async function SharePage({ params }: SharePageProps) {
     notFound();
   }
 
-  // Check expiration
   if (share.expires_at && new Date(share.expires_at) < new Date()) {
     notFound();
   }
 
-  // Increment view count atomically via RPC
   const { data: newCount } = await supabase.rpc("increment_view_count", {
     share_slug: slug,
   });
   const viewCount = typeof newCount === "number" ? newCount : share.view_count + 1;
 
-  // Fetch HTML content from storage
   const { data: fileData, error: storageError } = await supabase.storage
     .from("html-files")
     .download(share.storage_path);
@@ -81,21 +84,42 @@ export default async function SharePage({ params }: SharePageProps) {
   const isMarkdown = share.mime_type === "text/markdown";
 
   return (
-    <div className="flex flex-1 flex-col gap-4 p-4 md:p-6">
+    <div className="flex flex-1 flex-col gap-4 p-4 md:p-6 max-w-5xl mx-auto w-full animate-fade-in">
       {/* Metadata header */}
       <Card>
-        <CardHeader>
-          <div className="flex items-start justify-between gap-2">
-            <CardTitle className="truncate">{share.filename}</CardTitle>
-            <Badge variant="secondary" className="shrink-0 text-xs">
-              {isMarkdown ? "MD" : "HTML"}
+        <CardHeader className="gap-3">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="shrink-0">
+                {isMarkdown ? (
+                  <FileText className="size-5 text-violet-500" />
+                ) : (
+                  <FileCode className="size-5 text-blue-500" />
+                )}
+              </div>
+              <CardTitle className="truncate text-lg">{share.filename}</CardTitle>
+            </div>
+            <Badge variant="outline" className="shrink-0">
+              {isMarkdown ? "Markdown" : "HTML"}
             </Badge>
           </div>
-          <CardDescription className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
-            <span>Uploaded {formatUploadDate(share.created_at)}</span>
-            <span>{viewCount} views</span>
+          <CardDescription className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
+            <span className="flex items-center gap-1">
+              <Calendar className="size-3" />
+              {formatUploadDate(share.created_at)}
+            </span>
+            <span className="flex items-center gap-1">
+              <Eye className="size-3" />
+              {viewCount} views
+            </span>
+            {share.file_size && (
+              <span>{formatFileSize(share.file_size)}</span>
+            )}
             {share.expires_at && (
-              <span>Expires in {formatExpiresIn(share.expires_at)}</span>
+              <span className="flex items-center gap-1">
+                <Clock className="size-3" />
+                Expires in {formatExpiresIn(share.expires_at)}
+              </span>
             )}
           </CardDescription>
         </CardHeader>
