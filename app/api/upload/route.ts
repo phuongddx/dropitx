@@ -104,16 +104,19 @@ export async function POST(request: NextRequest) {
     const storagePath = `${storageUuid}${isMarkdown ? ".md" : ".html"}`;
 
     // Upload to Supabase Storage (admin client bypasses RLS)
+    // Use TextEncoder to produce Uint8Array — Vercel runtime rejects raw strings
+    // as fetch body ("Invalid Compact"), while Node.js implicitly wraps them.
+    const body = new TextEncoder().encode(fileContent);
     const supabase = createAdminClient();
     const { error: uploadError } = await supabase.storage
       .from(STORAGE_BUCKET)
-      .upload(storagePath, fileContent, {
+      .upload(storagePath, body, {
         contentType: mimeType,
         upsert: false,
       });
 
     if (uploadError) {
-      console.error("Storage upload failed:", uploadError.message);
+      console.error("Storage upload failed:", JSON.stringify(uploadError, null, 2));
       return NextResponse.json(
         { error: "Failed to upload file. Please try again." },
         { status: 500 },
