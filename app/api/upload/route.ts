@@ -16,7 +16,6 @@ export const maxDuration = 60;
 
 const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 MB
 const ALLOWED_EXTENSIONS = [".html", ".htm", ".md"];
-const ALLOWED_MIME_TYPES = ["text/html", "text/markdown"];
 const STORAGE_BUCKET = "html-files";
 
 function getClientIp(request: NextRequest): string {
@@ -75,13 +74,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate MIME type (allow empty/falsy type — some browsers send application/octet-stream for .md)
-    if (file.type && !ALLOWED_MIME_TYPES.includes(file.type)) {
-      return NextResponse.json(
-        { error: "Invalid content type. Only .html and .md files are accepted." },
-        { status: 400 },
-      );
-    }
+    // MIME type not validated — browsers are unreliable for .md files;
+    // extension check above is sufficient.
 
     // Validate file size
     if (file.size > MAX_FILE_SIZE) {
