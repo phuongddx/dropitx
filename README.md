@@ -1,10 +1,11 @@
 # Share HTML
 
-Drop HTML files, get short shareable links. Built with Next.js 16, Supabase, and Tailwind CSS.
+Drop HTML and Markdown files, get short shareable links. Built with Next.js 16, Supabase, and Tailwind CSS.
 
 ## Features
 
-- **Upload**: Drag-and-drop HTML files (up to 10MB)
+- **Upload**: Drag-and-drop HTML and Markdown files (up to 50MB)
+- **Markdown**: GitHub-like rendered preview with syntax highlighting, toggle to raw source
 - **Share**: Short slug-based URLs (`/s/abc123`)
 - **Search**: Full-text search across uploaded content
 - **Security**: Sandboxed iframe viewing with CSP, rate limiting
@@ -54,7 +55,7 @@ npm run dev
 Run `supabase/schema.sql` to create:
 - `shares` table with full-text search
 - `search_shares()` and `increment_view_count()` RPCs
-- Storage bucket `html-files` (public, 10MB max)
+- Storage bucket `html-files` (public, 50MB max)
 
 ## Project Structure
 

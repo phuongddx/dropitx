@@ -24,7 +24,7 @@ interface UploadDropzoneProps {
 
 type UploadState = "idle" | "dragging" | "uploading" | "success" | "error";
 
-const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
+const MAX_SIZE = 50 * 1024 * 1024; // 50 MB
 
 export function UploadDropzone({ onUploadSuccess }: UploadDropzoneProps) {
   const [state, setState] = useState<UploadState>("idle");
@@ -79,9 +79,9 @@ export function UploadDropzone({ onUploadSuccess }: UploadDropzoneProps) {
     onDropRejected: () => {
       setDragActive(false);
       setState("error");
-      setErrorMessage("Only .html/.htm files under 10MB are accepted.");
+      setErrorMessage("Only .html/.htm/.md files under 50MB are accepted.");
     },
-    accept: { "text/html": [".html", ".htm"] },
+    accept: { "text/html": [".html", ".htm"], "text/markdown": [".md"] },
     maxSize: MAX_SIZE,
     multiple: false,
     disabled: state === "uploading",
@@ -115,8 +115,8 @@ export function UploadDropzone({ onUploadSuccess }: UploadDropzoneProps) {
         return errorMessage;
       default:
         return dragActive
-          ? "Drop your HTML file here"
-          : "Drag & drop an HTML file here, or click to browse";
+          ? "Drop your HTML or Markdown file here"
+          : "Drag & drop an HTML or Markdown file here, or click to browse";
     }
   };
 

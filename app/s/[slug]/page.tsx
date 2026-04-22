@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { createClient } from "@/utils/supabase/server";
 import { HtmlViewer } from "@/components/html-viewer";
+import { MarkdownViewerWrapper } from "@/components/markdown-viewer-wrapper";
 import {
   Card,
   CardContent,
@@ -9,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import type { Share } from "@/types/share";
 
 interface SharePageProps {
@@ -75,14 +77,20 @@ export default async function SharePage({ params }: SharePageProps) {
     notFound();
   }
 
-  const htmlContent = await fileData.text();
+  const fileContent = await fileData.text();
+  const isMarkdown = share.mime_type === "text/markdown";
 
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 md:p-6">
       {/* Metadata header */}
       <Card>
         <CardHeader>
-          <CardTitle className="truncate">{share.filename}</CardTitle>
+          <div className="flex items-start justify-between gap-2">
+            <CardTitle className="truncate">{share.filename}</CardTitle>
+            <Badge variant="secondary" className="shrink-0 text-xs">
+              {isMarkdown ? "MD" : "HTML"}
+            </Badge>
+          </div>
           <CardDescription className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
             <span>Uploaded {formatUploadDate(share.created_at)}</span>
             <span>{viewCount} views</span>
@@ -93,10 +101,14 @@ export default async function SharePage({ params }: SharePageProps) {
         </CardHeader>
       </Card>
 
-      {/* HTML viewer */}
+      {/* File viewer */}
       <Card>
-        <CardContent className="p-2">
-          <HtmlViewer htmlContent={htmlContent} />
+        <CardContent className={isMarkdown ? "p-4 md:p-6" : "p-2"}>
+          {isMarkdown ? (
+            <MarkdownViewerWrapper content={fileContent} />
+          ) : (
+            <HtmlViewer htmlContent={fileContent} />
+          )}
         </CardContent>
       </Card>
     </div>

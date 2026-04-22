@@ -12,8 +12,11 @@ import { generateSlug, generateDeleteToken } from "@/lib/nanoid";
 import { extractTextFromHtml } from "@/lib/extract-text";
 import { checkRateLimit } from "@/lib/rate-limit";
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
-const ALLOWED_EXTENSIONS = [".html", ".htm"];
+export const maxDuration = 60;
+
+const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 MB
+const ALLOWED_EXTENSIONS = [".html", ".htm", ".md"];
+const ALLOWED_MIME_TYPES = ["text/html", "text/markdown"];
 const STORAGE_BUCKET = "html-files";
 
 function getClientIp(request: NextRequest): string {
@@ -67,15 +70,15 @@ export async function POST(request: NextRequest) {
     const hasValidExt = ALLOWED_EXTENSIONS.some((ext) => lowerName.endsWith(ext));
     if (!hasValidExt) {
       return NextResponse.json(
-        { error: "Invalid file extension. Only .html and .htm files are accepted." },
+        { error: "Invalid file extension. Only .html, .htm, and .md files are accepted." },
         { status: 400 },
       );
     }
 
-    // Validate MIME type
-    if (file.type && file.type !== "text/html") {
+    // Validate MIME type (allow empty/falsy type — some browsers send application/octet-stream for .md)
+    if (file.type && !ALLOWED_MIME_TYPES.includes(file.type)) {
       return NextResponse.json(
-        { error: "Invalid content type. Only text/html is accepted." },
+        { error: "Invalid content type. Only .html and .md files are accepted." },
         { status: 400 },
       );
     }
@@ -83,30 +86,33 @@ export async function POST(request: NextRequest) {
     // Validate file size
     if (file.size > MAX_FILE_SIZE) {
       return NextResponse.json(
-        { error: "File too large. Maximum size is 10MB." },
+        { error: "File too large. Maximum size is 50MB." },
         { status: 400 },
       );
     }
 
+    const isMarkdown = lowerName.endsWith(".md");
+    const mimeType = isMarkdown ? "text/markdown" : "text/html";
+
     // Read file content
     const arrayBuffer = await file.arrayBuffer();
-    const htmlContent = new TextDecoder("utf-8", { fatal: true }).decode(arrayBuffer);
+    const fileContent = new TextDecoder("utf-8", { fatal: true }).decode(arrayBuffer);
 
     // Extract plain text for search indexing
-    const contentText = extractTextFromHtml(htmlContent);
+    const contentText = extractTextFromHtml(fileContent);
 
     // Generate identifiers
     const slug = generateSlug();
     const deleteToken = generateDeleteToken();
     const storageUuid = randomUUID();
-    const storagePath = `${storageUuid}.html`;
+    const storagePath = `${storageUuid}${isMarkdown ? ".md" : ".html"}`;
 
     // Upload to Supabase Storage (admin client bypasses RLS)
     const supabase = createAdminClient();
     const { error: uploadError } = await supabase.storage
       .from(STORAGE_BUCKET)
-      .upload(storagePath, htmlContent, {
-        contentType: "text/html",
+      .upload(storagePath, fileContent, {
+        contentType: mimeType,
         upsert: false,
       });
 
@@ -125,7 +131,7 @@ export async function POST(request: NextRequest) {
       storage_path: storagePath,
       content_text: contentText,
       file_size: file.size,
-      mime_type: "text/html",
+      mime_type: mimeType,
       delete_token: deleteToken,
     });
 

@@ -68,5 +68,7 @@ $$ LANGUAGE plpgsql;
 -- 3. DELETE FROM shares WHERE expires_at < NOW();
 
 -- Storage bucket: "html-files" (create via Supabase Dashboard)
--- Public: true, Max file size: 10MB
--- Storage path format: {uuid-v4}.html
+-- Public: true, Max file size: 50MB
+-- Storage path format: {uuid-v4}.html or {uuid-v4}.md
+-- To update existing bucket limit:
+-- UPDATE storage.buckets SET file_size_limit = 52428800 WHERE id = 'html-files';
