@@ -28,13 +28,76 @@ supabase login
 supabase init
 ```
 
-### 2. Database Schema
+### 2. Database Schema and Migrations
 
-Run `supabase/schema.sql` in the SQL Editor. This creates:
+Do not bootstrap hosted projects with only `supabase/schema.sql`.
+
+`supabase/schema.sql` contains the original share storage schema only. Auth/dashboard tables such as `user_profiles`, `favorites`, and `shares.user_id` live in `supabase/migrations/`.
+
+Preferred path:
+
+```bash
+supabase link --project-ref <your-project-ref>
+supabase db push
+```
+
+If you are not using the CLI, run both:
+
+1. `supabase/schema.sql`
+2. every SQL file in `supabase/migrations/` in timestamp order
+
+This creates:
 - `shares` table with full-text search (TSVECTOR) and RLS
+- `user_profiles` and `favorites`
+- `shares.user_id` and `shares.title`
 - GIN index on `search_vec` for fast search
 - `search_shares(query, limit, offset)` RPC
 - `increment_view_count(slug)` RPC
+
+### 2a. Recovery for Already-Provisioned Projects
+
+If your app is already deployed and profile reads fail with `PGRST205` / `Could not find the table 'public.user_profiles'`, the project is missing the auth migration.
+
+Recovery:
+
+1. Apply `supabase/migrations/20260423000001_add_auth_tables.sql`
+2. Backfill profile rows for existing users:
+
+```sql
+insert into public.user_profiles (id, display_name, avatar_url)
+select
+  u.id,
+  nullif(
+    left(
+      trim(
+        regexp_replace(
+          coalesce(
+            u.raw_user_meta_data->>'full_name',
+            u.raw_user_meta_data->>'name',
+            u.raw_user_meta_data->>'user_name',
+            u.raw_user_meta_data->>'preferred_username',
+            ''
+          ),
+          '<[^>]+>',
+          '',
+          'g'
+        )
+      ),
+      100
+    ),
+    ''
+  ) as display_name,
+  case
+    when coalesce(u.raw_user_meta_data->>'avatar_url', '') like 'https://%' then u.raw_user_meta_data->>'avatar_url'
+    when coalesce(u.raw_user_meta_data->>'picture', '') like 'https://%' then u.raw_user_meta_data->>'picture'
+    else null
+  end as avatar_url
+from auth.users u
+left join public.user_profiles p on p.id = u.id
+where p.id is null;
+```
+
+3. Verify REST access with an authenticated request or by loading `/dashboard/profile`
 
 ### 3. Storage Bucket
 

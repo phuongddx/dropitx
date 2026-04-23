@@ -52,8 +52,22 @@ npm run dev
 
 ### Database Setup
 
-Run `supabase/schema.sql` to create:
+Do not stop at `supabase/schema.sql`.
+
+`supabase/schema.sql` is the base share schema. Auth/dashboard support lives in `supabase/migrations/`.
+
+Recommended:
+
+```bash
+supabase link --project-ref <your-project-ref>
+supabase db push
+```
+
+If applying SQL manually, run `supabase/schema.sql` and then every file in `supabase/migrations/` in timestamp order.
+
+That setup creates:
 - `shares` table with full-text search
+- `user_profiles` and `favorites`
 - `search_shares()` and `increment_view_count()` RPCs
 - Storage bucket `html-files` (public, 50MB max)
 

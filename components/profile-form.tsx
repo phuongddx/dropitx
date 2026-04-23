@@ -43,8 +43,10 @@ export function ProfileForm({
       const supabase = createClient();
       const { error } = await supabase
         .from("user_profiles")
-        .update({ display_name: trimmed })
-        .eq("id", userId);
+        .upsert(
+          { id: userId, display_name: trimmed },
+          { onConflict: "id" },
+        );
       if (error) throw error;
       setName(trimmed);
       toast.success("Profile updated");

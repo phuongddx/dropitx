@@ -16,9 +16,10 @@ export function AuthUserMenu() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const supabase = createClient();
 
   useEffect(() => {
+    const supabase = createClient();
+
     supabase.auth.getUser().then(({ data }) => {
       setUser(data.user ?? null);
       if (data.user) {
@@ -26,8 +27,14 @@ export function AuthUserMenu() {
           .from("user_profiles")
           .select("display_name, avatar_url")
           .eq("id", data.user.id)
-          .single()
-          .then(({ data }) => setProfile(data));
+          .maybeSingle()
+          .then(({ data, error }) => {
+            if (error) {
+              console.error("Failed to load user profile", error);
+              return;
+            }
+            setProfile(data);
+          });
       }
     });
 
@@ -39,8 +46,14 @@ export function AuthUserMenu() {
             .from("user_profiles")
             .select("display_name, avatar_url")
             .eq("id", session.user.id)
-            .single()
-            .then(({ data }) => setProfile(data));
+            .maybeSingle()
+            .then(({ data, error }) => {
+              if (error) {
+                console.error("Failed to load user profile", error);
+                return;
+              }
+              setProfile(data);
+            });
         } else {
           setProfile(null);
         }
@@ -113,6 +126,7 @@ export function AuthUserMenu() {
           </Link>
           <button
             onClick={async () => {
+              const supabase = createClient();
               await supabase.auth.signOut();
               setOpen(false);
               window.location.href = "/";

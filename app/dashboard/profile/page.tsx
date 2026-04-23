@@ -19,7 +19,7 @@ export default async function ProfilePage() {
     .from("user_profiles")
     .select("display_name, avatar_url")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
   const providers = (user.app_metadata?.provider ?? "")
     .split(",")
