@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+## [1.3.0] - 2026-04-25
+
+### Changed
+
+- Rebranded from ShareHTML to DropItX with electric violet identity
+- CSS design tokens: blue accent (hue 264) → violet (hue 293); neutral backgrounds shifted to violet-tinted hue 280
+- Logotype updated to `[x] dropitx` in Geist Mono with violet accent across all layouts
+- Home page hero heading, tagline, gradient orb, and footer copy updated
+- All hardcoded `blue-*` Tailwind classes replaced with `violet-*` equivalents across components
+- HTML and MD file-type icons unified to `text-violet-500`
+- CLI binary renamed `share-html` → `dropitx`; config dir `~/.share-html` → `~/.dropitx` (auto-migrated on first run)
+- Package name updated to `dropitx`
+- Docs and README updated with new brand and CLI references
+
 ## [1.2.0] - 2026-04-25
 
 ### Added
@@ -109,7 +125,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Upstash Redis (rate limiting)
 - TypeScript 5
 
-[Unreleased]: https://github.com/phuongddx/dropitx/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/phuongddx/dropitx/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/phuongddx/dropitx/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/phuongddx/dropitx/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/phuongddx/dropitx/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/phuongddx/dropitx/releases/tag/v1.0.0
