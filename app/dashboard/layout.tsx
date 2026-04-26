@@ -11,15 +11,11 @@ export default async function DashboardLayout({
 }) {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) redirect("/auth/login");
-
-  const { data: profile } = await supabase
-    .from("user_profiles")
-    .select("display_name, avatar_url")
-    .eq("id", user.id)
-    .maybeSingle();
 
   const navItems = [
     { href: "/dashboard", label: "History", icon: FileText },
@@ -29,15 +25,9 @@ export default async function DashboardLayout({
 
   return (
     <div className="flex min-h-screen">
-      {/* Sidebar */}
+      {/* Sidebar — nav links only; HeaderBar provides logo + profile */}
       <aside className="hidden md:flex w-56 flex-col border-r bg-card">
-        <div className="p-4 border-b">
-          <Link href="/" className="font-mono text-lg font-bold tracking-tight">
-            [x]{" "}<span className="text-violet-600 dark:text-violet-400">dropitx</span>
-          </Link>
-        </div>
-
-        <div className="flex-1 p-3 space-y-1">
+        <div className="flex-1 p-3 space-y-1 pt-4">
           {navItems.map(({ href, label, icon: Icon }) => (
             <Link
               key={href}
@@ -48,26 +38,6 @@ export default async function DashboardLayout({
               {label}
             </Link>
           ))}
-        </div>
-
-        <div className="p-3 border-t">
-          <div className="flex items-center gap-3 rounded-lg px-3 py-2">
-            {profile?.avatar_url ? (
-              <img
-                src={profile.avatar_url}
-                alt=""
-                className="size-8 rounded-full"
-                referrerPolicy="no-referrer"
-              />
-            ) : (
-              <div className="size-8 rounded-full bg-violet-600 flex items-center justify-center text-white text-xs font-bold">
-                {(profile?.display_name || user.email || "U")[0].toUpperCase()}
-              </div>
-            )}
-            <span className="text-sm truncate">
-              {profile?.display_name || user.email}
-            </span>
-          </div>
         </div>
       </aside>
 
@@ -89,7 +59,7 @@ export default async function DashboardLayout({
 
       {/* Main content */}
       <main className="flex-1 overflow-auto">
-        <div className="p-4 md:p-6 max-w-4xl mx-auto w-full">
+        <div className="p-4 md:p-6 pb-20 md:pb-6 max-w-4xl mx-auto w-full">
           {children}
         </div>
       </main>
