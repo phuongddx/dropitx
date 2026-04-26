@@ -107,7 +107,7 @@ export function AuthUserMenu() {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-48 rounded-lg border bg-card shadow-lg z-50 py-1">
+        <div className="absolute right-0 mt-2 w-48 rounded-lg border bg-card shadow-lg z-[41] py-1">
           <Link
             href="/dashboard"
             onClick={() => setOpen(false)}
