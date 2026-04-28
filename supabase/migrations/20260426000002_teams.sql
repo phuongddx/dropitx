@@ -267,9 +267,15 @@ END;
 $$ LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path = public;
 
 -- Auto-add creator as owner when team is created
+-- SECURITY DEFINER + SET LOCAL ROLE bypasses RLS on team_members insert
+-- (avoids chicken-and-egg: RLS requires membership, but this IS the first member)
 CREATE OR REPLACE FUNCTION add_team_owner()
 RETURNS TRIGGER AS $$
+DECLARE
+  v_pg_user TEXT;
 BEGIN
+  SELECT current_user INTO v_pg_user;
+  EXECUTE format('SET LOCAL ROLE %I', v_pg_user);
   INSERT INTO team_members (team_id, user_id, role)
   VALUES (NEW.id, NEW.created_by, 'owner')
   ON CONFLICT (team_id, user_id) DO NOTHING;

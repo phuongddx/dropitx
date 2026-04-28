@@ -35,11 +35,11 @@ function formatDate(iso: string): string {
 export default async function TeamsPage() {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
 
   if (!user) redirect("/auth/login");
 
-  const { data: memberships } = await supabase
+  const { data: memberships, error: membersError } = await supabase
     .from("team_members")
     .select("role, teams(id, name, slug, created_by, plan, created_at)")
     .eq("user_id", user.id);

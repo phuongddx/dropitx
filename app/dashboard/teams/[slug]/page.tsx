@@ -26,7 +26,7 @@ export default async function TeamOverviewPage({
   if (!user) redirect("/auth/login");
 
   // Fetch team
-  const { data: team } = await supabase
+  const { data: team, error: teamError } = await supabase
     .from("teams")
     .select("*")
     .eq("slug", slug)
@@ -35,7 +35,7 @@ export default async function TeamOverviewPage({
   if (!team) redirect("/dashboard/teams");
 
   // Verify membership
-  const { data: membership } = await supabase
+  const { data: membership, error: memberError } = await supabase
     .from("team_members")
     .select("role")
     .eq("team_id", team.id)
