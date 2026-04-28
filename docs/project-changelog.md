@@ -2,6 +2,27 @@
 
 All notable changes to DropItX.
 
+## [v2.0.1] — 2026-04-28
+
+### Added
+- **RLS Policy Hardening**: Fixed infinite recursion and permission errors for team workspaces
+- **Authentication Role Migration**: Changed RLS policies from `anon` to `authenticated` role for proper access control
+- **Team Workspace Stability**: Resolved issues with workspace member management and access permissions
+
+### Infrastructure Enhancements
+- **Database Stability**: Fixed recursive queries in team member policies
+- **Security Improvements**: Proper role-based access control across all workspace tables
+- **Performance**: Optimized RLS policies for better query performance
+
+### Database Migrations
+- `20260428000001_fix_team_owner_trigger_rls.sql`: RLS fixes for team workspace owner policies
+- `20260428000002_fix_team_members_rls_recursion.sql`: Fixed infinite recursion in team member policies
+- `20260428000003_fix_teams_insert_policy.sql`: Team member insertion policy fixes
+- `20260428000004_fix_rls_policies_use_anon_role.sql`: RLS policy updates using anon role
+- `20260428162629_fix_rls_policies_to_authenticated.sql`: RLS policies changed to authenticated role
+
+---
+
 ## [v2.0.0] — 2026-04-26
 
 ### Added
@@ -129,7 +150,7 @@ New compound pattern improves:
 - **`lib/api-auth.ts`**: SHA-256 hash + `api_keys` table lookup for Bearer token auth
 - **Private shares**: `is_private` flag on `shares`; hidden from search and public listing for non-owners
 - **Custom slugs**: `handle/slug` format via `custom_slug` column with partial unique index
-- **CLI tool** (`packages/cli/`): binary `share-html`; commands: `login`, `publish`, `update`, `delete`, `list`, `whoami`
+- **CLI tool** (`packages/cli/`): binary `dropitx`; commands: `login`, `publish`, `update`, `delete`, `list`, `whoami`
 
 ### Database Migrations
 - `20260424000001_add_editor_columns.sql`: `shares.source`, `shares.custom_slug`, `shares.is_private`, `shares.updated_at`

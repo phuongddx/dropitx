@@ -16,6 +16,7 @@
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (server-only) |
 | `UPSTASH_REDIS_REST_URL` | Upstash Redis REST endpoint |
 | `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis auth token |
+| `SHARE_ACCESS_SECRET` | 32+ char secret for HMAC cookie signing (password protection) |
 
 No additional env vars are needed for API key hashing — it uses Node.js built-in `crypto`.
 
@@ -47,6 +48,11 @@ supabase db push
 3. `supabase/migrations/20260424000001_add_editor_columns.sql`
 4. `supabase/migrations/20260424000002_add_api_keys.sql`
 5. `supabase/migrations/20260424000003_private_search_filter.sql`
+6. `supabase/migrations/20260425000001_add_share_password.sql`
+7. `supabase/migrations/20260425045621_rate-limits-supabase.sql`
+8. `supabase/migrations/20260426000001_share_views.sql`
+9. `supabase/migrations/20260426000002_teams.sql`
+10. All RLS fix migrations from 20260428000001 to 20260428162629 (apply in timestamp order)
 
 **What each migration creates:**
 
@@ -57,6 +63,12 @@ supabase db push
 | `20260424000001_add_editor_columns.sql` | `shares.source`, `shares.custom_slug`, `shares.is_private`, `shares.updated_at` |
 | `20260424000002_add_api_keys.sql` | `api_keys` table + RLS policies |
 | `20260424000003_private_search_filter.sql` | Updates `search_shares` RPC to filter private shares by owner |
+| `20260425000001_add_share_password.sql` | `shares.password_hash` (nullable TEXT) for password protection |
+| `20260425045621_rate-limits-supabase.sql` | Rate limiting policies and procedures |
+| `20260426000001_share_views.sql` | Share view tracking system |
+| `20260426000002_teams.sql` | `team_workspaces`, `workspace_members`, `workspace_shares` tables |
+| `20260428000001-05` | RLS fixes for team workspaces and infinite recursion bugs |
+| `20260428162629` | RLS policies changed to authenticated role |
 
 ### 2a. Recovery for Already-Provisioned Projects
 
@@ -130,6 +142,7 @@ npm link               # makes `dropitx` available globally
 # Configure with your API key (generated from /dashboard)
 dropitx login
 dropitx publish my-file.md -t "My Doc"
+dropitx publish my-file.md -t "My Doc" -P password  # with password protection
 dropitx list
 ```
 
@@ -157,14 +170,16 @@ No custom `vercel.json` needed. Next.js 16 is auto-detected.
 
 ## Production Checklist
 
-- [ ] All 5 env vars set in Vercel
-- [ ] Supabase schema + all 4 migrations applied
+- [ ] All 6 env vars set in Vercel (including SHARE_ACCESS_SECRET)
+- [ ] Supabase schema + all 14 migrations applied (including teams and analytics)
 - [ ] Storage bucket `html-files` created (public, 50 MB, correct MIME types)
 - [ ] Upstash Redis connected
 - [ ] `npm run build` passes
 - [ ] Upload, view, search, delete flows tested
 - [ ] OAuth redirect URLs configured in Supabase Dashboard (Google + GitHub)
 - [ ] Editor publish and API key flows tested
+- [ ] Password protection and team workspace flows tested
+- [ ] oEmbed embedding and analytics dashboard functional
 
 ## Maintenance
 

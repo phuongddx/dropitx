@@ -27,7 +27,7 @@ utils/supabase/       # Supabase client factories
 types/                # TypeScript interfaces
 supabase/             # Schema and config
 supabase/migrations/  # Incremental schema migrations
-packages/cli/         # CLI tool (share-html binary)
+packages/cli/         # CLI tool (dropitx binary)
 public/               # Static assets
 docs/                 # Documentation
 ```
@@ -35,10 +35,10 @@ docs/                 # Documentation
 ## Monorepo Structure
 
 `packages/cli/` is a standalone TypeScript ESM package:
-- `package.json` with `"type": "module"`, `"bin": { "share-html": "dist/index.js" }`
+- `package.json` with `"type": "module"`, `"bin": { "dropitx": "dist/index.js" }`
 - Build: `tsc` outputs to `dist/`
 - Local link: `npm link` from `packages/cli/` for development
-- Config stored at `~/.share-html/config.json` (mode 0600, never committed)
+- Config stored at `~/.dropitx/config.json` (mode 0600, never committed)
 
 ## TypeScript
 
@@ -78,6 +78,8 @@ docs/                 # Documentation
 ### Versioned API Convention
 - Routes under `/api/v1/` use API key auth only (no cookie fallback)
 - Auth via `lib/api-auth.ts`: SHA-256 hash of Bearer token → lookup `api_keys`
+- Team workspace routes: `/api/dashboard/teams/` with RLS policies for access control
+- Analytics tracking: `/api/analytics/track` for event-based user engagement metrics
 
 ### API Key Auth Pattern
 ```typescript
@@ -97,6 +99,21 @@ const { data } = await adminClient
 const formData = await request.formData();
 const file = formData.get('file') as File;
 const buffer = Buffer.from(await file.arrayBuffer());
+```
+
+### Team Workspace API Pattern
+```typescript
+// POST /api/dashboard/teams/[slug]/members
+// RLS policies ensure only owners can add/remove members
+// workspace_id extracted from route slug, user_id from auth
+```
+
+### Analytics Tracking Pattern
+```typescript
+// POST /api/analytics/track
+// Event types: 'page_view', 'search', 'upload', 'api_call'
+// metadata varies by event type (slug, query, file_size, etc.)
+// both anonymous and authenticated user tracking
 ```
 
 ## Database Migrations
@@ -147,6 +164,9 @@ Never use the admin client in client components — server-only.
 - **Service role key**: server-only — never expose to client bundle
 - **API key**: only SHA-256 hash + prefix stored; full key shown once at creation
 - **`is_private`**: enforced at RLS level and in `search_shares` RPC — not just application logic
+- **Password protection**: bcryptjs hash in `shares.password_hash`; HMAC-SHA256 signed HttpOnly access cookie
+- **Team workspaces**: RLS policies with owner/member role-based access control on workspace tables
+- **Analytics tracking**: Event-based system with separate `analytics_events` table and privacy safeguards
 
 ## Lint & Build
 
@@ -164,4 +184,4 @@ Fix lint errors before commit. Build must pass before push.
 - Conventional commits: `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`
 - No AI references in commit messages
 - Keep commits focused on actual changes
-- Never commit `.env.local`, `~/.share-html/config.json`, or any secrets
+- Never commit `.env.local`, `~/.dropitx/config.json`, or any secrets

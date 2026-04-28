@@ -58,11 +58,13 @@ All theme variables in `app/globals.css` using `oklch()`. The v1.0.0 overhaul es
 - **EditorPublishBar**: Title input, custom slug input, privacy toggle, publish button; sticky at bottom
 
 ### Dashboard / Auth Components
-- **DashboardShareCard**: Share card with title, slug, stats (views), edit/delete actions
+- **DashboardShareCard**: Share card with title, slug, stats (views), edit/delete actions, password lock toggle
 - **ApiKeyManager**: Table of API keys (prefix, created_at, last_used_at); create/revoke actions
 - **BookmarkToggle**: Icon button; filled/outline state; optimistic update
 - **ProfileForm**: Display name + avatar URL inputs with save feedback
 - **AuthUserMenu**: Header dropdown; avatar or initials fallback; profile + logout links
+- **AnalyticsStatsCards**: Performance metrics cards for dashboard analytics view
+- **AnalyticsCharts**: Recharts-based visualization components for user engagement data
 
 ### Header Components
 - **HeaderBar**: Main header orchestrator; manages mobile/desktop state and mobile drawer
@@ -73,6 +75,13 @@ All theme variables in `app/globals.css` using `oklch()`. The v1.0.0 overhaul es
 - **SearchBar**: Debounced (300 ms) input → URL params navigation
 - **SearchResults**: Result cards with relative time, skeleton loading, empty state
 - **ThemeProvider**: next-themes class-based dark/light toggle
+
+### Team Components
+- **CreateTeamForm**: Workspace creation interface with name/description inputs
+- **TeamMemberRow**: Member display with role indicator and remove action
+- **TeamNav**: Workspace navigation sidebar with member list
+- **TeamShareCard**: Share card within workspace context with workspace actions
+- **InviteMemberDialog**: Email-based invitation system for workspace members
 
 ## Spacing
 
@@ -114,4 +123,6 @@ Tailwind breakpoints (mobile-first):
 - **HtmlViewer**: Sandboxed iframe (`sandbox="allow-scripts"`) + CSP meta tag injection
 - **File validation**: Extension (`.html`/`.htm`/`.md`), size (≤ 50 MB) checks client-side; MIME validation server-side
 - **Image validation**: Extension + size (≤ 5 MB) client-side hint; full validation server-side
-- **Rate limiting**: 10 requests/minute per IP on write endpoints
+- **Rate limiting**: 10 requests/minute per IP on write endpoints; 5 attempts/10 min for password unlock
+- **Password protection**: bcryptjs hash with HMAC-SHA256 access cookies; multi-layer access gates
+- **Team workspace isolation**: RLS policies ensure members only see their own workspace content

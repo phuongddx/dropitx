@@ -2,7 +2,7 @@
 
 ## Overview
 
-DropItX is a Next.js 16 application (App Router) deployed on Vercel with Supabase (PostgreSQL + Storage) and Upstash Redis (rate limiting). Supports two auth models: cookie-based session (browser) and API key (programmatic). Includes a CLI tool at `packages/cli/`.
+DropItX is a Next.js 16 application (App Router) deployed on Vercel with Supabase (PostgreSQL + Storage) and Upstash Redis (rate limiting). Features include team workspaces, analytics dashboard, password-protected shares, rich embedding via oEmbed, and programmatic access via REST API and CLI. Supports two auth models: cookie-based session (browser) and API key (programmatic).
 
 ## Architecture Diagram
 
@@ -23,9 +23,12 @@ DropItX is a Next.js 16 application (App Router) deployed on Vercel with Supabas
 │  POST /api/images/upload                                     │
 │  POST /api/shares/[slug]/unlock                              │
 │  POST /api/shares/[slug]/set-password                        │
+│  POST /api/analytics/track                                   │
+│  GET /api/oembed                                             │
 │  GET|POST /api/v1/keys    DELETE /api/v1/keys/[id]           │
 │  POST /api/v1/documents   GET /api/v1/documents              │
 │  GET /api/v1/documents/[slug]   PATCH|DELETE /api/v1/..      │
+│  CRUD /api/dashboard/teams, /api/dashboard/teams/[slug]/*    │
 │                                                              │
 │  ┌─────────────────────────────────────────────────────┐    │
 │  │  lib/api-auth.ts          utils/supabase/server.ts  │    │
@@ -64,33 +67,48 @@ RootLayout (app/layout.tsx)
     │   ├── SearchBar
     │   ├── UploadDropzone
     │   └── ShareLink
-    ├── /editor (Editor Page — SSR disabled via next/dynamic)
+    ├── /editor (SSR disabled via next/dynamic)
     │   └── EditorShell
     │       ├── EditorToolbar
     │       ├── EditorPane (CodeMirror 6)
     │       ├── EditorPreview (react-markdown + shiki)
     │       └── EditorPublishBar
     ├── /s/[slug] (SharePage)
-    │   ├── PasswordGate (full-page password form — rendered when share has password)
-    │   ├── HtmlViewer (sandboxed iframe, for .html files)
-    │   ├── MarkdownViewerWrapper (lazy loaded, for .md files)
-    │   └── BookmarkToggle
-    ├── /search (SearchPage)
+    │   ├── PasswordGate (when share has password)
+    │   ├── HtmlViewer (sandboxed iframe, .html files)
+    │   ├── MarkdownViewerWrapper (lazy loaded, .md files)
+    │   ├── BookmarkToggle
+    │   ├── ShareViewedTracker
+    │   └── ShareAnalyticsTracker
+    ├── /embed/[slug] (oEmbed viewer)
+    │   ├── EmbedViewedTracker
+    │   └── EmbedSnippet
+    ├── /search
     │   ├── SearchBar
     │   └── SearchResults
     ├── /auth/login
     │   ├── Google OAuth button
-    │   ├── GitHub OAuth button
-    │   └── Contextual message ("Sign in to view shared content" when ?next=/s/*)
+    │   └── GitHub OAuth button
     ├── /dashboard
-    │   ├── HeaderBar (compound component with optimized sidebar)
-    │   ├── layout.tsx (sidebar nav - simplified, no duplicate logo/profile)
+    │   ├── layout.tsx (sidebar nav)
     │   ├── page.tsx (share list + stats)
-    │   │   ├── DashboardShareCard (with lock/unlock password toggle)
-    │   │   │   └── SharePasswordForm
+    │   │   ├── DashboardShareCard (with password toggle)
     │   │   └── ApiKeyManager
     │   ├── profile/page.tsx → ProfileForm
-    │   └── favorites/page.tsx → DashboardShareCard list
+    │   ├── favorites/page.tsx → DashboardShareCard list
+    │   ├── analytics/page.tsx
+    │   │   ├── AnalyticsStatsCards
+    │   │   ├── AnalyticsViewChart
+    │   │   ├── AnalyticsGeoChart
+    │   │   ├── AnalyticsReferrerChart
+    │   │   ├── AnalyticsTopPerformers
+    │   │   └── AnalyticsEmptyState
+    │   ├── analytics/[slug]/page.tsx → per-share analytics
+    │   ├── teams/page.tsx → team list
+    │   ├── teams/new/page.tsx → CreateTeamForm
+    │   ├── teams/[slug]/page.tsx → team detail
+    │   ├── teams/[slug]/members/page.tsx → TeamMemberRow, InviteMemberDialog
+    │   └── teams/[slug]/settings/page.tsx → team settings
     └── /auth/callback (PKCE code exchange, bootstraps user_profiles)
 ```
 
@@ -98,53 +116,45 @@ RootLayout (app/layout.tsx)
 
 ### Session Auth (Browser)
 ```
-User clicks OAuth button → /auth/login
+User clicks OAuth → /auth/login
   → supabase.auth.signInWithOAuth({ provider })
-  → Redirect to Google or GitHub
-  → /auth/callback
-    → supabase.auth.exchangeCodeForSession()
-    → INSERT user_profiles if first login
-    → Redirect to /dashboard
+  → Redirect to Google/GitHub
+  → /auth/callback → exchangeCodeForSession() + INSERT user_profiles
+  → Redirect to /dashboard
 ```
 
 ### API Key Auth (Programmatic)
 ```
 POST /api/v1/keys  →  generate shk_ + 48 hex chars
-                   →  store SHA-256 hash + key_prefix in api_keys
-                   →  return full key ONCE
+  →  store SHA-256 hash + key_prefix in api_keys
+  →  return full key ONCE
 
-Subsequent requests:
-  Authorization: Bearer shk_...
-  → lib/api-auth.ts: SHA-256 hash input key
-  → SELECT from api_keys WHERE key_hash = ? AND revoked_at IS NULL
-  → UPDATE last_used_at (async)
+Requests: Authorization: Bearer shk_...
+  → lib/api-auth.ts: SHA-256 hash → SELECT from api_keys WHERE key_hash = ?
 ```
 
-### Share Access Cookie (Password-Protected Shares)
+### Share Access Cookie (Password-Protected)
 ```
 POST /api/shares/[slug]/unlock { password }
-  → checkPasswordRateLimit: 5 attempts / 10 min per IP
-      → fail-closed: 503 when Upstash Redis is unavailable
   → bcryptjs.compare(password, shares.password_hash)
-  → On match: sign token with HMAC-SHA256 (SHARE_ACCESS_SECRET env var, 32+ chars)
-    → Set-Cookie: share_access_{slug}=<signed>; HttpOnly; SameSite=Lax; Max-Age=86400
-  → Subsequent GET /s/[slug]: cookie verified, access granted for 24 h
+  → On match: HMAC-SHA256 signed cookie (SHARE_ACCESS_SECRET)
+  → Set-Cookie: share_access_{slug}=<signed>; HttpOnly; SameSite=Lax; Max-Age=86400
 ```
 
 ### Auth Layers
 | Layer | Implementation |
 |-------|---------------|
-| Middleware | Routes `/dashboard/*` redirect unauthenticated to `/auth/login` |
+| Middleware | `/dashboard/*` redirect unauthenticated to `/auth/login` |
 | Session | Supabase SSR cookies, PKCE flow |
 | OAuth | Google and GitHub via Supabase config |
-| API Key | SHA-256 hash lookup in `api_keys`; soft-revoke via `revoked_at` |
-| Share access cookie | HMAC-SHA256 signed HttpOnly cookie; 24 h TTL; issued by `/api/shares/[slug]/unlock` |
+| API Key | SHA-256 hash lookup; soft-revoke via `revoked_at` |
+| Share access cookie | HMAC-SHA256 signed HttpOnly cookie; 24 h TTL |
 | RLS | Owner-only on `user_profiles`, `favorites`, `api_keys`; private share filter |
 
 ### Supabase Client Usage
 | Client | Export | Use Case |
 |--------|--------|----------|
-| Browser | `client.ts` | Client components, direct user interaction |
+| Browser | `client.ts` | Client components |
 | Server (anon) | `server.ts → createClient()` | Server components, reads respecting RLS |
 | Admin | `server.ts → createAdminClient()` | Mutations, storage ops (bypasses RLS) |
 
@@ -152,94 +162,38 @@ POST /api/shares/[slug]/unlock { password }
 
 ### Upload Flow
 ```
-User drops file → UploadDropzone (client: .html/.htm/.md, ≤50 MB)
-  → POST /api/upload (multipart)
-    → Rate limit check (Upstash Redis)
-    → File validation (extension, MIME, size)
-    → Upload to Supabase Storage (admin client)
-    → Extract text (lib/extract-text.ts)
-    → INSERT shares record (admin client)
-    → On failure: compensating DELETE from storage
-  → Return { slug, filename, deleteUrl, shareUrl }
-  → ShareLink component
+User drops file → UploadDropzone (.html/.htm/.md, ≤50 MB)
+  → POST /api/upload (multipart) → rate limit → validate → upload to Storage
+  → extract text → INSERT shares → on failure: compensating DELETE from storage
+  → Return { slug, shareUrl }
 ```
 
 ### Editor Publish Flow
 ```
-EditorPane (CodeMirror) → user edits Markdown
-  → useEditorAutoSave: persist draft to localStorage
-  → EditorPublishBar: user sets title, custom_slug, is_private
+EditorPane → useEditorAutoSave (localStorage draft)
+  → EditorPublishBar: title, custom_slug, is_private
   → POST /api/publish { content, title, custom_slug, is_private }
-    → Auth: session cookie required
-    → INSERT shares (source='editor', mime_type='text/markdown')
-  → Redirect to /s/[slug]
+  → INSERT shares (source='editor') → redirect to /s/[slug]
 ```
 
 ### Image Upload Flow
 ```
-User drags image into EditorPane
-  → Editor extension catches drop event
-  → POST /api/images/upload (multipart, PNG/JPG/GIF/WebP, ≤5 MB)
-    → Auth: session cookie required
-    → Upload to Supabase Storage (images/ prefix)
-  → Return { url }
-  → Editor inserts ![alt](url) at cursor
-```
-
-### API Publish Flow
-```
-CLI: dropitx publish file.md [-P password]
-  → Read ~/.dropitx/config.json for API key
-  → POST /api/v1/documents { content, title, slug, is_private, password? }
-    → lib/api-auth.ts: hash Bearer token, lookup api_keys
-    → password present → bcryptjs.hash(password, 10) stored in shares.password_hash
-    → INSERT shares (source='editor')
-  → Return { slug, url }
+Image dropped in EditorPane → POST /api/images/upload (≤5 MB)
+  → Upload to Storage (images/ prefix) → insert ![alt](url) at cursor
 ```
 
 ### View Flow
 ```
-GET /s/[slug]
-  → Server component: fetch share (anon client — private filter via RLS)
-  → Check expiration → 404 if expired
-  → Access gate (in order):
-      1. Owner bypass   — session user_id == share.user_id → pass
-      2. Private check  — share.is_private + no session → login redirect (?next=/s/[slug])
-      3. Access cookie  — HMAC-SHA256 signed HttpOnly cookie present → pass
-      4. Password gate  — share.password_hash set → render PasswordGate component
-      5. Auth gate      — share requires auth → login redirect
-  → Download content from Storage (admin client)
-  → RPC: increment_view_count(slug)  ← only reached after gate passes
-  → Branch by mime_type:
-    → text/markdown → MarkdownViewer (lazy, react-markdown + shiki)
-    → text/html → HtmlViewer (sandboxed iframe + CSP)
-```
-
-### Password Unlock Flow
-```
-User submits password on PasswordGate
-  → POST /api/shares/[slug]/unlock { password }
-    → checkPasswordRateLimit (5 attempts/10 min per IP, fail-closed on Redis error)
-    → SELECT password_hash FROM shares WHERE slug = ?
-    → bcryptjs.compare(password, hash)
-    → On success: Set-Cookie: share_access_{slug}=<HMAC-SHA256 signed token>; HttpOnly; 24h
-  → Redirect: GET /s/[slug] (cookie auto-sent, gate passes)
-```
-
-### Set Password Flow
-```
-Owner sets/removes password
-  → POST /api/shares/[slug]/set-password { password? }
-    → Auth: session user_id == share.user_id OR delete_token header
-    → password present  → bcryptjs.hash(password, 10) → UPDATE shares.password_hash
-    → password absent   → UPDATE shares SET password_hash = NULL
+GET /s/[slug] → fetch share (anon client) → check expiration
+  → Access gate: owner bypass → private check → access cookie → password gate → auth gate
+  → Download from Storage → increment_view_count → render by mime_type
 ```
 
 ### API Key Lifecycle
 ```
-POST /api/v1/keys (name)  →  create + return key once
-GET  /api/v1/keys         →  list (prefix + created_at, never hash)
-DELETE /api/v1/keys/[id]  →  set revoked_at = NOW()
+POST /api/v1/keys (name) → create + return key once
+GET  /api/v1/keys        → list (prefix only, never hash)
+DELETE /api/v1/keys/[id]  → set revoked_at = NOW()
 ```
 
 ## Database Schema
@@ -260,9 +214,9 @@ DELETE /api/v1/keys/[id]  →  set revoked_at = NOW()
 | `title` | TEXT | display title |
 | `custom_slug` | VARCHAR(100) UNIQUE PARTIAL | `handle/slug` format |
 | `source` | TEXT | `'upload'` or `'editor'` |
-| `is_private` | BOOLEAN | hidden from search/listing for non-owners |
-| `password_hash` | TEXT (nullable) | bcryptjs hash; never sent to client (`has_password: boolean` exposed instead) |
-| `updated_at` | TIMESTAMPTZ | updated by trigger |
+| `is_private` | BOOLEAN | hidden from search/listing |
+| `password_hash` | TEXT (nullable) | bcryptjs hash; never sent to client |
+| `updated_at` | TIMESTAMPTZ | trigger-updated |
 | `created_at` | TIMESTAMPTZ | auto-set |
 | `expires_at` | TIMESTAMPTZ | default NOW() + 30 days |
 | `view_count` | INTEGER | atomic increment via RPC |
@@ -282,8 +236,7 @@ DELETE /api/v1/keys/[id]  →  set revoked_at = NOW()
 | `id` | UUID PK | |
 | `user_id` | UUID FK | |
 | `share_id` | UUID FK | |
-| `created_at` | TIMESTAMPTZ | |
-| — | UNIQUE(user_id, share_id) | |
+| `created_at` | TIMESTAMPTZ | UNIQUE(user_id, share_id) |
 
 ### `api_keys` table
 | Column | Type | Notes |
@@ -302,70 +255,47 @@ DELETE /api/v1/keys/[id]  →  set revoked_at = NOW()
 |--------|------|-------|
 | `id` | UUID PK | auto-generated |
 | `name` | TEXT | workspace name |
-| `description` | TEXT | workspace description (nullable) |
-| `owner_id` | UUID FK → auth.users | workspace creator and owner |
-| `created_at` | TIMESTAMPTZ | auto-set |
+| `description` | TEXT | nullable |
+| `owner_id` | UUID FK → auth.users | workspace owner |
+| `created_at` | TIMESTAMPTZ | |
 | `updated_at` | TIMESTAMPTZ | trigger-updated |
 
 ### `workspace_members` table
 | Column | Type | Notes |
 |--------|------|-------|
-| `id` | UUID PK | auto-generated |
+| `id` | UUID PK | |
 | `workspace_id` | UUID FK → team_workspaces | |
 | `user_id` | UUID FK → auth.users | |
 | `role` | TEXT | `'owner'` or `'member'` |
-| `created_at` | TIMESTAMPTZ | auto-set |
-| — | UNIQUE(workspace_id, user_id) | |
+| `created_at` | TIMESTAMPTZ | UNIQUE(workspace_id, user_id) |
 
 ### `workspace_shares` table
 | Column | Type | Notes |
 |--------|------|-------|
-| `id` | UUID PK | auto-generated |
+| `id` | UUID PK | |
 | `workspace_id` | UUID FK → team_workspaces | |
-| `share_id` | UUID FK → shares | reference to shared content |
-| `user_id` | UUID FK → auth.users | user who shared to workspace |
+| `share_id` | UUID FK → shares | |
+| `user_id` | UUID FK → auth.users | |
+| `created_at` | TIMESTAMPTZ | UNIQUE(workspace_id, share_id) |
+
+### `analytics_events` table
+| Column | Type | Notes |
+|--------|------|-------|
+| `id` | UUID PK | auto-generated |
+| `event_type` | TEXT | `'page_view'`, `'search'`, `'upload'`, `'api_call'` |
+| `user_id` | UUID FK (nullable) | authenticated user |
+| `session_id` | UUID | anonymous session tracking |
+| `metadata` | JSONB | event-specific data |
+| `user_agent` | TEXT | browser/user agent string |
+| `ip_address` | INET | client IP |
 | `created_at` | TIMESTAMPTZ | auto-set |
-| — | UNIQUE(workspace_id, share_id) | |
 
 ### RPCs
-- `search_shares(query, limit, offset)` — full-text search with ranking + highlighted snippets; filters `is_private` unless owner
+- `search_shares(query, limit, offset)` — full-text search with ranking + highlighted snippets
 - `increment_view_count(slug)` — atomic view counter
-- `get_user_workspaces(user_id)` — list all workspaces the user belongs to
-- `is_user_in_workspace(user_id, workspace_id)` — check if user has access to workspace
-
-### `user_profiles` table
-| Column | Type | Notes |
-|--------|------|-------|
-| `id` | UUID PK FK → auth.users | |
-| `display_name` | TEXT | editable |
-| `avatar_url` | TEXT | editable |
-| `created_at` | TIMESTAMPTZ | |
-| `updated_at` | TIMESTAMPTZ | trigger-updated |
-
-### `favorites` table
-| Column | Type | Notes |
-|--------|------|-------|
-| `id` | UUID PK | |
-| `user_id` | UUID FK | |
-| `share_id` | UUID FK | |
-| `created_at` | TIMESTAMPTZ | |
-| — | UNIQUE(user_id, share_id) | |
-
-### `api_keys` table
-| Column | Type | Notes |
-|--------|------|-------|
-| `id` | UUID PK | |
-| `user_id` | UUID FK | |
-| `name` | TEXT | user-supplied label |
-| `key_hash` | VARCHAR(64) | SHA-256 of full key |
-| `key_prefix` | VARCHAR(12) | display only (`shk_xxxxxx`) |
-| `last_used_at` | TIMESTAMPTZ | async update on auth |
-| `created_at` | TIMESTAMPTZ | |
-| `revoked_at` | TIMESTAMPTZ nullable | soft-delete |
-
-### RPCs
-- `search_shares(query, limit, offset)` — full-text search with ranking + highlighted snippets; filters `is_private` unless owner
-- `increment_view_count(slug)` — atomic view counter
+- `get_user_workspaces(user_id)` — list workspaces for a user
+- `is_user_in_workspace(user_id, workspace_id)` — check workspace access
+- `get_workspace_shares(workspace_id)` — list shares in a workspace
 
 ## Storage
 
@@ -382,7 +312,15 @@ DELETE /api/v1/keys/[id]  →  set revoked_at = NOW()
 | `20260424000001_add_editor_columns.sql` | `shares.source`, `shares.custom_slug`, `shares.is_private`, `shares.updated_at` |
 | `20260424000002_add_api_keys.sql` | `api_keys` table + RLS |
 | `20260424000003_private_search_filter.sql` | Updates `search_shares` RPC to filter private shares |
-| `20260425000001_add_share_password.sql` | `shares.password_hash` (nullable TEXT) |
+| `20260425000001_add_share_password.sql` | `shares.password_hash` |
+| `20260425045621_rate-limits-supabase.sql` | Rate limiting policies |
+| `20260426000001_share_views.sql` | Share view tracking |
+| `20260426000002_teams.sql` | `team_workspaces`, `workspace_members`, `workspace_shares` |
+| `20260428000001_fix_team_owner_trigger_rls.sql` | RLS fixes for team owner |
+| `20260428000002_fix_team_members_rls_recursion.sql` | Fix infinite recursion |
+| `20260428000003_fix_teams_insert_policy.sql` | Team member insert policy fixes |
+| `20260428000004_fix_rls_policies_use_anon_role.sql` | RLS policy anon role updates |
+| `20260428162629_fix_rls_policies_to_authenticated.sql` | RLS policies to authenticated role |
 
 ## Security Layers
 
@@ -390,138 +328,38 @@ DELETE /api/v1/keys/[id]  →  set revoked_at = NOW()
 |-------|---------------|
 | File validation | Extension (.html/.htm/.md), MIME type, size ≤ 50 MB |
 | Image validation | MIME type (png/jpg/gif/webp), size ≤ 5 MB, auth required |
-| Rate limiting | Upstash sliding window: 10 req/min per IP (upload/API); 5 attempts/10 min per IP (password unlock); fail-closed (503 on Redis error) |
+| Rate limiting | Upstash sliding window: 10 req/min per IP (upload/API); 5 attempts/10 min per IP (password unlock) |
 | HtmlViewer sandbox | `sandbox="allow-scripts"` + CSP meta tag |
 | Delete protection | Random 32-char token (file-upload shares) |
 | Slug validation | Regex pattern check on API routes |
 | DB access | RLS for reads; service_role for writes |
-| API key auth | SHA-256 hash stored; `revoked_at` soft-delete; prefix for display |
-| Private shares | RLS + `search_shares` RPC filter non-owner requests |
-| Password protection | bcryptjs hash in `shares.password_hash`; HMAC-SHA256 signed HttpOnly access cookie (24 h); `password_hash` never sent to client |
+| API key auth | SHA-256 hash stored; `revoked_at` soft-delete |
+| Private shares | RLS + `search_shares` RPC filter non-owner |
+| Password protection | bcryptjs hash; HMAC-SHA256 signed HttpOnly access cookie (24 h) |
 | Compensating tx | Storage cleanup if DB insert fails |
-| Workspace access | RLS policies on `team_workspaces`, `workspace_members`, and `workspace_shares` tables |
+| Workspace access | RLS on `team_workspaces`, `workspace_members`, `workspace_shares` |
 
-## Infrastructure
+## oEmbed Endpoint
 
-| Service | Purpose | Provider |
-|---------|---------|----------|
-| Hosting | Serverless deployment | Vercel |
-| Database | PostgreSQL + Storage | Supabase |
-| Rate limiting | Redis sliding window | Upstash |
-| CDN | Static assets + storage files | Vercel + Supabase |
-| Monitoring | Error tracking and analytics | Sentry/Upstash Metrics |
-| Search | Full-text search with GIN indexes | PostgreSQL built-in |
-
-## oEmbed Endpoint Architecture
-
-### Overview
-The oEmbed endpoint enables rich content embedding across third-party platforms by providing standardized metadata and embed codes.
-
-### Endpoint Structure
 ```
-GET /api/oembed?url=https://dropitx.app/s/{slug}  → JSON metadata + HTML embed
-GET /api/oembed.json?url=...                       → JSON response (standard oEmbed)
-GET /api/oembed.xml?url=...                        → XML response (WordPress compatible)
+GET /api/oembed?url=https://dropitx.app/s/{slug}  → JSON + HTML embed code
 ```
+Response includes: type (rich), provider_name, title, author, iframe embed HTML (800x600).
+Security: domain validation, rate limiting, CSP headers for embedded content.
 
-### Response Format
-```json
-{
-  "type": "rich",
-  "version": "1.0",
-  "provider_name": "DropItX",
-  "provider_url": "https://dropitx.app",
-  "title": "Document Title",
-  "author_name": "Author Name",
-  "author_url": "https://dropitx.app/dashboard",
-  "html": "<iframe src='https://dropitx.app/s/{slug}/embed' width='800' height='600'></iframe>",
-  "width": 800,
-  "height": 600
-}
-```
+## Analytics Tracking
 
-### Workflow
-1. **URL Parsing**: Extract slug from `url` query parameter
-2. **Share Lookup**: Fetch share metadata (title, mime_type, user profile)
-3. **Access Control**: Verify share accessibility (public, authenticated, password-gated)
-4. **Metadata Generation**: Create oEmbed response with share details
-5. **Embed Code**: Generate sandboxed iframe with appropriate dimensions
+- **Page Views**: `GET /s/[slug]` captures view events
+- **Custom Tracking**: `lib/analytics-track.ts` + `lib/analytics.ts`
+- **Vercel Analytics**: `@vercel/analytics` integration
+- **Dashboard**: `/dashboard/analytics` with charts (Recharts)
+- **Per-share**: `/dashboard/analytics/[slug]` for individual share metrics
+- **Components**: StatsCards, ViewChart, GeoChart, ReferrerChart, TopPerformers
 
-### Security
-- **Domain Validation**: Only allow dropitx.app domains
-- **Content Filtering**: Strip executable content for embeds
-- **Rate Limiting**: 100 requests/min per IP via Upstash
-- **CSP Headers**: Strict Content Security Policy for embedded content
+## Team Workspaces
 
-## Analytics Tracking Architecture
-
-### Overview
-Real-time analytics system for tracking user engagement, content performance, and platform metrics.
-
-### Data Collection Points
-- **Page Views**: `GET /s/[slug]` endpoint captures view events
-- **Search Queries**: `/api/search` endpoint captures search terms
-- **Editor Usage**: `/editor` page tracks keystrokes, auto-saves, publishes
-- **Uploads**: `/api/upload` tracks file types, sizes, success rates
-- **API Calls**: Versioned API endpoints track usage patterns
-
-### Storage Schema
-#### `analytics_events` table
-| Column | Type | Notes |
-|--------|------|-------|
-| `id` | UUID PK | auto-generated |
-| `event_type` | TEXT | `'page_view'`, `'search'`, `'upload'`, `'api_call'` |
-| `user_id` | UUID FK (nullable) | authenticated user |
-| `session_id` | UUID | anonymous session tracking |
-| `metadata` | JSONB | event-specific data (slug, query, status, etc.) |
-| `user_agent` | TEXT | browser/user agent string |
-| `ip_address` | INET | client IP (rate limiting) |
-| `created_at` | TIMESTAMPTZ | auto-set |
-
-### Tracking Implementation
-```typescript
-// Client-side: lib/track.ts
-track('page_view', { slug: 'abc123', referrer: document.referrer });
-track('search', { query: 'typescript results: 5' });
-track('upload', { file_size: 1024000, mime_type: 'text/html' });
-```
-
-### Analytics Dashboard
-- **Real-time Metrics**: Live view counts, popular content, search trends
-- **User Engagement**: Session duration, bounce rate, feature adoption
-- **Content Performance**: Most viewed shares, search terms, upload patterns
-- **API Usage**: Request rates, error tracking, endpoint popularity
-- **Geographic Distribution**: User location analysis
-
-## Team Workspaces Data Model
-
-### Overview
-Collaborative workspaces enabling teams to organize and share content collectively.
-
-### Access Control
-```
-Ownership: workspace owner has full access
-Membership: workspace members can view and share content
-RLS Policies: Row-level security ensures data isolation
-```
-
-### Key Flows
-1. **Workspace Creation**: Owner creates workspace, automatically added as member
-2. **Member Invitations**: Owner adds members via email or direct invite
-3. **Content Sharing**: Members can upload content to workspace or share existing shares
-4. **Permission Management**: Owners can remove members and delete workspace content
-
-### Security Features
-- **Private Workspaces**: All workspaces are private by default
-- **Permission Escalation**: Role-based access control (owner vs member)
-- **Audit Logging**: Track content sharing and member changes
-- **Data Isolation**: Members only see workspaces they belong to
-
-### API Endpoints
-- `POST /api/workspaces` - Create new workspace
-- `GET /api/workspaces` - List user's workspaces
-- `GET /api/workspaces/[id]` - Get workspace details
-- `POST /api/workspaces/[id]/members` - Add member to workspace
-- `DELETE /api/workspaces/[id]/members/[user_id]` - Remove member
-- `POST /api/workspaces/[id]/shares` - Share content to workspace
-- `GET /api/workspaces/[id]/shares` - List workspace content
+- **Creation**: Owner creates workspace, auto-added as member
+- **Members**: Owner invites via `/api/dashboard/teams/[slug]/invites`
+- **Content**: Members share content to workspace via `workspace_shares` junction
+- **RLS**: All workspace tables enforce membership-based access control
+- **API**: CRUD under `/api/dashboard/teams/[slug]/` — members, invites, shares

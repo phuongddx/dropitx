@@ -2,7 +2,7 @@
 
 ## Project Vision
 
-DropItX is a modern web platform that enables users to upload HTML and Markdown files, write content in a built-in editor, and generate shareable links for easy content distribution. The platform supports both browser-based sharing and programmatic access via a REST API and CLI tool.
+DropItX is a modern web platform that enables users to upload HTML and Markdown files, write content in a built-in Markdown editor, and generate shareable links for easy content distribution. Features include team workspaces, analytics dashboard, password-protected shares, rich embedding via oEmbed, and programmatic access via REST API and CLI tool.
 
 ## Target Users
 
@@ -38,11 +38,13 @@ DropItX is a modern web platform that enables users to upload HTML and Markdown 
 ### Developer Access
 - **REST API**: Bearer API key authentication for programmatic document management
 - **API Key Management**: Dashboard UI for generating and revoking API keys
-- **CLI Tool**: `share-html` binary for publish/update/delete/list from the terminal
+- **CLI Tool**: `dropitx` binary for publish/update/delete/list from the terminal
 
 ### Platform
 - **User Auth**: Google and GitHub OAuth via Supabase (PKCE flow)
 - **Dashboard**: Share history, stats (count, total views, storage used)
+- **Analytics Dashboard**: Real-time analytics with charts and metrics
+- **Team Workspaces**: Collaborative content sharing and management
 - **Profile**: Edit display name and avatar
 - **Theme Support**: Light/dark mode switching
 - **Rate Limiting**: 10 requests/minute to prevent abuse
@@ -119,7 +121,8 @@ DropItX is a modern web platform that enables users to upload HTML and Markdown 
 - **Database**: Supabase (PostgreSQL + Storage)
 - **Styling**: Tailwind CSS 4, shadcn/ui, OKLCH color tokens
 - **Cache/Rate-limit**: Upstash Redis
-- **CLI**: `packages/cli/` — TypeScript ESM, binary `share-html`
+- **CLI**: `packages/cli/` — TypeScript ESM, binary `dropitx`
+- **Analytics**: Vercel Analytics + custom `analytics_events` table
 
 ### Infrastructure Constraints
 - Deploy on Vercel platform
@@ -163,13 +166,20 @@ DropItX is a modern web platform that enables users to upload HTML and Markdown 
 - [x] Private shares (`is_private` flag)
 - [x] RLS hardening
 
-### Phase 4: Future Enhancements
-- [ ] File organization and tagging
-- [ ] Custom expiration dates
-- [ ] Email notifications
-- [ ] Analytics dashboard
-- [ ] Mobile applications
-- [ ] Collaborative features
+### Phase 4: Team Workspaces, Analytics & Embed (Complete)
+- [x] Analytics dashboard with real-time charts and metrics
+- [x] Team workspaces with role-based access control
+- [x] Collaborative content sharing and management
+- [x] oEmbed support for rich content embedding
+- [x] Password protection for shares
+- [x] Vercel Analytics integration
+
+### Phase 5: Production Hardening (Planned)
+- [ ] Comprehensive test suite (unit, integration, E2E)
+- [ ] Security audit and penetration testing
+- [ ] Performance benchmarking and optimization
+- [ ] Production monitoring and error tracking
+- [ ] CI/CD pipeline with automated tests
 
 ## Success Metrics
 
