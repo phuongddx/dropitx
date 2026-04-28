@@ -6,7 +6,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { createClient } from "@/utils/supabase/server";
+import { createClient, createAdminClient } from "@/utils/supabase/server";
 import { generateTeamSlug, isValidTeamName, isValidTeamSlug } from "@/lib/team-utils";
 
 /** GET — List user's teams with their role in each. */
@@ -65,7 +65,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid team slug (2-50 chars, lowercase alphanumeric + hyphens)" }, { status: 400 });
     }
 
-    const { data: team, error } = await supabase
+    // Use admin client to bypass RLS — publishable key gets 403 from Supabase REST API
+    const admin = createAdminClient();
+    const { data: team, error } = await admin
       .from("teams")
       .insert({ name, slug: teamSlug, created_by: user.id })
       .select()
