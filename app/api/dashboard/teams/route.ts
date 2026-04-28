@@ -75,14 +75,14 @@ export async function POST(request: NextRequest) {
       if (error.code === "23505") {
         return NextResponse.json({ error: "Team slug already taken" }, { status: 409 });
       }
-      console.error("Team creation failed:", error.message);
-      return NextResponse.json({ error: "Failed to create team" }, { status: 500 });
+      console.error("Team creation failed:", JSON.stringify(error, null, 2));
+      return NextResponse.json({ error: "Failed to create team", detail: error.message }, { status: 500 });
     }
 
     // Owner membership is auto-created by the add_team_owner DB trigger
     return NextResponse.json({ team, role: "owner" }, { status: 201 });
   } catch (err) {
-    console.error("POST /api/dashboard/teams error:", err);
+    console.error("POST /api/dashboard/teams error:", err instanceof Error ? err.stack : err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
