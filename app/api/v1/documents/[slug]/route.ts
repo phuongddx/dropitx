@@ -52,8 +52,8 @@ async function getOwnedShare(
   }
   const typed = share as unknown as Share;
 
-  // Check direct ownership
-  if (typed.user_id === auth.userId) {
+  // Team-scoped keys can only access shares via team_shares, never personal shares
+  if (!auth.teamId && typed.user_id === auth.userId) {
     return { ok: true, share: typed, supabase, teamRole: null };
   }
 

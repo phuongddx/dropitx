@@ -13,11 +13,16 @@ export async function GET(
 
   const { data: share } = await adminClient
     .from("shares")
-    .select("filename, title, view_count")
+    .select("filename, title, view_count, is_private, password_hash")
     .eq("slug", slug)
     .single();
 
   if (!share) {
+    return new NextResponse("Not found", { status: 404 });
+  }
+
+  // Don't expose metadata for private or password-protected shares
+  if (share.is_private || share.password_hash) {
     return new NextResponse("Not found", { status: 404 });
   }
 

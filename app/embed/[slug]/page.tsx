@@ -62,7 +62,7 @@ export default async function EmbedPage({ params }: EmbedPageProps) {
           gap: "1rem",
         }}>
           <p>Sign in to view this embedded content</p>
-          <a href={`/auth/login?redirect=/s/${slug}`} style={{
+          <a href={`/auth/login?next=/s/${slug}`} style={{
             color: "#a855f7",
             border: "1px solid #a855f7",
             padding: "0.5rem 1rem",
