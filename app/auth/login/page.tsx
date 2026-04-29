@@ -323,7 +323,7 @@ function LoginContent() {
       {/* Branding Side */}
       <div
         className="hidden items-center justify-center bg-gradient-to-br from-[#3B6FD4] via-[#1E3A7B] to-[#152952] p-12 md:flex"
-        style={{ flex: "0 0 40%" }}
+        style={{ flex: "0 0 50%" }}
       >
         <div className="space-y-8 text-white">
           {/* Geometric decoration */}
