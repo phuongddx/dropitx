@@ -12,7 +12,7 @@ DropItX is a Next.js 16 (App Router) application for uploading HTML/Markdown fil
 | Editor | CodeMirror 6, loaded via `next/dynamic` (ssr: false) |
 | Viewer | `react-markdown` + `remark-gfm` + shiki |
 | Database | Supabase PostgreSQL (RLS), Storage (S3-compatible) |
-| Auth | Supabase Auth (Google + GitHub OAuth, PKCE), `@supabase/ssr` |
+| Auth | Supabase Auth (Google + GitHub OAuth + email/password, PKCE), `@supabase/ssr` |
 | Styling | Tailwind CSS 4, shadcn/ui, OKLCH color tokens |
 | Rate limiting | Upstash Redis |
 | File upload | `react-dropzone` |
@@ -41,8 +41,11 @@ app/
 │   ├── teams/[slug]/settings/page.tsx # Workspace settings
 │   └── teams/[slug]/shares/page.tsx   # Workspace content
 ├── auth/
-│   ├── login/page.tsx
-│   └── callback/route.ts              # PKCE code exchange
+│   ├── login/page.tsx                 # Email/password + OAuth sign-in
+│   ├── callback/route.ts              # PKCE code exchange
+│   ├── confirm/route.ts               # Email confirmation
+│   ├── reset-password/page.tsx         # Password reset page
+│   └── update-password/page.tsx       # Update password after reset
 └── api/
     ├── upload/route.ts                # POST multipart ≤50 MB
     ├── publish/route.ts               # POST editor publish
@@ -142,8 +145,11 @@ public/                                # Static assets
 | `/dashboard/teams/[slug]/members` | Member management |
 | `/dashboard/teams/[slug]/shares` | Workspace shared content |
 | `/dashboard/teams/new` | Create new workspace |
-| `/auth/login` | OAuth sign-in (Google + GitHub) |
+| `/auth/login` | Email/password and OAuth sign-in (Google + GitHub) |
 | `/auth/callback` | PKCE code-exchange, bootstraps `user_profiles` |
+| `/auth/reset-password` | Password reset page for email auth users |
+| `/auth/update-password` | Update password after email reset link |
+| `/auth/confirm` | Email confirmation page |
 
 ## API Routes
 
