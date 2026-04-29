@@ -11,12 +11,12 @@ function isValidRedirect(path: string | null): boolean {
 }
 
 export default function LoginPage() {
-  const supabase = createClient();
   const searchParams = useSearchParams();
   const nextPath = searchParams.get("next");
   const isShareRedirect = isValidRedirect(nextPath);
 
   const login = async (provider: "google" | "github") => {
+    const supabase = createClient();
     const callbackUrl = new URL("/auth/callback", window.location.origin);
     if (isShareRedirect && nextPath) {
       callbackUrl.searchParams.set("next", nextPath);
