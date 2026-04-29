@@ -100,13 +100,16 @@ CREATE OR REPLACE FUNCTION create_team_invite(
   p_email TEXT,
   p_role VARCHAR(20) DEFAULT 'viewer'
 ) RETURNS TABLE (invite_id UUID, token TEXT, expires_at TIMESTAMPTZ, rate_limited BOOLEAN) AS $$
+#variable_conflict use_column
 DECLARE
   v_user_role VARCHAR(20);
   v_recent_count INTEGER;
   v_member_count INTEGER;
   v_team_plan VARCHAR(20);
-  v_token TEXT;
+  v_token_val TEXT;
   v_caller_id UUID;
+  v_invite_id_val UUID;
+  v_expires_at_val TIMESTAMPTZ;
 BEGIN
   v_caller_id := auth.uid();
   IF v_caller_id IS NULL THEN
@@ -136,7 +139,11 @@ BEGIN
       AND event_type = 'invite.created'
       AND created_at > NOW() - INTERVAL '1 hour';
   IF v_recent_count >= 20 THEN
-    RETURN QUERY SELECT NULL::UUID, NULL::TEXT, NULL::TIMESTAMPTZ, true::BOOLEAN;
+    invite_id := NULL;
+    token := NULL;
+    expires_at := NULL;
+    rate_limited := true;
+    RETURN NEXT;
     RETURN;
   END IF;
 
@@ -160,14 +167,18 @@ BEGIN
     RAISE EXCEPTION 'Pending invite already exists for this email';
   END IF;
 
-  v_token := encode(gen_random_bytes(32), 'hex');
+  v_token_val := encode(gen_random_bytes(32), 'hex');
+  v_expires_at_val := NOW() + INTERVAL '7 days';
 
   INSERT INTO team_invites (team_id, email, role, token, expires_at, invited_by, status)
   VALUES (
-    p_team_id, LOWER(TRIM(p_email)), p_role, v_token,
-    NOW() + INTERVAL '7 days', v_caller_id, 'pending'
-  ) RETURNING id, token, expires_at INTO invite_id, token, expires_at;
+    p_team_id, LOWER(TRIM(p_email)), p_role, v_token_val,
+    v_expires_at_val, v_caller_id, 'pending'
+  ) RETURNING id INTO v_invite_id_val;
 
+  invite_id := v_invite_id_val;
+  token := v_token_val;
+  expires_at := v_expires_at_val;
   rate_limited := false;
 
   PERFORM emit_team_event(
@@ -177,7 +188,7 @@ BEGIN
 
   RETURN NEXT;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, extensions;
 
 -- ============================================================
 -- 6. RPC: accept_team_invite()
