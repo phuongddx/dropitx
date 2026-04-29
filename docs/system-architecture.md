@@ -87,9 +87,17 @@ RootLayout (app/layout.tsx)
     │   ├── SearchBar
     │   └── SearchResults
     ├── /auth/login
-    │   ├── Google OAuth button
-    │   └── GitHub OAuth button
-    ├── /dashboard
+    │   ├── Email/password sign-in form
+│   ├── Google OAuth button
+    │   ├── GitHub OAuth button
+│   └── Email auth components
+├── /auth/reset-password
+│   └── Password reset form
+├── /auth/update-password
+│   └── Password update form (after email reset)
+├── /auth/confirm
+│   └── Email confirmation page
+└── /dashboard
     │   ├── layout.tsx (sidebar nav)
     │   ├── page.tsx (share list + stats)
     │   │   ├── DashboardShareCard (with password toggle)
@@ -146,7 +154,7 @@ POST /api/shares/[slug]/unlock { password }
 |-------|---------------|
 | Middleware | `/dashboard/*` redirect unauthenticated to `/auth/login` |
 | Session | Supabase SSR cookies, PKCE flow |
-| OAuth | Google and GitHub via Supabase config |
+| OAuth | Google, GitHub, and email/password via Supabase config |
 | API Key | SHA-256 hash lookup; soft-revoke via `revoked_at` |
 | Share access cookie | HMAC-SHA256 signed HttpOnly cookie; 24 h TTL |
 | RLS | Owner-only on `user_profiles`, `favorites`, `api_keys`; private share filter |

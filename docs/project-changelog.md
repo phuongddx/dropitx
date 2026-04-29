@@ -2,6 +2,30 @@
 
 All notable changes to DropItX.
 
+## [v2.1.0] — 2026-04-29
+
+### Added
+- **Email/Password Authentication**: Complete email auth system with signup, login, password reset, and email confirmation flows
+- **Split-screen Login Page**: Redesigned `/auth/login` with split-screen layout showing email form alongside OAuth buttons
+- **Email Signup Flow**: Users can create accounts with email/password via PKCE flow with email verification
+- **Password Reset System**: Complete flow from reset request → email link → password update
+- **Email Confirmation**: Verification page for email address confirmation
+- **Enhanced Auth UI**: New form components for email authentication with proper validation
+
+### Infrastructure Enhancements
+- **Supabase Email Auth**: Extended auth system to include email/password alongside OAuth providers
+- **Security**: PKCE flow for email auth, password hashing, and secure session management
+- **User Experience**: Seamless switching between OAuth and email authentication methods
+
+### New Pages and Routes
+- `/auth/login`: Split-screen layout with email form and OAuth options
+- `/auth/reset-password`: Password reset request and email link handling
+- `/auth/update-password`: Password update after reset link verification
+- `/auth/confirm`: Email verification and confirmation
+- Enhanced `/auth/callback` to handle email auth alongside OAuth
+
+---
+
 ## [v2.0.1] — 2026-04-28
 
 ### Added

@@ -45,6 +45,8 @@ DropItX has completed Phase 1 through Phase 4, delivering core file sharing, ful
 
 #### Auth & Dashboard
 - [x] Google/GitHub OAuth via Supabase (PKCE flow)
+- [x] Email/password authentication with confirmation and reset flows
+- [x] Split-screen login page with email form and OAuth options
 - [x] User dashboard: share history, stats (count, views, storage)
 - [x] Profile settings: display name, avatar
 - [x] Favorites/bookmark system
@@ -101,6 +103,15 @@ DropItX has completed Phase 1 through Phase 4, delivering core file sharing, ful
 
 #### Migrations Delivered
 - [x] `20260425000001_add_share_password.sql`
+
+### Phase 3.5: Enhanced Authentication — COMPLETE
+**Duration**: April 29, 2026
+
+- [x] Email/password authentication system with PKCE flow
+- [x] Email confirmation and verification pages
+- [x] Complete password reset flow (request → email → update)
+- [x] Split-screen login page redesign with email form and OAuth options
+- [x] Enhanced user authentication components and forms
 
 ### Phase 4: Growth, Engagement & Revenue — COMPLETE
 **Duration**: April 2026

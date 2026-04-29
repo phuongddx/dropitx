@@ -41,7 +41,7 @@ DropItX is a modern web platform that enables users to upload HTML and Markdown 
 - **CLI Tool**: `dropitx` binary for publish/update/delete/list from the terminal
 
 ### Platform
-- **User Auth**: Google and GitHub OAuth via Supabase (PKCE flow)
+- **User Auth**: Google, GitHub OAuth, and email/password via Supabase (PKCE flow)
 - **Dashboard**: Share history, stats (count, total views, storage used)
 - **Analytics Dashboard**: Real-time analytics with charts and metrics
 - **Team Workspaces**: Collaborative content sharing and management
@@ -153,7 +153,7 @@ DropItX is a modern web platform that enables users to upload HTML and Markdown 
 - [x] 50 MB upload limit
 
 ### Phase 3: Auth, Editor & API (Complete)
-- [x] User authentication (Google/GitHub OAuth)
+- [x] User authentication (Google/GitHub OAuth + email/password)
 - [x] User dashboard with share history and stats
 - [x] Profile settings and avatar management
 - [x] Favorites/bookmark system
