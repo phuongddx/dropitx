@@ -41,8 +41,9 @@ export default async function InviteAcceptPage({ searchParams }: Props) {
     .single();
 
   // Unwrap — PostgREST wraps aliased main table columns under the alias key.
-  const invite = row?.team_invites ?? row;
-  const teams = row?.teams;
+  type Invite = { id: string; team_id: string; email: string; role: string; expires_at: string; status: string };
+  const invite = (Array.isArray(row?.team_invites) ? row.team_invites[0] : row?.team_invites) as Invite | null;
+  const teams = Array.isArray(row?.teams) ? row.teams[0] : row?.teams;
 
   if (error || !invite) {
     return (
