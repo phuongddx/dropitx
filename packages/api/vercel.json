@@ -1,6 +1,8 @@
 {
-  "buildCommand": "cd ../.. && pnpm turbo build --filter=@dropitx/api",
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "pnpm --filter @dropitx/shared build && pnpm --filter @dropitx/api build",
   "outputDirectory": "dist",
-  "rewrites": [{ "source": "/(.*)", "destination": "/api" }],
-  "framework": null
+  "installCommand": "pnpm install --frozen-lockfile",
+  "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
 }
