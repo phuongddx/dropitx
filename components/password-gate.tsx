@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { getApiUrl } from "@/lib/api-client";
 
 interface PasswordGateProps {
   slug: string;
@@ -29,7 +30,7 @@ export function PasswordGate({ slug, title }: PasswordGateProps) {
     setError(null);
 
     try {
-      const res = await fetch(`/api/shares/${slug}/unlock`, {
+      const res = await fetch(getApiUrl(`/api/shares/${slug}/unlock`), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password }),
