@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SharePasswordForm } from "@/components/share-password-form";
+import { authFetch } from "@/lib/api-client";
 import { Eye, Clock, Trash2, ExternalLink, FileCode, FileText, Lock, LockOpen, BarChart3 } from "lucide-react";
 import type { ShareWithPasswordFlag } from "@/app/dashboard/page";
 
@@ -34,7 +35,7 @@ export function DashboardShareCard({ share }: { share: ShareWithPasswordFlag }) 
     if (!confirm("Delete this share? This cannot be undone.")) return;
     setDeleting(true);
     try {
-      const res = await fetch(`/api/shares/${share.slug}`, { method: "DELETE" });
+      const res = await authFetch(`/api/shares/${share.slug}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Delete failed");
       window.location.reload();
     } catch {

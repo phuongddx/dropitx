@@ -10,6 +10,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { authFetch } from "@/lib/api-client";
 
 interface InviteAcceptFormProps {
   teamSlug: string;
@@ -28,9 +29,8 @@ export function InviteAcceptForm({ teamSlug, token, autoAccept }: InviteAcceptFo
     setError(null);
 
     try {
-      const res = await fetch("/api/invite/accept", {
+      const res = await authFetch("/api/invite/accept", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token }),
       });
 

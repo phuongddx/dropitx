@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Trash2, Loader2, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
+import { authFetch } from "@/lib/api-client";
 import type { TeamRole } from "@/types/team";
 import { TEAM_ROLES } from "@/lib/team-utils";
 
@@ -52,9 +53,8 @@ export function TeamMemberRow({
     setChangingRole(true);
     setMenuOpen(false);
     try {
-      const res = await fetch(`/api/dashboard/teams/${teamSlug}/members`, {
+      const res = await authFetch(`/api/dashboard/teams/${teamSlug}/members`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: userId, role: newRole }),
       });
       if (!res.ok) {
@@ -76,7 +76,7 @@ export function TeamMemberRow({
 
     setRemoving(true);
     try {
-      const res = await fetch(
+      const res = await authFetch(
         `/api/dashboard/teams/${teamSlug}/members?user_id=${userId}`,
         { method: "DELETE" },
       );

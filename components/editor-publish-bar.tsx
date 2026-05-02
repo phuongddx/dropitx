@@ -3,10 +3,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { createClient } from "@/utils/supabase/client";
 import { Check, Copy, Loader2, Lock, Unlock } from "lucide-react";
 import { toast } from "sonner";
 import { trackEvent, AnalyticsEvent } from "@/lib/analytics";
+import { authFetch, getAuthHeaders } from "@/lib/api-client";
 
 interface EditorPublishBarProps {
   content: string;
@@ -31,16 +31,14 @@ export function EditorPublishBar({
   onPublished,
   onClearDraft,
 }: EditorPublishBarProps) {
-  const [user, setUser] = useState<{ id: string } | null>(null);
+  const [user, setUser] = useState<boolean>(false);
   const [publishing, setPublishing] = useState(false);
   const [publishedUrl, setPublishedUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [isPrivate, setIsPrivate] = useState(false);
 
   useEffect(() => {
-    createClient().auth.getUser().then(({ data }) => {
-      if (data.user) setUser({ id: data.user.id });
-    });
+    getAuthHeaders().then((h) => setUser(!!h.Authorization));
   }, []);
 
   const handlePublish = useCallback(async () => {
@@ -51,9 +49,8 @@ export function EditorPublishBar({
 
     setPublishing(true);
     try {
-      const res = await fetch("/api/publish", {
+      const res = await authFetch("/api/publish", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           content,
           is_private: isPrivate,
@@ -83,9 +80,8 @@ export function EditorPublishBar({
 
     setPublishing(true);
     try {
-      const res = await fetch(`/api/shares/${editSlug}`, {
+      const res = await authFetch(`/api/shares/${editSlug}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content, is_private: isPrivate }),
       });
 
@@ -156,6 +152,7 @@ export function EditorPublishBar({
             </Button>
           </div>
         ) : !user ? (
+
           <a href="/auth/login?redirect=/editor">
             <Button size="sm">Sign in to publish</Button>
           </a>

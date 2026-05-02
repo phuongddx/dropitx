@@ -5,6 +5,7 @@ import { Lock, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { getApiUrl, getAuthHeaders } from "@/lib/api-client";
 
 interface SharePasswordFormProps {
   slug: string;
@@ -28,9 +29,13 @@ export function SharePasswordForm({
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/shares/${slug}/set-password`, {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      const auth = await getAuthHeaders();
+      if (auth.Authorization) headers.Authorization = auth.Authorization;
+
+      const res = await fetch(getApiUrl(`/api/shares/${slug}/set-password`), {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({
           password: passwordValue,
           ...(deleteToken ? { delete_token: deleteToken } : {}),

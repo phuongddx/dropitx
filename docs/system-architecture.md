@@ -2,7 +2,7 @@
 
 ## Overview
 
-DropItX is a Next.js 16 application (App Router) deployed on Vercel with Supabase (PostgreSQL + Storage) and Upstash Redis (rate limiting). Features include team workspaces, analytics dashboard, password-protected shares, rich embedding via oEmbed, and programmatic access via REST API and CLI. Supports two auth models: cookie-based session (browser) and API key (programmatic).
+DropItX is a Next.js 16 application (App Router) deployed on Vercel as a pure frontend. All API logic runs on a FastAPI backend (`dropitx-api.onrender.com`) with Supabase (PostgreSQL + Storage) and Upstash Redis (rate limiting). Features include team workspaces, analytics dashboard, password-protected shares, rich embedding via oEmbed, and programmatic access via REST API. Supports two auth models: JWT Bearer token (browser) and API key (programmatic).
 
 ## Architecture Diagram
 
@@ -18,25 +18,29 @@ DropItX is a Next.js 16 application (App Router) deployed on Vercel with Supabas
         ▼             ▼           ▼               ▼
 ┌──────────────────────────────────────────────────────────────┐
 │                     Next.js (Vercel)                         │
-│  POST /api/upload     GET /s/[slug]    GET /api/search       │
-│  POST /api/publish    GET/PATCH/DELETE /api/shares/[slug]    │
-│  POST /api/images/upload                                     │
-│  POST /api/shares/[slug]/unlock                              │
-│  POST /api/shares/[slug]/set-password                        │
-│  POST /api/analytics/track                                   │
-│  GET /api/oembed                                             │
-│  GET|POST /api/v1/keys    DELETE /api/v1/keys/[id]           │
-│  POST /api/v1/documents   GET /api/v1/documents              │
-│  GET /api/v1/documents/[slug]   PATCH|DELETE /api/v1/..      │
-│  CRUD /api/dashboard/teams, /api/dashboard/teams/[slug]/*    │
+│  Pure frontend — no API routes (except /api/og-image)        │
+│  Client components use authFetch() / fetch(getApiUrl())      │
+│  lib/api-client.ts: singleton Supabase client + 401 retry   │
+└──────────────────────────┬───────────────────────────────────┘
+                           │  JWT Bearer token
+                           ▼
+┌──────────────────────────────────────────────────────────────┐
+│                  FastAPI Backend (Render)                     │
+│  dropitx-api.onrender.com                                    │
 │                                                              │
-│  ┌─────────────────────────────────────────────────────┐    │
-│  │  lib/api-auth.ts          utils/supabase/server.ts  │    │
-│  │  lib/password.ts          lib/share-access-cookie.ts│    │
-│  │  lib/rate-limit.ts        createClient()            │    │
-│  │  createAdminClient()                                │    │
-│  └────────┬──────────────────────┬──────────────────────┘   │
-└───────────┼──────────────────────┼──────────────────────────┘
+│  POST /api/upload     GET /api/search    POST /api/publish   │
+│  POST /api/images/upload                                   │
+│  GET/PATCH/DELETE /api/shares/{slug}                        │
+│  POST /api/shares/{slug}/unlock                              │
+│  POST /api/shares/{slug}/set-password                        │
+│  POST /api/analytics/track   GET /api/oembed                 │
+│  GET|POST /api/v1/keys    DELETE /api/v1/keys/{key_id}      │
+│  POST /api/v1/documents  GET /api/v1/documents              │
+│  CRUD /api/dashboard/teams, /api/dashboard/teams/{slug}/*   │
+│  POST /api/invite/accept   POST /api/invite/decline          │
+│                                                              │
+│  JWT validation via JWKS  ·  Rate limiting via Upstash       │
+└───────────┬──────────────────────────────────────────────────┘
             │                      │
             ▼                      ▼
 ┌───────────────────┐  ┌──────────────────────┐
@@ -44,13 +48,6 @@ DropItX is a Next.js 16 application (App Router) deployed on Vercel with Supabas
 │  PostgreSQL (RLS) │  │  Rate Limiting       │
 │  Storage (S3)     │  │  (10 req/min/IP)     │
 └───────────────────┘  └──────────────────────┘
-
-  CLI (packages/cli/)
-  ──────────────────
-  dropitx publish <file> [-P password]  →  POST /api/v1/documents
-  dropitx list                          →  GET  /api/v1/documents
-  dropitx delete <slug>                 →  DELETE /api/v1/documents/[slug]
-  Config: ~/.dropitx/config.json (mode 0600)
 ```
 
 ## Component Hierarchy
@@ -139,18 +136,18 @@ Email/Password Auth → /auth/login (split-screen)
 
 ### API Key Auth (Programmatic)
 ```
-POST /api/v1/keys  →  generate shk_ + 48 hex chars
+POST /api/v1/keys  →  FastAPI: generate shk_ + 48 hex chars
   →  store SHA-256 hash + key_prefix in api_keys
   →  return full key ONCE
 
 Requests: Authorization: Bearer shk_...
-  → lib/api-auth.ts: SHA-256 hash → SELECT from api_keys WHERE key_hash = ?
+  → FastAPI: SHA-256 hash → SELECT from api_keys WHERE key_hash = ?
 ```
 
 ### Share Access Cookie (Password-Protected)
 ```
 POST /api/shares/[slug]/unlock { password }
-  → bcryptjs.compare(password, shares.password_hash)
+  → FastAPI: bcryptjs.compare(password, shares.password_hash)
   → On match: HMAC-SHA256 signed cookie (SHARE_ACCESS_SECRET)
   → Set-Cookie: share_access_{slug}=<signed>; HttpOnly; SameSite=Lax; Max-Age=86400
 ```
@@ -177,7 +174,7 @@ POST /api/shares/[slug]/unlock { password }
 ### Upload Flow
 ```
 User drops file → UploadDropzone (.html/.htm/.md, ≤50 MB)
-  → POST /api/upload (multipart) → rate limit → validate → upload to Storage
+  → authFetch("/api/upload") → FastAPI: rate limit → validate → upload to Storage
   → extract text → INSERT shares → on failure: compensating DELETE from storage
   → Return { slug, shareUrl }
 ```
@@ -186,14 +183,14 @@ User drops file → UploadDropzone (.html/.htm/.md, ≤50 MB)
 ```
 EditorPane → useEditorAutoSave (localStorage draft)
   → EditorPublishBar: title, custom_slug, is_private
-  → POST /api/publish { content, title, custom_slug, is_private }
-  → INSERT shares (source='editor') → redirect to /s/[slug]
+  → authFetch("/api/publish") { content, title, custom_slug, is_private }
+  → FastAPI: INSERT shares (source='editor') → redirect to /s/[slug]
 ```
 
 ### Image Upload Flow
 ```
-Image dropped in EditorPane → POST /api/images/upload (≤5 MB)
-  → Upload to Storage (images/ prefix) → insert ![alt](url) at cursor
+Image dropped in EditorPane → authFetch("/api/images/upload") (≤5 MB)
+  → FastAPI: Upload to Storage (images/ prefix) → insert ![alt](url) at cursor
 ```
 
 ### View Flow

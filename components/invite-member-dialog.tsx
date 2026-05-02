@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { X, Loader2, Copy, Mail, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { isValidEmail } from "@/lib/validation";
+import { authFetch } from "@/lib/api-client";
 import type { TeamRole, TeamInvite } from "@/types/team";
 
 interface InviteMemberDialogProps {
@@ -66,9 +67,8 @@ export function InviteMemberDialog({
     setSubmitting(true);
     setInviteUrl(null);
     try {
-      const res = await fetch(`/api/dashboard/teams/${teamSlug}/invites`, {
+      const res = await authFetch(`/api/dashboard/teams/${teamSlug}/invites`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: trimmed, role }),
       });
       const data = await res.json();
@@ -96,7 +96,7 @@ export function InviteMemberDialog({
   async function handleCancelInvite(inviteId: string) {
     setCancellingId(inviteId);
     try {
-      const res = await fetch(
+      const res = await authFetch(
         `/api/dashboard/teams/${teamSlug}/invites?id=${inviteId}`,
         { method: "DELETE" },
       );

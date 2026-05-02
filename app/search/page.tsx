@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { SearchBar } from "@/components/search-bar";
 import { SearchResults } from "@/components/search-results";
 import type { SearchResult } from "@/types/share";
+import { getApiUrl } from "@/lib/api-client";
 
 export default function SearchPage() {
   const searchParams = useSearchParams();
@@ -37,7 +38,7 @@ export default function SearchPage() {
 
     try {
       const res = await fetch(
-        `/api/search?q=${encodeURIComponent(term)}`,
+        getApiUrl(`/api/search?q=${encodeURIComponent(term)}`),
         { signal: controller.signal },
       );
       if (!res.ok) {
