@@ -26,6 +26,7 @@ import {
   Copy
 } from "lucide-react";
 import { toast } from "sonner";
+import { authFetch } from "@/lib/api-client";
 import type { TeamRole } from "@/types/team";
 
 interface BulkInviteDialogProps {
@@ -63,9 +64,8 @@ export function BulkInviteDialog({
       .filter(email => email.length > 0);
 
     try {
-      const res = await fetch(`/api/dashboard/teams/${teamSlug}/invites/bulk`, {
+      const res = await authFetch(`/api/dashboard/teams/${teamSlug}/invites/bulk`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ emails: emailList, role }),
       });
 

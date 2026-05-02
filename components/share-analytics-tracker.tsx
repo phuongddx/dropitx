@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { getApiUrl } from "@/lib/api-client";
 
 interface ShareAnalyticsTrackerProps {
   shareId: string;
@@ -20,14 +21,14 @@ export function ShareAnalyticsTracker({ shareId, trackingToken }: ShareAnalytics
 
     const isEmbed = window.parent !== window;
 
-    fetch("/api/analytics/track", {
+    fetch(getApiUrl("/api/analytics/track"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        trackingToken,
-        shareId,
+        tracking_token: trackingToken,
+        share_id: shareId,
         referrer: document.referrer || null,
-        isEmbed,
+        is_embed: isEmbed,
       }),
       keepalive: true,
     }).catch(() => {

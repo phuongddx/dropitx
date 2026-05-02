@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Upload, FileUp, Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { trackEvent, AnalyticsEvent } from "@/lib/analytics";
+import { authFetch } from "@/lib/api-client";
 
 export interface UploadResult {
   slug: string;
@@ -36,7 +37,7 @@ export function UploadDropzone({ onUploadSuccess }: UploadDropzoneProps) {
         const formData = new FormData();
         formData.append("file", file);
 
-        const response = await fetch("/api/upload", {
+        const response = await authFetch("/api/upload", {
           method: "POST",
           body: formData,
         });

@@ -9,6 +9,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Settings, ArrowLeft, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { authFetch } from "@/lib/api-client";
 import { isValidTeamName, isValidTeamSlug } from "@/lib/team-utils";
 
 interface TeamData {
@@ -47,7 +48,7 @@ export default function TeamSettingsPage({
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch(`/api/dashboard/teams/${slug}`);
+        const res = await authFetch(`/api/dashboard/teams/${slug}`);
         if (cancelled) return;
         if (!res.ok) throw new Error("Failed to load team");
         const data = await res.json();
@@ -92,9 +93,8 @@ export default function TeamSettingsPage({
         return;
       }
 
-      const res = await fetch(`/api/dashboard/teams/${team.slug}`, {
+      const res = await authFetch(`/api/dashboard/teams/${team.slug}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updates),
       });
       const data = await res.json();
@@ -126,7 +126,7 @@ export default function TeamSettingsPage({
     }
     setDeleting(true);
     try {
-      const res = await fetch(`/api/dashboard/teams/${team.slug}`, {
+      const res = await authFetch(`/api/dashboard/teams/${team.slug}`, {
         method: "DELETE",
       });
       if (!res.ok) {

@@ -16,6 +16,7 @@ import {
 } from "@/lib/use-scroll-sync";
 import { nanoid } from "nanoid";
 import { toast } from "sonner";
+import { getApiUrl, authFetch } from "@/lib/api-client";
 
 const EditorPane = dynamic(
   () =>
@@ -49,7 +50,7 @@ export function EditorShell() {
     if (initialDraftRef.current !== null) return;
 
     if (editSlug) {
-      fetch(`/api/shares/${editSlug}`)
+      authFetch(`/api/shares/${editSlug}`)
         .then((res) => {
           if (!res.ok) throw new Error("Not found");
           return res.json();
@@ -136,7 +137,7 @@ export function EditorShell() {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const res = await fetch("/api/images/upload", {
+      const res = await authFetch("/api/images/upload", {
         method: "POST",
         body: formData,
       });

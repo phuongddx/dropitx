@@ -5,6 +5,7 @@ import { Bell, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useAuthUser } from "@/lib/use-auth-user";
+import { authFetch } from "@/lib/api-client";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -48,7 +49,7 @@ export function InviteNotificationBell() {
     const load = async () => {
       setLoading(true);
       try {
-        const res = await fetch("/api/dashboard/invitations");
+        const res = await authFetch("/api/dashboard/invitations");
         if (res.ok && !cancelled) {
           const data = await res.json();
           setInvites(data.invites ?? []);
@@ -77,9 +78,8 @@ export function InviteNotificationBell() {
     const key = `accept:${token}`;
     setLoadingAction(key);
     try {
-      const res = await fetch("/api/invite/accept", {
+      const res = await authFetch("/api/invite/accept", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token }),
       });
       if (res.ok) {
@@ -99,9 +99,8 @@ export function InviteNotificationBell() {
     const key = `decline:${token}`;
     setLoadingAction(key);
     try {
-      const res = await fetch("/api/invite/decline", {
+      const res = await authFetch("/api/invite/decline", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token }),
       });
       if (res.ok) {

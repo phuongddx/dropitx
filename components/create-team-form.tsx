@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Users, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { authFetch } from "@/lib/api-client";
 import { isValidTeamName, isValidTeamSlug } from "@/lib/team-utils";
 
 /** Auto-generates a slug from a name (mirrors server-side logic without random suffix). */
@@ -47,9 +48,8 @@ export function CreateTeamForm() {
 
     setSubmitting(true);
     try {
-      const res = await fetch("/api/dashboard/teams", {
+      const res = await authFetch("/api/dashboard/teams", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: trimmedName, slug: finalSlug }),
       });
       const data = await res.json();

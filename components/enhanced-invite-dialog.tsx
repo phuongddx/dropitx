@@ -30,6 +30,7 @@ import { toast } from "sonner";
 import type { TeamRole, TeamInvite } from "@/types/team";
 import { useEmailValidation } from "@/hooks/use-email-validation";
 import { CopyButton } from "@/components/copy-button";
+import { authFetch } from "@/lib/api-client";
 
 interface EnhancedInviteDialogProps {
   teamSlug: string;
@@ -67,9 +68,8 @@ export function EnhancedInviteDialog({
     setInviteUrl(null);
 
     try {
-      const res = await fetch(`/api/dashboard/teams/${teamSlug}/invites`, {
+      const res = await authFetch(`/api/dashboard/teams/${teamSlug}/invites`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: validatedEmail, role }),
       });
 
@@ -90,7 +90,7 @@ export function EnhancedInviteDialog({
   const handleCancelInvite = async (inviteId: string) => {
     setCancellingId(inviteId);
     try {
-      const res = await fetch(
+      const res = await authFetch(
         `/api/dashboard/teams/${teamSlug}/invites?id=${inviteId}`,
         { method: "DELETE" }
       );
@@ -107,7 +107,7 @@ export function EnhancedInviteDialog({
   const handleResendInvite = async (inviteId: string) => {
     setResendingId(inviteId);
     try {
-      const res = await fetch(`/api/dashboard/teams/${teamSlug}/invites/${inviteId}/resend`, {
+      const res = await authFetch(`/api/dashboard/teams/${teamSlug}/invites/${inviteId}/resend`, {
         method: "POST",
       });
       if (!res.ok) throw new Error("Failed to resend invite");

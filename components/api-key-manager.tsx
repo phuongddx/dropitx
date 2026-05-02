@@ -12,6 +12,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Key, Plus, Copy, Loader2, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
+import { authFetch } from "@/lib/api-client";
 
 interface ApiKey {
   id: string;
@@ -39,7 +40,7 @@ export function ApiKeyManager() {
 
   const fetchKeys = useCallback(async () => {
     try {
-      const res = await fetch("/api/v1/keys");
+      const res = await authFetch("/api/v1/keys");
       if (!res.ok) throw new Error("Failed to fetch keys");
       const data = await res.json();
       setKeys(data.keys ?? []);
@@ -63,9 +64,8 @@ export function ApiKeyManager() {
 
     setGenerating(true);
     try {
-      const res = await fetch("/api/v1/keys", {
+      const res = await authFetch("/api/v1/keys", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: trimmed }),
       });
       if (!res.ok) {
@@ -89,7 +89,7 @@ export function ApiKeyManager() {
 
     setRevokingId(id);
     try {
-      const res = await fetch(`/api/v1/keys/${id}`, { method: "DELETE" });
+      const res = await authFetch(`/api/v1/keys/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to revoke key");
       toast.success(`Key "${name}" revoked`);
       setKeys((prev) => prev.filter((k) => k.id !== id));
