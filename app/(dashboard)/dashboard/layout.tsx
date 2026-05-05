@@ -1,7 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import { FileText, Heart, User, BarChart3 } from "lucide-react";
 import { TeamNav } from "@/components/team-nav";
 import { DashboardSidebarNav } from "@/components/dashboard-sidebar-nav";
 import { DashboardMobileNav } from "@/components/dashboard-mobile-nav";
@@ -21,10 +20,10 @@ export default async function DashboardLayout({
   if (!user) redirect("/auth/login");
 
   const navItems = [
-    { href: "/dashboard", label: "History", icon: FileText },
-    { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
-    { href: "/dashboard/favorites", label: "Favorites", icon: Heart },
-    { href: "/dashboard/profile", label: "Profile", icon: User },
+    { href: "/dashboard", label: "History", icon: "FileText" },
+    { href: "/dashboard/analytics", label: "Analytics", icon: "BarChart3" },
+    { href: "/dashboard/favorites", label: "Favorites", icon: "Heart" },
+    { href: "/dashboard/profile", label: "Profile", icon: "User" },
   ];
 
   // Fetch user's teams for sidebar nav

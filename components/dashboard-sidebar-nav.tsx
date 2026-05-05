@@ -2,25 +2,32 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { LucideIcon } from "lucide-react";
+import { FileText, BarChart3, Heart, User, type LucideIcon } from "lucide-react";
+
+const iconMap: Record<string, LucideIcon> = {
+  FileText,
+  BarChart3,
+  Heart,
+  User,
+};
 
 interface NavItem {
   href: string;
   label: string;
-  icon: LucideIcon;
+  icon: string;
 }
 
 interface DashboardSidebarNavProps {
   items: NavItem[];
 }
 
-/** Sidebar nav links with active state using new design tokens. */
 export function DashboardSidebarNav({ items }: DashboardSidebarNavProps) {
   const pathname = usePathname();
 
   return (
     <nav className="space-y-1">
-      {items.map(({ href, label, icon: Icon }) => {
+      {items.map(({ href, label, icon }) => {
+        const Icon = iconMap[icon];
         const isActive = href === "/dashboard"
           ? pathname === "/dashboard"
           : pathname.startsWith(href);
@@ -35,7 +42,7 @@ export function DashboardSidebarNav({ items }: DashboardSidebarNavProps) {
                 : "text-muted-foreground hover:bg-fg-soft hover:text-foreground"
             }`}
           >
-            <Icon className="size-4" />
+            {Icon && <Icon className="size-4" />}
             {label}
           </Link>
         );
