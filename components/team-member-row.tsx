@@ -23,12 +23,6 @@ interface TeamMemberRowProps {
   teamSlug: string;
 }
 
-const ROLE_COLORS: Record<TeamRole, "default" | "secondary" | "outline"> = {
-  owner: "default",
-  editor: "secondary",
-  viewer: "outline",
-};
-
 export function TeamMemberRow({
   userId,
   displayName,
@@ -102,10 +96,10 @@ export function TeamMemberRow({
           src={avatarUrl}
           alt=""
           referrerPolicy="no-referrer"
-          className="size-8 rounded-md shrink-0"
+          className="size-8 rounded-[var(--radius-card)] shrink-0"
         />
       ) : (
-        <div className="size-8 rounded-md bg-muted flex items-center justify-center text-primary text-xs font-bold shrink-0">
+        <div className="size-8 rounded-[var(--radius-card)] bg-muted flex items-center justify-center text-primary text-xs font-bold shrink-0">
           {initial}
         </div>
       )}
@@ -133,7 +127,7 @@ export function TeamMemberRow({
               disabled={changingRole}
               type="button"
             >
-              <Badge variant={ROLE_COLORS[role]} className="font-mono text-sm rounded-sm">{role}</Badge>
+              <Badge variant={role} className="font-mono text-sm">{role}</Badge>
               {changingRole ? (
                 <Loader2 className="size-3 animate-spin" />
               ) : (
@@ -156,7 +150,7 @@ export function TeamMemberRow({
             )}
           </>
         ) : (
-          <Badge variant={ROLE_COLORS[role]} className="font-mono text-sm rounded-sm">{role}</Badge>
+          <Badge variant={role} className="font-mono text-sm">{role}</Badge>
         )}
       </div>
 

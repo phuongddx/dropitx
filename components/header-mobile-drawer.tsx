@@ -82,7 +82,7 @@ export function HeaderMobileDrawer({
                   href={href}
                   ref={i === 0 ? firstLinkRef : undefined}
                   onClick={onClose}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-muted"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-full text-sm hover:bg-muted"
                 >
                   <Icon className="size-4" />
                   {label}
@@ -97,13 +97,13 @@ export function HeaderMobileDrawer({
                 <Link
                   href="/dashboard/profile"
                   onClick={onClose}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-muted"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-full text-sm hover:bg-muted"
                 >
                   <User className="size-4" /> Profile
                 </Link>
                 <button
                   onClick={handleSignOut}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-muted w-full text-left text-destructive"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-full text-sm hover:bg-muted w-full text-left text-destructive"
                 >
                   <LogOut className="size-4" /> Sign Out
                 </button>
@@ -112,7 +112,7 @@ export function HeaderMobileDrawer({
               <Link
                 href="/auth/login"
                 onClick={onClose}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-muted"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-full text-sm hover:bg-muted"
               >
                 Sign In
               </Link>

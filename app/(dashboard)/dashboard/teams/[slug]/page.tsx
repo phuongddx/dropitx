@@ -5,16 +5,13 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Users, FileText, Eye, Settings, UserPlus, ArrowLeft, Activity } from "lucide-react";
+import { Users, FileText, Eye, Settings, UserPlus, Activity } from "lucide-react";
+import { PageHeader } from "@/components/page-header";
+import { StatCard } from "@/components/stat-card";
+import { EmptyStateCard } from "@/components/empty-state-card";
 import { TeamShareCard } from "@/components/team-share-card";
 import { TeamActivityFeed } from "@/components/team-activity-feed";
 import type { TeamEvent } from "@/types/team-event";
-
-const ROLE_COLORS: Record<string, "default" | "secondary" | "outline"> = {
-  owner: "default",
-  editor: "secondary",
-  viewer: "outline",
-};
 
 export default async function TeamOverviewPage({
   params,
@@ -88,24 +85,15 @@ export default async function TeamOverviewPage({
   return (
     <div className="space-y-6 max-w-[1200px]">
       {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <Link
-            href="/dashboard/teams"
-            className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-2"
-          >
-            <ArrowLeft className="size-3" />
-            Back to Teams
-          </Link>
-          <div className="flex items-center gap-3">
-            <h1 className="font-mono text-lg font-semibold">{team.name}</h1>
-            <Badge variant={ROLE_COLORS[userRole] ?? "outline"}>{userRole}</Badge>
-          </div>
-          <p className="text-sm text-muted-foreground mt-1">
-            {team.slug} · {team.plan} plan
-          </p>
-        </div>
-        <div className="flex gap-2">
+      <div className="flex items-start justify-between max-[920px]:flex-col max-[920px]:gap-4">
+        <PageHeader
+          eyebrow={`/dashboard/teams/${slug}`}
+          title={team.name}
+          subtitle={`${team.slug} · ${team.plan} plan`}
+        >
+          <Badge variant={userRole as "owner" | "editor" | "viewer"}>{userRole}</Badge>
+        </PageHeader>
+        <div className="flex gap-2 mt-2">
           {isOwnerOrEditor && (
             <Link href={`/dashboard/teams/${slug}/members`}>
               <Button variant="outline" size="sm">
@@ -126,33 +114,15 @@ export default async function TeamOverviewPage({
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="rounded-lg border border-border bg-card p-4">
-          <div className="flex items-center gap-2 text-muted-foreground text-sm">
-            <FileText className="size-4" />
-            Shares
-          </div>
-          <p className="text-2xl font-bold mt-1">{validShares.length}</p>
-        </div>
-        <div className="rounded-lg border border-border bg-card p-4">
-          <div className="flex items-center gap-2 text-muted-foreground text-sm">
-            <Eye className="size-4" />
-            Views
-          </div>
-          <p className="text-2xl font-bold mt-1">{totalViews}</p>
-        </div>
-        <div className="rounded-lg border border-border bg-card p-4">
-          <div className="flex items-center gap-2 text-muted-foreground text-sm">
-            <Users className="size-4" />
-            Members
-          </div>
-          <p className="text-2xl font-bold mt-1">{memberCount ?? 0}</p>
-        </div>
+      <div className="grid grid-cols-3 max-[920px]:grid-cols-1 gap-4">
+        <StatCard icon={FileText} value={validShares.length} label="Shares" />
+        <StatCard icon={Eye} value={totalViews} label="Total Views" />
+        <StatCard icon={Users} value={memberCount ?? 0} label="Members" />
       </div>
 
       {/* Recent Activity */}
       {events && events.length > 0 && (
-        <Card className="border border-border rounded-lg">
+        <Card className="border border-border rounded-[var(--radius-card)] shadow-[var(--shadow)]">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Activity className="size-5" />
@@ -167,13 +137,11 @@ export default async function TeamOverviewPage({
 
       {/* Shares list */}
       {validShares.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground">
-          <FileText className="size-12 mx-auto mb-3 opacity-50" />
-          <p>No shares in this team yet.</p>
-          {isOwnerOrEditor && (
-            <p className="text-xs mt-1">Use the API with a team API key to create team shares.</p>
-          )}
-        </div>
+        <EmptyStateCard
+          icon={FileText}
+          title="No shares in this team yet"
+          description={isOwnerOrEditor ? "Use the API with a team API key to create team shares." : undefined}
+        />
       ) : (
         <div className="space-y-3">
           {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}

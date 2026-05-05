@@ -13,19 +13,19 @@ import { useTheme } from "next-themes";
 import type { ViewTimeSeriesPoint } from "@/types/analytics";
 
 const CHART_COLORS = {
-  violet: '#7C3AED',
-  emerald: '#059669',
-  blue: '#4F46E5',
-  amber: '#D97706',
-  zinc: '#71717A',
+  violet: 'oklch(0.491 0.270 293)',
+  emerald: 'oklch(0.55 0.17 160)',
+  blue: 'oklch(0.491 0.270 264)',
+  amber: 'oklch(0.705 0.162 60)',
+  zinc: 'oklch(0.55 0.01 260)',
 };
 
 const CHART_COLORS_DARK = {
-  violet: '#A78BFA',
-  emerald: '#34D399',
-  blue: '#818CF8',
-  amber: '#FBBF24',
-  zinc: '#A1A1AA',
+  violet: 'oklch(0.64 0.2 293)',
+  emerald: 'oklch(0.7 0.17 160)',
+  blue: 'oklch(0.64 0.2 264)',
+  amber: 'oklch(0.82 0.14 80)',
+  zinc: 'oklch(0.65 0.01 260)',
 };
 
 interface AnalyticsViewChartProps {

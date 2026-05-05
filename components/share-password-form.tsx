@@ -76,7 +76,7 @@ export function SharePasswordForm({
   };
 
   return (
-    <form onSubmit={handleSet} className="flex flex-col gap-3 pt-1">
+    <form onSubmit={handleSet} className="flex flex-col gap-3 border border-dashed border-accent-line rounded-lg p-3 mt-2">
       <div className="flex items-center gap-2 text-sm font-medium">
         <Lock className="size-4 shrink-0" />
         Password Protection

@@ -2,15 +2,15 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Settings, ArrowLeft, Loader2, Trash2 } from "lucide-react";
+import { Settings, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { authFetch } from "@/lib/api-client";
 import { isValidTeamName, isValidTeamSlug } from "@/lib/team-utils";
+import { PageHeader } from "@/components/page-header";
 
 interface TeamData {
   id: string;
@@ -161,17 +161,12 @@ export default function TeamSettingsPage({
   }
 
   return (
-    <div className="space-y-6 max-w-[680px]">
-      <div>
-        <Link
-          href={`/dashboard/teams/${slug}`}
-          className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-2"
-        >
-          <ArrowLeft className="size-3" />
-          Back to Team
-        </Link>
-        <h1 className="text-2xl font-bold">Team Settings</h1>
-      </div>
+    <div className="space-y-6 max-w-[680px] max-[920px]:px-0">
+      <PageHeader
+        eyebrow={`/dashboard/teams/${slug}/settings`}
+        title="Settings"
+        subtitle={`Manage ${team.name} configuration`}
+      />
 
       {/* General settings */}
       <Card>
@@ -226,25 +221,21 @@ export default function TeamSettingsPage({
       </Card>
 
       {/* Danger zone */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-destructive">Danger Zone</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground mb-4">
-            Deleting this team will remove all member associations and team share links.
-            Personal shares will not be deleted.
-          </p>
-          <Button variant="destructive" onClick={handleDelete} disabled={deleting}>
-            {deleting ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <Trash2 className="size-4" />
-            )}
-            Delete Team
-          </Button>
-        </CardContent>
-      </Card>
+      <div className="border border-dashed border-destructive/30 rounded-[var(--radius-card)] p-4 space-y-3">
+        <h3 className="text-sm font-semibold text-destructive">Danger Zone</h3>
+        <p className="text-sm text-muted-foreground">
+          Deleting this team will remove all member associations and team share links.
+          Personal shares will not be deleted.
+        </p>
+        <Button variant="destructive" onClick={handleDelete} disabled={deleting}>
+          {deleting ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <Trash2 className="size-4" />
+          )}
+          Delete Team
+        </Button>
+      </div>
     </div>
   );
 }

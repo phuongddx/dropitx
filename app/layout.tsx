@@ -1,8 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
-import { HeaderBar } from "@/components/header-bar";
 import { VercelAnalytics } from "@/components/vercel-analytics";
 import "./globals.css";
 
@@ -23,6 +22,12 @@ export const metadata: Metadata = {
   description: "Instant file drops, shareable links.",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -35,7 +40,6 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
-          <HeaderBar />
           {children}
           <Toaster />
         </ThemeProvider>

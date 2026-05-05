@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { SharePasswordForm } from "@/components/share-password-form";
 import { authFetch } from "@/lib/api-client";
 import { Eye, Clock, Trash2, ExternalLink, FileCode, FileText, Lock, LockOpen, BarChart3 } from "lucide-react";
-import type { ShareWithPasswordFlag } from "@/app/dashboard/page";
+import type { ShareWithPasswordFlag } from "@/app/(dashboard)/dashboard/page";
 
 function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString("en-US", {
@@ -45,7 +45,7 @@ export function DashboardShareCard({ share }: { share: ShareWithPasswordFlag }) 
   };
 
   return (
-    <Card>
+    <Card shadow className="rounded-[var(--radius-card)]">
       <CardContent className="flex flex-col gap-0 p-0">
         <div className="flex items-center gap-4 p-4">
           <div className="shrink-0">
@@ -59,14 +59,14 @@ export function DashboardShareCard({ share }: { share: ShareWithPasswordFlag }) 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
               <p className="font-medium truncate">{share.title || share.filename}</p>
-              <Badge variant="outline" className="shrink-0 text-xs">
+              <Badge variant={isMarkdown ? "markdown" : "html"} className="shrink-0">
                 {isMarkdown ? "MD" : "HTML"}
               </Badge>
               {hasPassword && (
                 <Lock className="size-3 text-muted-foreground shrink-0" />
               )}
             </div>
-            <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground mt-1">
+            <div className="meta flex flex-wrap gap-x-3 gap-y-1 mt-1">
               <span className="flex items-center gap-1">
                 <Clock className="size-3" />
                 {formatDate(share.created_at)}

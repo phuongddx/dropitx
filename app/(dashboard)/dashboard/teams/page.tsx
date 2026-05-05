@@ -6,6 +6,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Users, Plus, Clock } from "lucide-react";
+import { PageHeader } from "@/components/page-header";
+import { EmptyStateCard } from "@/components/empty-state-card";
 import type { TeamRole } from "@/types/team";
 
 interface TeamWithRole {
@@ -17,12 +19,6 @@ interface TeamWithRole {
   created_at: string;
   role: TeamRole;
 }
-
-const ROLE_COLORS: Record<TeamRole, "default" | "secondary" | "outline"> = {
-  owner: "default",
-  editor: "secondary",
-  viewer: "outline",
-};
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-US", {
@@ -60,37 +56,35 @@ export default async function TeamsPage() {
 
   return (
     <div className="space-y-6 max-w-[1200px]">
-      <div className="flex items-center justify-between">
-        <h1 className="font-mono text-lg font-semibold">Teams</h1>
+      <PageHeader
+        eyebrow="/dashboard/teams"
+        title="Teams"
+        subtitle="Collaborate with others on shared drops"
+      >
         <Link href="/dashboard/teams/new">
-          <Button size="sm">
+          <Button variant="pill" size="sm">
             <Plus className="size-4" />
             Create Team
           </Button>
         </Link>
-      </div>
+      </PageHeader>
 
       {teams.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground">
-          <Users className="size-12 mx-auto mb-3 opacity-50" />
-          <p>No teams yet. Create one to collaborate with others.</p>
-          <Link href="/dashboard/teams/new" className="mt-4 inline-block">
-            <Button variant="outline" size="sm">
-              <Plus className="size-4" />
-              Create Your First Team
-            </Button>
-          </Link>
-        </div>
+        <EmptyStateCard
+          icon={Users}
+          title="No teams yet"
+          description="Create a team to collaborate with others on shared drops."
+        />
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-2 max-[920px]:grid-cols-1 gap-4">
           {teams.map((team) => (
             <Link key={team.id} href={`/dashboard/teams/${team.slug}`}>
-              <Card className="border border-border rounded-lg transition-colors duration-200 cursor-pointer">
+              <Card className="rounded-[var(--radius-card)] shadow-[var(--shadow)] transition-colors duration-200 cursor-pointer">
                 <CardContent className="p-4 space-y-2">
                   <div className="flex items-center gap-2">
                     <Users className="size-5 text-primary shrink-0" />
                     <p className="font-medium truncate flex-1">{team.name}</p>
-                    <Badge variant={ROLE_COLORS[team.role]} className="shrink-0 text-xs">
+                    <Badge variant={team.role} className="shrink-0 text-xs">
                       {team.role}
                     </Badge>
                   </div>
