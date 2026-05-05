@@ -18,25 +18,25 @@ interface AnalyticsReferrerChartProps {
 }
 
 const SOURCE_COLORS_LIGHT: Record<string, string> = {
-  direct: '#71717A',
-  google: '#7C3AED',
-  twitter: '#4F46E5',
-  slack: '#059669',
-  discord: '#8B5CF6',
-  github: '#52525B',
-  embed: '#D97706',
-  other: '#A1A1AA',
+  direct: 'oklch(0.55 0.01 260)',
+  google: 'oklch(0.491 0.270 293)',
+  twitter: 'oklch(0.491 0.270 264)',
+  slack: 'oklch(0.55 0.17 160)',
+  discord: 'oklch(0.55 0.24 293)',
+  github: 'oklch(0.45 0.01 260)',
+  embed: 'oklch(0.705 0.162 60)',
+  other: 'oklch(0.65 0.01 260)',
 };
 
 const SOURCE_COLORS_DARK: Record<string, string> = {
-  direct: '#A1A1AA',
-  google: '#A78BFA',
-  twitter: '#818CF8',
-  slack: '#34D399',
-  discord: '#C4B5FD',
-  github: '#A1A1AA',
-  embed: '#FBBF24',
-  other: '#D4D4D8',
+  direct: 'oklch(0.65 0.01 260)',
+  google: 'oklch(0.64 0.2 293)',
+  twitter: 'oklch(0.64 0.2 264)',
+  slack: 'oklch(0.7 0.17 160)',
+  discord: 'oklch(0.65 0.2 293)',
+  github: 'oklch(0.65 0.01 260)',
+  embed: 'oklch(0.82 0.14 80)',
+  other: 'oklch(0.72 0.01 260)',
 };
 
 function CustomTooltip({ active, payload }: {

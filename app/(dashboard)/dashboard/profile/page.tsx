@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { ProfileForm } from "@/components/profile-form";
+import { PageHeader } from "@/components/page-header";
 
 const PROVIDER_LABELS: Record<string, string> = {
   google: "Google",
@@ -28,13 +29,20 @@ export default async function ProfilePage() {
 
   return (
     <div className="max-w-[680px]">
-      <ProfileForm
-        userId={user.id}
-        displayName={profile?.display_name ?? ""}
-        avatarUrl={profile?.avatar_url ?? ""}
-        email={user.email ?? ""}
-        providers={providers}
+      <PageHeader
+        eyebrow="/dashboard/profile"
+        title="Profile"
+        subtitle="Manage your account information"
       />
+      <div className="rounded-[var(--radius-card)] border border-border bg-card p-6">
+        <ProfileForm
+          userId={user.id}
+          displayName={profile?.display_name ?? ""}
+          avatarUrl={profile?.avatar_url ?? ""}
+          email={user.email ?? ""}
+          providers={providers}
+        />
+      </div>
     </div>
   );
 }

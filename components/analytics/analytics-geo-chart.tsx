@@ -5,30 +5,14 @@ import { useTheme } from "next-themes";
 import type { PieLabelRenderProps } from "recharts";
 import type { GeoBreakdown } from "@/types/analytics";
 
-const CHART_COLORS = {
-  violet: '#7C3AED',
-  emerald: '#059669',
-  blue: '#4F46E5',
-  amber: '#D97706',
-  zinc: '#71717A',
-};
-
-const CHART_COLORS_DARK = {
-  violet: '#A78BFA',
-  emerald: '#34D399',
-  blue: '#818CF8',
-  amber: '#FBBF24',
-  zinc: '#A1A1AA',
-};
-
 const PIE_PALETTE_LIGHT = [
-  '#7C3AED', '#4F46E5', '#059669', '#D97706',
-  '#8B5CF6', '#DC2626', '#CA8A04', '#0D9488',
+  'oklch(0.491 0.270 293)', 'oklch(0.491 0.270 264)', 'oklch(0.55 0.17 160)', 'oklch(0.705 0.162 60)',
+  'oklch(0.55 0.24 293)', 'oklch(0.55 0.22 25)', 'oklch(0.68 0.16 85)', 'oklch(0.56 0.13 180)',
 ];
 
 const PIE_PALETTE_DARK = [
-  '#A78BFA', '#818CF8', '#34D399', '#FBBF24',
-  '#C4B5FD', '#F87171', '#FACC15', '#5EEAD4',
+  'oklch(0.64 0.2 293)', 'oklch(0.64 0.2 264)', 'oklch(0.7 0.17 160)', 'oklch(0.82 0.14 80)',
+  'oklch(0.65 0.2 293)', 'oklch(0.65 0.2 25)', 'oklch(0.82 0.14 85)', 'oklch(0.7 0.13 180)',
 ];
 
 interface AnalyticsGeoChartProps {

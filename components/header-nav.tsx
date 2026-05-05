@@ -11,7 +11,7 @@ export function HeaderNav() {
 
   return (
     <nav
-      className="hidden md:flex items-center gap-1"
+      className="hidden max-[920px]:hidden md:flex items-center rounded-full bg-surface border border-border gap-2 px-2 py-1 overflow-x-auto"
       aria-label="Main navigation"
     >
       {NAV_LINKS.map(({ href, label, icon: Icon, iconOnly, authOnly }) => {
@@ -22,10 +22,10 @@ export function HeaderNav() {
             key={href}
             href={href}
             aria-current={isActive ? "page" : undefined}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200
+            className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 min-h-[36px] text-sm font-medium transition-colors duration-200 whitespace-nowrap
               ${
                 isActive
-                  ? "text-foreground border-b-2 border-primary"
+                  ? "bg-fg-soft text-foreground"
                   : "text-muted-foreground hover:text-foreground"
               }`}
           >

@@ -19,6 +19,23 @@ const badgeVariants = cva(
         ghost:
           "hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50",
         link: "text-primary underline-offset-4 hover:underline",
+        /* File type badges */
+        html: "bg-accent-soft text-primary border-accent-line rounded-full",
+        markdown:
+          "bg-accent-soft text-primary border-accent-line rounded-full",
+        /* Status badges */
+        success:
+          "bg-success/10 text-success rounded-full dark:bg-success/20",
+        warn:
+          "bg-[oklch(0.82_0.14_80_/_15%)] text-[oklch(0.65_0.17_80)] rounded-full dark:bg-[oklch(0.65_0.17_80_/_20%)] dark:text-[oklch(0.82_0.14_80)]",
+        danger:
+          "bg-destructive/10 text-destructive rounded-full dark:bg-destructive/20",
+        /* Role badges */
+        owner: "bg-primary text-primary-foreground rounded-full",
+        editor:
+          "bg-accent-soft text-primary rounded-full",
+        viewer:
+          "bg-secondary text-secondary-foreground rounded-full",
       },
     },
     defaultVariants: {

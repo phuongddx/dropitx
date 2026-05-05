@@ -3,12 +3,12 @@
  * Fetches members and invites server-side, no useEffect data fetching.
  */
 
-import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Users, ArrowLeft } from "lucide-react";
+import { Users } from "lucide-react";
+import { PageHeader } from "@/components/page-header";
 import { TeamMemberRow } from "@/components/team-member-row";
 import { MembersPageClient } from "@/components/members-page-client";
 import type { TeamRole, TeamInvite } from "@/types/team";
@@ -97,20 +97,11 @@ export default async function TeamMembersPage({ params }: Props) {
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between">
-        <div>
-          <Link
-            href={`/dashboard/teams/${slug}`}
-            className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-2"
-          >
-            <ArrowLeft className="size-3" />
-            Back to Team
-          </Link>
-          <h1 className="font-mono text-lg font-semibold">Members</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            {team.name} &middot; {members.length} member
-            {members.length !== 1 ? "s" : ""}
-          </p>
-        </div>
+        <PageHeader
+          eyebrow={`/dashboard/teams/${slug}/members`}
+          title="Members"
+          subtitle={`${team.name} · ${members.length} member${members.length !== 1 ? "s" : ""}`}
+        />
         <MembersPageClient
           teamSlug={slug}
           canInvite={canInvite}
@@ -118,7 +109,7 @@ export default async function TeamMembersPage({ params }: Props) {
         />
       </div>
 
-      <Card className="border border-border rounded-lg">
+      <Card className="border border-border rounded-[var(--radius-card)] shadow-[var(--shadow)]">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Users className="size-5" />

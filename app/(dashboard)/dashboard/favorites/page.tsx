@@ -3,8 +3,10 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { Heart } from "lucide-react";
 import { DashboardShareCard } from "@/components/dashboard-share-card";
+import { PageHeader } from "@/components/page-header";
+import { EmptyStateCard } from "@/components/empty-state-card";
 import type { Share } from "@/types/share";
-import type { ShareWithPasswordFlag } from "@/app/dashboard/page";
+import type { ShareWithPasswordFlag } from "@/app/(dashboard)/dashboard/page";
 
 interface FavoriteRow {
   share_id: string;
@@ -33,13 +35,18 @@ export default async function FavoritesPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="font-mono text-lg font-semibold">Favorites</h1>
+      <PageHeader
+        eyebrow="/dashboard/favorites"
+        title="Favorites"
+        subtitle="Shares you've hearted for quick access"
+      />
 
       {shares.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground">
-          <Heart className="size-12 mx-auto mb-3 opacity-50" />
-          <p>No favorites yet. Heart a share to save it here.</p>
-        </div>
+        <EmptyStateCard
+          icon={Heart}
+          title="No favorites yet"
+          description="Heart a share to save it here for quick access."
+        />
       ) : (
         <div className="space-y-3">
           {shares.map((share) => (

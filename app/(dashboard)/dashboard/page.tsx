@@ -2,6 +2,8 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { DashboardShareList } from "@/components/dashboard-share-list";
+import { PageHeader } from "@/components/page-header";
+import { StatCard } from "@/components/stat-card";
 import { FileText, Eye, HardDrive } from "lucide-react";
 import type { Share } from "@/types/share";
 
@@ -67,31 +69,17 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="font-mono text-lg font-semibold">Dashboard</h1>
+      <PageHeader
+        eyebrow="/dashboard"
+        title="Shares"
+        subtitle="Manage your shared files and view performance metrics."
+      />
 
       {/* Stats — always show personal share stats */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="rounded-lg border border-border bg-card p-4">
-          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            <FileText className="size-4" />
-            Shares
-          </div>
-          <p className="font-mono text-3xl font-bold mt-1">{totalShares}</p>
-        </div>
-        <div className="rounded-lg border border-border bg-card p-4">
-          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            <Eye className="size-4" />
-            Views
-          </div>
-          <p className="font-mono text-3xl font-bold mt-1">{totalViews}</p>
-        </div>
-        <div className="rounded-lg border border-border bg-card p-4">
-          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            <HardDrive className="size-4" />
-            Storage
-          </div>
-          <p className="font-mono text-3xl font-bold mt-1">{formatFileSize(totalSize)}</p>
-        </div>
+      <div className="grid grid-cols-3 max-[920px]:grid-cols-1 gap-4 mb-6">
+        <StatCard icon={FileText} value={totalShares} label="Shares" />
+        <StatCard icon={Eye} value={totalViews} label="Views" />
+        <StatCard icon={HardDrive} value={formatFileSize(totalSize)} label="Storage" />
       </div>
 
       {/* Share list with team filter */}
