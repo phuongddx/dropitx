@@ -13,19 +13,19 @@ import { useTheme } from "next-themes";
 import type { ViewTimeSeriesPoint } from "@/types/analytics";
 
 const CHART_COLORS = {
-  violet: 'oklch(0.491 0.270 293)',
+  primary: 'oklch(0.655 0.222 47)',
   emerald: 'oklch(0.55 0.17 160)',
-  blue: 'oklch(0.491 0.270 264)',
+  blue: 'oklch(0.60 0.15 200)',
   amber: 'oklch(0.705 0.162 60)',
-  zinc: 'oklch(0.55 0.01 260)',
+  zinc: 'oklch(0.55 0.02 47)',
 };
 
 const CHART_COLORS_DARK = {
-  violet: 'oklch(0.64 0.2 293)',
+  primary: 'oklch(0.72 0.18 47)',
   emerald: 'oklch(0.7 0.17 160)',
-  blue: 'oklch(0.64 0.2 264)',
+  blue: 'oklch(0.65 0.15 200)',
   amber: 'oklch(0.82 0.14 80)',
-  zinc: 'oklch(0.65 0.01 260)',
+  zinc: 'oklch(0.65 0.02 47)',
 };
 
 interface AnalyticsViewChartProps {
@@ -79,8 +79,8 @@ export function AnalyticsViewChart({ data }: AnalyticsViewChartProps) {
           <Area
             type="monotone"
             dataKey="views"
-            stroke={colors.violet}
-            fill={colors.violet}
+            stroke={colors.primary}
+            fill={colors.primary}
             fillOpacity={0.1}
             name="views"
             strokeWidth={2}

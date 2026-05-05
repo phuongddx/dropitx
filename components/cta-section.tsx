@@ -5,7 +5,7 @@ export function CTASection() {
   return (
     <section className="px-6 max-[720px]:px-4 py-20 max-w-[1200px] mx-auto">
       <div className="section-card flex flex-col items-center text-center gap-6 px-8 py-14">
-        <h2 className="heading-fluid-md font-bold tracking-tight">
+        <h2 className="heading-fluid-md font-display font-bold tracking-tight">
           Ready to drop?
         </h2>
 

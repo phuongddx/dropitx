@@ -6,13 +6,13 @@ import type { PieLabelRenderProps } from "recharts";
 import type { GeoBreakdown } from "@/types/analytics";
 
 const PIE_PALETTE_LIGHT = [
-  'oklch(0.491 0.270 293)', 'oklch(0.491 0.270 264)', 'oklch(0.55 0.17 160)', 'oklch(0.705 0.162 60)',
-  'oklch(0.55 0.24 293)', 'oklch(0.55 0.22 25)', 'oklch(0.68 0.16 85)', 'oklch(0.56 0.13 180)',
+  'oklch(0.655 0.222 47)', 'oklch(0.623 0.178 155)', 'oklch(0.65 0.17 80)', 'oklch(0.55 0.19 300)',
+  'oklch(0.60 0.15 200)', 'oklch(0.55 0.22 25)', 'oklch(0.68 0.16 85)', 'oklch(0.56 0.13 180)',
 ];
 
 const PIE_PALETTE_DARK = [
-  'oklch(0.64 0.2 293)', 'oklch(0.64 0.2 264)', 'oklch(0.7 0.17 160)', 'oklch(0.82 0.14 80)',
-  'oklch(0.65 0.2 293)', 'oklch(0.65 0.2 25)', 'oklch(0.82 0.14 85)', 'oklch(0.7 0.13 180)',
+  'oklch(0.72 0.18 47)', 'oklch(0.75 0.17 155)', 'oklch(0.75 0.17 80)', 'oklch(0.65 0.19 300)',
+  'oklch(0.65 0.15 200)', 'oklch(0.65 0.2 25)', 'oklch(0.82 0.14 85)', 'oklch(0.7 0.13 180)',
 ];
 
 interface AnalyticsGeoChartProps {

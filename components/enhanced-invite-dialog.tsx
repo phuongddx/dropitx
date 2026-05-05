@@ -224,7 +224,7 @@ export function EnhancedInviteDialog({
                 </SelectItem>
                 <SelectItem value="editor">
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-purple-500" />
+                    <div className="w-2 h-2 rounded-full bg-primary" />
                     Editor — Can create and edit shares
                   </div>
                 </SelectItem>

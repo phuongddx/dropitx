@@ -56,7 +56,7 @@ export async function GET(
           }}
         >
           <span>{share.view_count ?? 0} views</span>
-          <span style={{ color: "#a855f7" }}>DropItX</span>
+          <span style={{ color: "#FF5701" }}>DropItX</span>
         </div>
       </div>
     ),

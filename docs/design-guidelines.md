@@ -2,7 +2,7 @@
 
 ## Overview
 
-DropItX uses Tailwind CSS 4 + shadcn/ui for styling. Design tokens defined in `app/globals.css` via CSS custom properties with OKLCH color space. v1.0.0 introduced a full blue accent design overhaul.
+DropItX uses Tailwind CSS 4 + shadcn/ui for styling. Design tokens defined in `app/globals.css` via CSS custom properties with OKLCH color space. The Agentic design system uses orange (#FF5701) as the primary accent with warm gray neutrals and Playfair Display for headings.
 
 ## Design Principles
 
@@ -12,28 +12,52 @@ DropItX uses Tailwind CSS 4 + shadcn/ui for styling. Design tokens defined in `a
 
 ## Color System
 
-All theme variables in `app/globals.css` using `oklch()`. The v1.0.0 overhaul established blue as the primary accent color.
+All theme variables in `app/globals.css` using `oklch()`. Primary accent is orange (#FF5701, `oklch(0.655 0.222 47)`). All neutrals use warm gray (H=47) — not cool gray.
 
-| Token | Purpose |
-|-------|---------|
-| `--background`, `--foreground` | Page background/text |
-| `--card`, `--card-foreground` | Card surfaces |
-| `--primary`, `--primary-foreground` | CTAs, links (blue accent) |
-| `--secondary`, `--secondary-foreground` | Secondary actions |
-| `--muted`, `--muted-foreground` | Subtle/disabled text |
-| `--accent`, `--accent-foreground` | Highlights |
-| `--destructive`, `--destructive-foreground` | Error/danger |
-| `--border`, `--input`, `--ring` | Borders, focus rings |
-| `--radius` | Border radius |
+| Token | Light Value | Purpose |
+|-------|-------------|---------|
+| `--primary` | `oklch(0.655 0.222 47)` | CTAs, links, orange accent |
+| `--primary-foreground` | `oklch(1 0 0)` | White text on orange |
+| `--background` | `oklch(1 0 0)` | Page background |
+| `--foreground` | `oklch(0.14 0.005 47)` | Body text, warm tint |
+| `--card`, `--card-foreground` | White / warm dark | Card surfaces |
+| `--secondary` | `oklch(0.965 0.004 47)` | Secondary actions |
+| `--muted`, `--muted-foreground` | Warm gray | Subtle/disabled text |
+| `--accent`, `--accent-foreground` | Warm gray | Highlights |
+| `--destructive` | `oklch(0.577 0.245 27)` | Error/danger (red, unchanged hue) |
+| `--success` | `oklch(0.623 0.178 155)` | Success (green, unchanged hue) |
+| `--border`, `--input`, `--ring` | Warm gray / orange | Borders, focus rings |
+| `--radius` | `0.375rem` | Border radius |
 
-`.dark` class overrides all tokens for dark mode.
+### Computed Tokens
+
+- `--accent-soft`: `color-mix(in oklch, var(--primary) 10%, var(--card))`
+- `--accent-line`: `color-mix(in oklch, var(--primary) 32%, var(--card))`
+- `--fg-soft`: `color-mix(in oklch, var(--foreground) 4%, var(--card))`
+- `--shadow`: `color-mix(in oklch, var(--foreground) 8%, transparent)`
+
+### Data Visualization Palette
+
+Charts use distinct hues for pie/bar slices — NOT monochrome orange.
+
+| Token | Value | Purpose |
+|-------|-------|---------|
+| `--chart-1` | `oklch(0.655 0.222 47)` | Primary orange |
+| `--chart-2` | `oklch(0.623 0.178 155)` | Teal/green |
+| `--chart-3` | `oklch(0.65 0.17 80)` | Amber/yellow |
+| `--chart-4` | `oklch(0.55 0.19 300)` | Rose/magenta |
+| `--chart-5` | `oklch(0.60 0.15 200)` | Sky blue |
+
+`.dark` class overrides all tokens for dark mode (higher L, lower C, same H).
 
 ## Typography
 
-- **Font**: Ubuntu (`--font-sans`), Ubuntu Mono (`--font-mono`)
-- Loaded via `next/font/google` in `app/layout.tsx`
-- Weights: 300 (light), 400 (regular), 500 (medium), 700 (bold) for Sans; 400, 700 for Mono
-- Responsive text sizes via Tailwind classes (`text-sm`, `text-lg`, etc.)
+- **Body font**: Inter (`--font-sans`) — weights 300, 400, 500, 600, 700
+- **Display font**: Playfair Display (`--font-display`) — weights 400, 700, 900 — used for h1-h3 and hero text
+- **Mono font**: JetBrains Mono (`--font-mono`) — weights 400, 500, 600, 700
+- `--font-heading` aliased to `--font-display` for backward compatibility (card.tsx, page-header.tsx)
+- Type scale: 14/16/18/24/32/40
+- Fluid headings via `.heading-fluid-lg` (clamp 48-88px) and `.heading-fluid-md` (clamp 28-46px)
 
 ## Component Library
 
@@ -97,7 +121,7 @@ All theme variables in `app/globals.css` using `oklch()`. The v1.0.0 overhaul es
 
 ## Spacing
 
-Tailwind default spacing scale. Consistent `p-4`/`p-6` padding for cards. `gap-6`/`gap-8` for layouts.
+8pt grid convention: use even Tailwind spacing values (2=8px, 4=16px, 6=24px, 8=32px, 12=48px, 16=64px). Consistent `p-4`/`p-6` padding for cards. `gap-6`/`gap-8` for layouts.
 
 ## Responsive Design
 

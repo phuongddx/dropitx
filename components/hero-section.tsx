@@ -25,7 +25,7 @@ export function HeroSection() {
         <div className="flex flex-col gap-6">
           <p className="eyebrow">Fast file sharing without the detour</p>
 
-          <h1 className="heading-fluid-lg font-bold tracking-tight">
+          <h1 className="heading-fluid-lg font-display font-bold tracking-tight">
             Drop files.
             <br />
             Share instantly.

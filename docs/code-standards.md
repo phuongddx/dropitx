@@ -136,10 +136,16 @@ Never use the admin client in client components — server-only.
 
 - Tailwind CSS 4 utility classes only — no custom CSS-in-JS
 - OKLCH color tokens via CSS custom properties in `app/globals.css`
+- Token layers: `@theme inline` → Tailwind namespace bindings, `:root` → light mode, `.dark` → dark mode
+- Token naming: `--{namespace}-{property}-{variant}` (e.g., `--primary`, `--accent-soft`, `--sidebar-ring`)
 - `cn()` from `lib/utils.ts` for conditional class merging (clsx + tailwind-merge)
 - Component variants via `class-variance-authority`
-- Dark mode via `.dark` class on `<html>` (next-themes)
-- Blue accent design system (v1.0.0 overhaul) — `--primary` uses blue OKLCH values
+- Dark mode: `.dark` class on `<html>` (next-themes). Same hue (47), higher L, lower C.
+- **Font usage**: `font-display` for headings (Playfair Display), `font-sans` for body (Inter), `font-mono` for code (JetBrains Mono)
+- **Chart colors**: Use `--chart-1` through `--chart-5` tokens for data visualization — NOT monochrome orange
+- **WARNING**: `bg-purple-500` uses Tailwind's default color palette, NOT CSS variables. Always use `bg-primary` for accent color
+- Agentic design system — `--primary` is orange (#FF5701, `oklch(0.655 0.222 47)`)
+- 8pt spacing grid: use even Tailwind spacing values
 
 ## Security
 

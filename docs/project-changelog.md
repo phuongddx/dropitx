@@ -2,6 +2,36 @@
 
 All notable changes to DropItX.
 
+## [v2.4.0] — 2026-05-05
+
+### Changed
+- **Agentic Design System migration**: Complete visual identity overhaul from violet to orange
+- **Primary color**: `#a855f7` (violet, OKLCH H=293) → `#FF5701` (orange, `oklch(0.655 0.222 47)`)
+- **Neutral palette**: Cool gray (H=260) → warm gray (H=47) across all surfaces, borders, muted text
+- **Display font**: Added Playfair Display (400, 700, 900) as `--font-display` for headings
+- **`--font-heading`** aliased to `--font-display` (was `--font-mono`) — card.tsx, page-header.tsx auto-adapt
+- **Data visualization palette**: Added `--chart-1` through `--chart-5` with distinct hues (orange, teal, amber, rose, sky blue)
+- **Analytics charts**: Migrated from monochrome violet to multi-hue palette
+- **Heading elements**: Applied `font-display` to h1-h3 across feature components
+
+### Removed
+- All hardcoded `#a855f7` hex values (OG image route, embed page)
+- All `bg-purple-500` Tailwind default palette classes (invite dialogs)
+- All hardcoded OKLCH H=293 values (analytics charts, referrer colors)
+- Zero violet/purple references remain in codebase
+
+### Files Modified
+- `app/globals.css` — full token replacement (40+ tokens, light + dark)
+- `app/layout.tsx` — Playfair Display font loading
+- `app/api/og-image/[slug]/route.tsx` — orange brand color
+- `app/(public)/embed/[slug]/page.tsx` — orange fallback color
+- `components/analytics/analytics-geo-chart.tsx` — multi-hue palette
+- `components/analytics/analytics-view-chart.tsx` — multi-hue palette
+- `components/analytics/analytics-referrer-chart.tsx` — multi-hue palette
+- `components/bulk-invite-dialog.tsx` — `bg-primary` class
+- `components/enhanced-invite-dialog.tsx` — `bg-primary` class
+- `components/hero-section.tsx`, `proof-cards.tsx`, `cta-section.tsx`, `profile-form.tsx`, `workflow-steps.tsx` — `font-display` headings
+
 ## [v2.3.0] — 2026-05-02
 
 ### Changed

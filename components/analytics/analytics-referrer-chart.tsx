@@ -18,25 +18,25 @@ interface AnalyticsReferrerChartProps {
 }
 
 const SOURCE_COLORS_LIGHT: Record<string, string> = {
-  direct: 'oklch(0.55 0.01 260)',
-  google: 'oklch(0.491 0.270 293)',
-  twitter: 'oklch(0.491 0.270 264)',
+  direct: 'oklch(0.55 0.02 47)',
+  google: 'oklch(0.655 0.222 47)',
+  twitter: 'oklch(0.60 0.15 200)',
   slack: 'oklch(0.55 0.17 160)',
-  discord: 'oklch(0.55 0.24 293)',
-  github: 'oklch(0.45 0.01 260)',
+  discord: 'oklch(0.55 0.19 300)',
+  github: 'oklch(0.45 0.02 47)',
   embed: 'oklch(0.705 0.162 60)',
-  other: 'oklch(0.65 0.01 260)',
+  other: 'oklch(0.65 0.02 47)',
 };
 
 const SOURCE_COLORS_DARK: Record<string, string> = {
-  direct: 'oklch(0.65 0.01 260)',
-  google: 'oklch(0.64 0.2 293)',
-  twitter: 'oklch(0.64 0.2 264)',
+  direct: 'oklch(0.65 0.02 47)',
+  google: 'oklch(0.72 0.18 47)',
+  twitter: 'oklch(0.65 0.15 200)',
   slack: 'oklch(0.7 0.17 160)',
-  discord: 'oklch(0.65 0.2 293)',
-  github: 'oklch(0.65 0.01 260)',
+  discord: 'oklch(0.65 0.19 300)',
+  github: 'oklch(0.65 0.02 47)',
   embed: 'oklch(0.82 0.14 80)',
-  other: 'oklch(0.72 0.01 260)',
+  other: 'oklch(0.72 0.02 47)',
 };
 
 function CustomTooltip({ active, payload }: {

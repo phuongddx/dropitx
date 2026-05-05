@@ -36,7 +36,7 @@ export default async function EmbedPage({ params }: EmbedPageProps) {
         background: "var(--color-background, #0a0a0a)",
         color: "var(--color-foreground, #fafafa)",
       }}>
-        <p>This content is protected. <a href={`/s/${slug}`} style={{ color: "var(--color-primary, #a855f7)" }}>View on DropItX</a></p>
+        <p>This content is protected. <a href={`/s/${slug}`} style={{ color: "var(--color-primary, #FF5701)" }}>View on DropItX</a></p>
       </div>
     );
   }
@@ -63,8 +63,8 @@ export default async function EmbedPage({ params }: EmbedPageProps) {
         }}>
           <p>Sign in to view this embedded content</p>
           <a href={`/auth/login?next=/s/${slug}`} style={{
-            color: "var(--color-primary, #a855f7)",
-            border: "1px solid var(--color-primary, #a855f7)",
+            color: "var(--color-primary, #FF5701)",
+            border: "1px solid var(--color-primary, #FF5701)",
             padding: "0.5rem 1rem",
             borderRadius: "0.375rem",
             textDecoration: "none",

@@ -28,7 +28,7 @@ export function ProofCards() {
       {/* Section header */}
       <div className="flex flex-col items-center text-center gap-3 mb-12">
         <p className="eyebrow">Why DropItX</p>
-        <h2 className="heading-fluid-md font-bold tracking-tight">
+        <h2 className="heading-fluid-md font-display font-bold tracking-tight">
           Everything you need
         </h2>
         <p className="text-muted-foreground text-base max-w-lg leading-relaxed">

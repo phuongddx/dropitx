@@ -33,7 +33,7 @@ export function WorkflowSteps() {
               {number}
             </span>
 
-            <h3 className="text-base font-semibold text-foreground">
+            <h3 className="text-base font-display font-semibold text-foreground">
               {title}
             </h3>
 
