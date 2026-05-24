@@ -22,11 +22,19 @@ DropItX is a Next.js 16 (App Router) application for uploading HTML/Markdown fil
 
 ## Recent Major Changes
 
+### v2.4.0 (2026-05-24) - UI/UX Redesign & Design System
+- **Route group reorganization**: Pages split into `(public)` and `(dashboard)` route groups
+- **Landing page redesign**: HeroSection, ProofCards, WorkflowSteps, CtaSection, LandingFooter
+- **Dashboard restyle**: New sidebar layout with DashboardSidebarNav, DashboardMobileNav, DashboardToolbar
+- **Agentic design system**: Orange primary (#FF5701), Playfair Display headings, warm gray neutrals
+- **New components**: hero-canvas, stat-card, empty-state-card, page-header, badge
+- **OG image route**: Moved to dynamic `[slug]` route
+
 ### v2.3.0 (2026-05-02) - FastAPI Migration
 - **All Next.js API routes removed**: 24 route handlers (~2,400 lines) deleted
 - **Frontend is now pure client**: Calls FastAPI backend via `authFetch()` with JWT Bearer auth
 - **`lib/api-client.ts`**: Singleton Supabase client + JWT injection + 401 retry
-- **Only remaining route**: `app/api/og-image/route.ts`
+- **Only remaining route**: `app/api/og-image/[slug]/route.tsx`
 - **Removed lib files**: `api-auth.ts`, `rate-limit.ts`, `validate-editor-content.ts`, `extract-text.ts`, `extract-title-from-markdown.ts`
 - **New env var**: `NEXT_PUBLIC_API_URL=https://dropitx-api.onrender.com`
 
@@ -40,38 +48,53 @@ DropItX is a Next.js 16 (App Router) application for uploading HTML/Markdown fil
 
 ```
 app/
-├── layout.tsx, page.tsx, globals.css, not-found.tsx, error.tsx
-├── editor/page.tsx                     # Markdown editor (SSR-disabled)
-├── s/[slug]/page.tsx                   # Public share viewer
-├── embed/[slug]/page.tsx              # oEmbed viewer
-├── search/page.tsx                     # Full-text search
-├── invite/accept/page.tsx             # Team invite acceptance
-├── dashboard/
-│   ├── layout.tsx, page.tsx            # Share list + stats + API keys
-│   ├── profile/page.tsx
-│   ├── favorites/page.tsx
-│   ├── analytics/page.tsx, analytics/[slug]/page.tsx
-│   ├── teams/page.tsx, teams/new/page.tsx
-│   └── teams/[slug]/(page,members,settings).tsx
-├── auth/
-│   ├── login/page.tsx                 # Email/password + OAuth
-│   ├── callback/route.ts              # PKCE code exchange
-│   ├── confirm/route.ts               # Email confirmation
-│   ├── reset-password/page.tsx
-│   └── update-password/page.tsx
+├── layout.tsx, globals.css, not-found.tsx, error.tsx, loading.tsx
+├── (public)/
+│   ├── layout.tsx                      # Public layout (header + footer)
+│   ├── page.tsx                        # Landing page (HeroSection → ProofCards → WorkflowSteps → CTA)
+│   ├── editor/page.tsx                 # Markdown editor (SSR-disabled)
+│   ├── s/[slug]/page.tsx               # Public share viewer
+│   ├── s/[slug]/loading.tsx
+│   ├── embed/[slug]/page.tsx           # oEmbed viewer
+│   ├── search/page.tsx                 # Full-text search
+│   ├── search/loading.tsx
+│   ├── invite/accept/page.tsx          # Team invite acceptance
+│   ├── auth/login/page.tsx             # Email/password + OAuth
+│   ├── auth/callback/route.ts          # PKCE code exchange
+│   ├── auth/confirm/route.ts           # Email confirmation
+│   ├── auth/reset-password/page.tsx
+│   └── auth/update-password/page.tsx
+├── (dashboard)/
+│   ├── dashboard/layout.tsx            # Dashboard layout (sidebar nav)
+│   ├── dashboard/page.tsx              # Share list + stats + API keys
+│   ├── dashboard/profile/page.tsx
+│   ├── dashboard/favorites/page.tsx
+│   ├── dashboard/analytics/page.tsx
+│   ├── dashboard/analytics/[slug]/page.tsx
+│   ├── dashboard/teams/page.tsx
+│   ├── dashboard/teams/new/page.tsx
+│   ├── dashboard/teams/[slug]/page.tsx
+│   ├── dashboard/teams/[slug]/members/page.tsx
+│   └── dashboard/teams/[slug]/settings/page.tsx
 └── api/
-    └── og-image/route.ts              # Only remaining Next.js API route
+    └── og-image/[slug]/route.tsx       # OG image generation (only Next.js API route)
 
 components/
 ├── ui/{button,card,input,textarea,dialog,select,badge,alert,sonner,skeleton,popover}.tsx
+├── hero-section.tsx, hero-canvas.tsx, cta-section.tsx       # Landing page sections
+├── proof-cards.tsx, workflow-steps.tsx, landing-footer.tsx   # Landing page sections
+├── home-page.tsx                                            # Landing page orchestrator
+├── page-header.tsx, stat-card.tsx, empty-state-card.tsx     # Shared UI
 ├── editor-shell.tsx, editor-pane.tsx, editor-preview.tsx
 ├── editor-toolbar.tsx, editor-publish-bar.tsx
 ├── upload-dropzone.tsx, share-link.tsx, copy-button.tsx
 ├── search-bar.tsx, search-results.tsx
 ├── html-viewer.tsx, markdown-viewer.tsx, markdown-viewer-wrapper.tsx
 ├── dashboard-share-card.tsx, dashboard-share-list.tsx, bookmark-toggle.tsx
+├── dashboard-sidebar-nav.tsx, dashboard-mobile-nav.tsx      # Dashboard navigation
+├── dashboard-toolbar.tsx                                    # Dashboard toolbar
 ├── api-key-manager.tsx, profile-form.tsx
-├── auth-user-menu.tsx, home-page.tsx, theme-provider.tsx, vercel-analytics.tsx
+├── auth-user-menu.tsx, theme-provider.tsx, vercel-analytics.tsx
 ├── header-bar.tsx, header-nav.tsx, header-mobile-drawer.tsx
 ├── password-gate.tsx, share-password-form.tsx
 ├── share-viewed-tracker.tsx, share-analytics-tracker.tsx
@@ -155,6 +178,8 @@ supabase/
 
 ### Component Architecture
 - **UI Primitives**: Reusable components in `components/ui/` using shadcn/ui patterns
+- **Landing Page**: Compound sections — `HeroSection` + `HeroCanvas`, `ProofCards`, `WorkflowSteps`, `CtaSection`, `LandingFooter`
+- **Dashboard**: Sidebar layout with `DashboardSidebarNav` (desktop) + `DashboardMobileNav` (mobile) + `DashboardToolbar`
 - **Feature Components**: Organized by domain (auth, team, editor, share, analytics)
 - **Compound Components**: Header system with `HeaderBar`, `HeaderNav`, `HeaderMobileDrawer`
 - **Hooks**: Custom hooks for state management, validation, and side effects
@@ -206,6 +231,13 @@ dropitx publish README.md -t "My Doc"
 ```
 
 ## Recent Development Status
+
+### v2.4.0 (2026-05-24) - UI/UX Redesign & Design System
+- ✅ Route groups: `(public)` and `(dashboard)` for layout separation
+- ✅ Landing page: HeroSection, ProofCards, WorkflowSteps, CtaSection, LandingFooter
+- ✅ Dashboard restyle: sidebar nav, mobile nav, toolbar
+- ✅ Agentic orange design system with Playfair Display headings
+- ✅ New shared components: page-header, stat-card, empty-state-card, badge
 
 ### v2.3.0 (2026-05-02) - FastAPI Migration
 - ✅ All 24 Next.js API routes removed, frontend is pure client

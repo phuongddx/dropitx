@@ -18,7 +18,7 @@ DropItX is a Next.js 16 application (App Router) deployed on Vercel as a pure fr
         ▼             ▼           ▼               ▼
 ┌──────────────────────────────────────────────────────────────┐
 │                     Next.js (Vercel)                         │
-│  Pure frontend — no API routes (except /api/og-image)        │
+│  Pure frontend — no API routes (except /api/og-image/[slug]) │
 │  Client components use authFetch() / fetch(getApiUrl())      │
 │  lib/api-client.ts: singleton Supabase client + 401 retry   │
 └──────────────────────────┬───────────────────────────────────┘
@@ -56,65 +56,60 @@ DropItX is a Next.js 16 application (App Router) deployed on Vercel as a pure fr
 RootLayout (app/layout.tsx)
 ├── ThemeProvider
 ├── Toaster (sonner)
-└── HeaderBar (compound component system)
-    ├── HeaderNav (desktop navigation)
-    └── HeaderMobileDrawer (mobile navigation)
 └── Routes
-    ├── / (HomePage)
-    │   ├── SearchBar
-    │   ├── UploadDropzone
-    │   └── ShareLink
-    ├── /editor (SSR disabled via next/dynamic)
-    │   └── EditorShell
-    │       ├── EditorToolbar
-    │       ├── EditorPane (CodeMirror 6)
-    │       ├── EditorPreview (react-markdown + shiki)
-    │       └── EditorPublishBar
-    ├── /s/[slug] (SharePage)
-    │   ├── PasswordGate (when share has password)
-    │   ├── HtmlViewer (sandboxed iframe, .html files)
-    │   ├── MarkdownViewerWrapper (lazy loaded, .md files)
-    │   ├── BookmarkToggle
-    │   ├── ShareViewedTracker
-    │   └── ShareAnalyticsTracker
-    ├── /embed/[slug] (oEmbed viewer)
-    │   ├── EmbedViewedTracker
-    │   └── EmbedSnippet
-    ├── /search
-    │   ├── SearchBar
-    │   └── SearchResults
-    ├── /auth/login
-    │   ├── Email/password sign-in form
-│   ├── Google OAuth button
-    │   ├── GitHub OAuth button
-│   └── Email auth components
-├── /auth/reset-password
-│   └── Password reset form
-├── /auth/update-password
-│   └── Password update form (after email reset)
-├── /auth/confirm
-│   └── Email confirmation page
-└── /dashboard
-    │   ├── layout.tsx (sidebar nav)
-    │   ├── page.tsx (share list + stats)
-    │   │   ├── DashboardShareCard (with password toggle)
-    │   │   └── ApiKeyManager
-    │   ├── profile/page.tsx → ProfileForm
-    │   ├── favorites/page.tsx → DashboardShareCard list
-    │   ├── analytics/page.tsx
-    │   │   ├── AnalyticsStatsCards
-    │   │   ├── AnalyticsViewChart
-    │   │   ├── AnalyticsGeoChart
-    │   │   ├── AnalyticsReferrerChart
-    │   │   ├── AnalyticsTopPerformers
-    │   │   └── AnalyticsEmptyState
-    │   ├── analytics/[slug]/page.tsx → per-share analytics
-    │   ├── teams/page.tsx → team list
-    │   ├── teams/new/page.tsx → CreateTeamForm
-    │   ├── teams/[slug]/page.tsx → team detail
-    │   ├── teams/[slug]/members/page.tsx → TeamMemberRow, InviteMemberDialog
-    │   └── teams/[slug]/settings/page.tsx → team settings
-    └── /auth/callback (PKCE code exchange, bootstraps user_profiles)
+    ├── (public)/ (PublicLayout)
+    │   ├── HeaderBar
+    │   │   ├── HeaderNav (desktop)
+    │   │   └── HeaderMobileDrawer (mobile)
+    │   ├── / (HomePage — landing)
+    │   │   ├── HeroSection + HeroCanvas
+    │   │   ├── SearchBar
+    │   │   ├── UploadDropzone
+    │   │   ├── ProofCards
+    │   │   ├── WorkflowSteps
+    │   │   ├── CtaSection
+    │   │   └── LandingFooter
+    │   ├── /editor (SSR disabled via next/dynamic)
+    │   │   └── EditorShell
+    │   │       ├── EditorToolbar
+    │   │       ├── EditorPane (CodeMirror 6)
+    │   │       ├── EditorPreview (react-markdown + shiki)
+    │   │       └── EditorPublishBar
+    │   ├── /s/[slug] (SharePage)
+    │   │   ├── PasswordGate (when share has password)
+    │   │   ├── HtmlViewer (sandboxed iframe, .html files)
+    │   │   ├── MarkdownViewerWrapper (lazy loaded, .md files)
+    │   │   ├── BookmarkToggle
+    │   │   ├── ShareViewedTracker
+    │   │   └── ShareAnalyticsTracker
+    │   ├── /embed/[slug] (oEmbed viewer)
+    │   ├── /search → SearchBar + SearchResults
+    │   ├── /auth/login → Email/password + OAuth
+    │   ├── /auth/reset-password → Password reset form
+    │   ├── /auth/update-password → Password update form
+    │   ├── /auth/confirm → Email confirmation
+    │   └── /invite/accept → InviteAcceptForm
+    │
+    └── (dashboard)/ (DashboardLayout)
+        ├── DashboardSidebarNav (desktop)
+        ├── DashboardMobileNav (mobile)
+        ├── DashboardToolbar
+        ├── /dashboard/page.tsx (share list + stats)
+        │   ├── DashboardShareCard
+        │   └── ApiKeyManager
+        ├── /dashboard/profile → ProfileForm
+        ├── /dashboard/favorites → DashboardShareCard list
+        ├── /dashboard/analytics
+        │   ├── AnalyticsStatsCards
+        │   ├── AnalyticsViewChart, GeoChart, ReferrerChart
+        │   ├── AnalyticsTopPerformers
+        │   └── AnalyticsEmptyState
+        ├── /dashboard/analytics/[slug] → per-share analytics
+        ├── /dashboard/teams → team list
+        ├── /dashboard/teams/new → CreateTeamForm
+        ├── /dashboard/teams/[slug] → team detail
+        ├── /dashboard/teams/[slug]/members → TeamMemberRow, InviteMemberDialog
+        └── /dashboard/teams/[slug]/settings → team settings
 ```
 
 ## Authentication Architecture

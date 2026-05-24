@@ -16,20 +16,21 @@ Standards for the DropItX codebase. Next.js 16 + TypeScript strict + Tailwind CS
 ## Project Structure
 
 ```
-app/                  # Next.js App Router (pages, layouts, API routes)
-app/editor/           # Markdown editor (SSR-disabled)
-app/api/v1/           # Versioned REST API (API key auth)
-components/ui/        # Reusable UI primitives (shadcn/ui)
-components/           # Feature components
-lib/                  # Utility functions
-lib/editor-extensions/# CodeMirror extensions
-utils/supabase/       # Supabase client factories
-types/                # TypeScript interfaces
-supabase/             # Schema and config
-supabase/migrations/  # Incremental schema migrations
-packages/cli/         # CLI tool (dropitx binary)
-public/               # Static assets
-docs/                 # Documentation
+app/                      # Next.js App Router (pages, layouts, API routes)
+app/(public)/             # Public route group (landing, auth, editor, shares, search)
+app/(dashboard)/          # Dashboard route group (sidebar layout, teams, analytics)
+app/api/og-image/         # Only remaining Next.js API route
+components/ui/            # Reusable UI primitives (shadcn/ui)
+components/               # Feature components (landing, editor, dashboard, team, analytics)
+lib/                      # Utility functions
+lib/editor-extensions/    # CodeMirror extensions
+utils/supabase/           # Supabase client factories
+types/                    # TypeScript interfaces
+supabase/                 # Schema and config
+supabase/migrations/      # Incremental schema migrations
+packages/cli/             # CLI tool (dropitx binary)
+public/                   # Static assets
+docs/                     # Documentation
 ```
 
 ## Monorepo Structure
@@ -68,7 +69,7 @@ docs/                 # Documentation
 
 ## API Routes
 
-**Note**: All API logic runs on a FastAPI backend (`dropitx-api.onrender.com`). The Next.js app is a pure frontend with only one remaining API route (`/api/og-image`).
+**Note**: All API logic runs on a FastAPI backend (`dropitx-api.onrender.com`). The Next.js app is a pure frontend with only one remaining API route (`/api/og-image/[slug]`).
 
 ### Client-Side API Calls
 - Use `authFetch()` from `lib/api-client.ts` for all authenticated requests

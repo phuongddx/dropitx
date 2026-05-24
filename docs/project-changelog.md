@@ -2,7 +2,15 @@
 
 All notable changes to DropItX.
 
-## [v2.4.0] — 2026-05-05
+## [v2.4.0] — 2026-05-24
+
+### Added
+- **Route group reorganization**: Pages split into `(public)` and `(dashboard)` route groups for layout separation
+- **Landing page redesign**: HeroSection with animated HeroCanvas, ProofCards, WorkflowSteps, CtaSection, LandingFooter
+- **Dashboard restyle**: New sidebar layout with DashboardSidebarNav (desktop), DashboardMobileNav (mobile), DashboardToolbar
+- **New shared components**: PageHeader, StatCard, EmptyStateCard, Badge UI primitive
+- **Public layout**: `app/(public)/layout.tsx` with HeaderBar
+- **Dashboard layout**: `app/(dashboard)/dashboard/layout.tsx` with sidebar navigation
 
 ### Changed
 - **Agentic Design System migration**: Complete visual identity overhaul from violet to orange
