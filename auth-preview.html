@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign In · DropItX</title>
+  <style>
+    /* ─── Vercel-inspired tokens + DropItX orange ─── */
+    :root {
+      --bg: #fafafa;
+      --surface: #ffffff;
+      --fg: #171717;
+      --fg-2: #666666;
+      --meta: #888888;
+      --border: rgba(0, 0, 0, 0.08);
+      --border-hover: rgba(0, 0, 0, 0.15);
+      --accent: #FF5701;
+      --accent-hover: #e64e01;
+      --accent-soft: rgba(255, 87, 1, 0.08);
+      --error: #dc2626;
+      --error-soft: rgba(220, 38, 38, 0.06);
+      --success: #16a34a;
+      --success-soft: rgba(22, 163, 74, 0.06);
+      --radius: 8px;
+      --radius-lg: 12px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+      --shadow-border: 0 0 0 1px var(--border);
+      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      --font-mono: ui-monospace, 'SF Mono', 'Menlo', monospace;
+      --transition: 150ms ease;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0a0a0a;
+        --surface: #111111;
+        --fg: #ededed;
+        --fg-2: #a1a1a1;
+        --meta: #666666;
+        --border: rgba(255, 255, 255, 0.08);
+        --border-hover: rgba(255, 255, 255, 0.15);
+        --accent-soft: rgba(255, 87, 1, 0.12);
+        --error-soft: rgba(220, 38, 38, 0.12);
+        --success-soft: rgba(22, 163, 74, 0.12);
+        --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
+        --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+        --shadow-border: 0 0 0 1px var(--border);
+      }
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── Layout ─── */
+    .container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .form-side {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px;
+      position: relative;
+    }
+
+    .brand-side {
+      flex: 0 0 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px;
+      background: linear-gradient(135deg, var(--accent-soft), transparent 60%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ─── Dot grid pattern ─── */
+    .form-side::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle at 1px 1px, var(--fg) 0.5px, transparent 0);
+      background-size: 32px 32px;
+      opacity: 0.025;
+      pointer-events: none;
+    }
+
+    .brand-side::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(to right, var(--border) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+      background-size: 48px 48px;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    /* ─── Form ─── */
+    .form-wrapper {
+      width: 100%;
+      max-width: 400px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 40px;
+      text-decoration: none;
+      color: var(--fg);
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--accent);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-icon svg {
+      width: 20px;
+      height: 20px;
+      stroke: white;
+      fill: none;
+    }
+
+    .logo-text {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    /* ─── Tabs ─── */
+    .tabs {
+      display: inline-flex;
+      background: var(--bg);
+      border-radius: var(--radius);
+      padding: 3px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow-border);
+    }
+
+    .tab {
+      padding: 8px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      border: none;
+      background: transparent;
+      color: var(--meta);
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all var(--transition);
+    }
+
+    .tab.active {
+      background: var(--surface);
+      color: var(--fg);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tab:hover:not(.active) {
+      color: var(--fg-2);
+    }
+
+    /* ─── Heading ─── */
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      color: var(--fg-2);
+      margin-bottom: 28px;
+    }
+
+    /* ─── Inputs ─── */
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    .field-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .field-header label {
+      margin-bottom: 0;
+    }
+
+    .forgot-link {
+      font-size: 13px;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+      transition: opacity var(--transition);
+    }
+
+    .forgot-link:hover { opacity: 0.8; }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-wrap svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      color: var(--meta);
+      pointer-events: none;
+    }
+
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+      width: 100%;
+      height: 44px;
+      padding: 0 40px 0 40px;
+      font-size: 15px;
+      font-family: var(--font);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--fg);
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+      box-shadow: var(--shadow-sm);
+    }
+
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    input::placeholder {
+      color: var(--meta);
+    }
+
+    .toggle-pw {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--meta);
+      padding: 4px;
+      display: flex;
+      transition: color var(--transition);
+    }
+
+    .toggle-pw:hover { color: var(--fg); }
+
+    .toggle-pw svg {
+      position: static;
+      transform: none;
+      width: 16px;
+      height: 16px;
+    }
+
+    /* ─── Button ─── */
+    .btn-primary {
+      width: 100%;
+      height: 44px;
+      margin-top: 8px;
+      background: var(--fg);
+      color: var(--bg);
+      border: none;
+      border-radius: var(--radius);
+      font-size: 15px;
+      font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: opacity var(--transition);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-primary .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid currentColor;
+      border-right-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── Divider ─── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .divider span {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--meta);
+    }
+
+    /* ─── OAuth ─── */
+    .oauth-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn-oauth {
+      flex: 1;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 500;
+      font-family: var(--font);
+      color: var(--fg);
+      cursor: pointer;
+      transition: border-color var(--transition), background var(--transition);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-oauth:hover {
+      border-color: var(--border-hover);
+      background: var(--bg);
+    }
+
+    .btn-oauth svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* ─── Footer ─── */
+    .form-footer {
+      margin-top: 32px;
+      text-align: center;
+      font-size: 14px;
+      color: var(--fg-2);
+    }
+
+    .form-footer a,
+    .form-footer button {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-family: var(--font);
+    }
+
+    .form-footer a:hover,
+    .form-footer button:hover { text-decoration: underline; }
+
+    /* ─── Messages ─── */
+    .msg {
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    .msg-error {
+      background: var(--error-soft);
+      color: var(--error);
+      border: 1px solid rgba(220, 38, 38, 0.15);
+    }
+
+    .msg-success {
+      background: var(--success-soft);
+      color: var(--success);
+      border: 1px solid rgba(22, 163, 74, 0.15);
+    }
+
+    /* ─── Brand side ─── */
+    .brand-content {
+      position: relative;
+      z-index: 1;
+      max-width: 420px;
+    }
+
+    .brand-shapes {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      margin-bottom: 40px;
+    }
+
+    .shape {
+      position: absolute;
+      border-radius: var(--radius-lg);
+    }
+
+    .shape-1 {
+      width: 56px;
+      height: 56px;
+      top: 0;
+      left: 0;
+      background: var(--accent-soft);
+      border: 1px solid rgba(255, 87, 1, 0.15);
+      transform: rotate(12deg);
+    }
+
+    .shape-2 {
+      width: 40px;
+      height: 40px;
+      bottom: 0;
+      right: 0;
+      background: var(--accent-soft);
+      border-radius: 50%;
+      border: 1px solid rgba(255, 87, 1, 0.1);
+    }
+
+    .shape-3 {
+      width: 24px;
+      height: 24px;
+      bottom: 16px;
+      left: 0;
+      background: rgba(255, 87, 1, 0.15);
+      border-radius: 6px;
+    }
+
+    .shape-4 {
+      width: 12px;
+      height: 12px;
+      top: 16px;
+      right: 8px;
+      background: rgba(255, 87, 1, 0.3);
+      border-radius: 50%;
+    }
+
+    .brand-tagline {
+      font-size: 44px;
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -1.5px;
+      margin-bottom: 16px;
+    }
+
+    .brand-tagline .accent { color: var(--accent); }
+
+    .brand-desc {
+      font-size: 16px;
+      color: var(--fg-2);
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+
+    .feature-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pill {
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--fg-2);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 768px) {
+      .brand-side { display: none; }
+      .form-side { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- ─── Form Side ─── -->
+    <div class="form-side">
+      <div class="form-wrapper">
+        <a href="/" class="logo">
+          <div class="logo-icon">
+            <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0L12 2.69z" />
+            </svg>
+          </div>
+          <span class="logo-text">DropItX</span>
+        </a>
+
+        <!-- Tabs -->
+        <div class="tabs">
+          <button class="tab active" data-mode="signin">Sign In</button>
+          <button class="tab" data-mode="signup">Sign Up</button>
+        </div>
+
+        <!-- Heading -->
+        <h1 id="heading">Welcome back</h1>
+        <p class="subtitle" id="subtitle">Enter your credentials to access your account</p>
+
+        <!-- Messages -->
+        <div id="msg" class="msg" style="display:none"></div>
+
+        <!-- Form -->
+        <form id="authForm">
+          <!-- Email -->
+          <div class="field">
+            <label for="email">Email</label>
+            <div class="input-wrap">
+              <svg viewBox="0 0 20 20" fill="currentColor">
+                <path d="M3 4a2 2 0 00-2 2v1.161l8.441 4.221a1.25 1.25 0 001.118 0L19 7.162V6a2 2 0 00-2-2H3z"/>
+                <path d="M19 8.839l-7.556 3.778a2.75 2.75 0 01-2.888 0L1 8.839V14a2 2 0 002 2h14a2 2 0 002-2V8.839z"/>
+              </svg>
+              <input type="email" id="email" placeholder="you@example.com" required autocomplete="email" />
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div class="field">
+            <div class="field-header">
+              <label for="password">Password</label>
+              <a href="#" class="forgot-link" id="forgotLink">Forgot password?</a>
+            </div>
+            <div class="input-wrap">
+              <svg viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd"/>
+              </svg>
+              <input type="password" id="password" placeholder="••••••••" required minlength="6" autocomplete="current-password" />
+              <button type="button" class="toggle-pw" id="togglePw">
+                <svg viewBox="0 0 20 20" fill="currentColor" id="eyeIcon">
+                  <path d="M10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z"/>
+                  <path fill-rule="evenodd" d="M.664 10.59a1.651 1.651 0 010-1.186A10.004 10.004 0 0110 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0110 17c-4.257 0-7.893-2.66-9.336-6.41zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Submit -->
+          <button type="submit" class="btn-primary" id="submitBtn">Sign In</button>
+        </form>
+
+        <!-- Divider -->
+        <div class="divider"><span>or continue with</span></div>
+
+        <!-- OAuth -->
+        <div class="oauth-row">
+          <button class="btn-oauth" id="googleBtn">
+            <svg viewBox="0 0 24 24">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            </svg>
+            Google
+          </button>
+          <button class="btn-oauth" id="githubBtn">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            GitHub
+          </button>
+        </div>
+
+        <!-- Footer -->
+        <div class="form-footer" id="formFooter">
+          Don't have an account? <button id="switchMode">Sign up</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── Brand Side ─── -->
+    <div class="brand-side">
+      <div class="brand-content">
+        <div class="brand-shapes">
+          <div class="shape shape-1"></div>
+          <div class="shape shape-2"></div>
+          <div class="shape shape-3"></div>
+          <div class="shape shape-4"></div>
+        </div>
+        <div class="brand-tagline">
+          Drop.<br>
+          <span class="accent">Share.</span><br>
+          Collaborate.
+        </div>
+        <p class="brand-desc">
+          Share HTML &amp; Markdown files with short, shareable links.
+          No bloat, no friction — just drop and go.
+        </p>
+        <div class="feature-pills">
+          <span class="pill">Instant links</span>
+          <span class="pill">Password protect</span>
+          <span class="pill">Team workspaces</span>
+          <span class="pill">Analytics</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ─── State ───
+    let mode = 'signin';
+    let showPw = false;
+
+    const $ = (s) => document.querySelector(s);
+    const heading = $('#heading');
+    const subtitle = $('#subtitle');
+    const submitBtn = $('#submitBtn');
+    const forgotLink = $('#forgotLink');
+    const switchBtn = $('#switchMode');
+    const formFooter = $('#formFooter');
+    const msg = $('#msg');
+    const pwInput = $('#password');
+    const togglePw = $('#togglePw');
+
+    // ─── Tabs ───
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        mode = tab.dataset.mode;
+        document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t === tab));
+        updateUI();
+      });
+    });
+
+    // ─── Switch mode ───
+    switchBtn.addEventListener('click', () => {
+      mode = mode === 'signin' ? 'signup' : 'signin';
+      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
+      updateUI();
+    });
+
+    function updateUI() {
+      hideMsg();
+      if (mode === 'signin') {
+        heading.textContent = 'Welcome back';
+        subtitle.textContent = 'Enter your credentials to access your account';
+        submitBtn.textContent = 'Sign In';
+        forgotLink.style.display = '';
+        formFooter.innerHTML = 'Don\'t have an account? <button id="switchMode">Sign up</button>';
+        pwInput.autocomplete = 'current-password';
+      } else {
+        heading.textContent = 'Create an account';
+        subtitle.textContent = 'Get started with DropItX — it\'s free';
+        submitBtn.textContent = 'Create Account';
+        forgotLink.style.display = 'none';
+        formFooter.innerHTML = 'Already have an account? <button id="switchMode">Sign in</button>';
+        pwInput.autocomplete = 'new-password';
+      }
+      $('#switchMode').addEventListener('click', () => {
+        mode = mode === 'signin' ? 'signup' : 'signin';
+        document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
+        updateUI();
+      });
+    }
+
+    // ─── Password toggle ───
+    togglePw.addEventListener('click', () => {
+      showPw = !showPw;
+      pwInput.type = showPw ? 'text' : 'password';
+    });
+
+    // ─── Messages ───
+    function showMsg(text, type) {
+      msg.textContent = text;
+      msg.className = 'msg msg-' + type;
+      msg.style.display = '';
+    }
+    function hideMsg() { msg.style.display = 'none'; }
+
+    // ─── Submit ───
+    $('#authForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner"></span> Please wait...';
+      
+      // Simulate API call
+      setTimeout(() => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = mode === 'signin' ? 'Sign In' : 'Create Account';
+        if (mode === 'signup') {
+          showMsg('Check your email to confirm your account.', 'success');
+        } else {
+          showMsg('Invalid email or password.', 'error');
+        }
+      }, 1500);
+    });
+  </script>
+</body>
+</html>
