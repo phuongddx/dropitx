@@ -10,11 +10,11 @@ interface PageHeaderProps {
 
 export function PageHeader({ eyebrow, title, subtitle, children, className }: PageHeaderProps) {
   return (
-    <div className={cn("mb-6", className)}>
+    <div className={cn("mb-8", className)}>
       {eyebrow && <p className="eyebrow mb-2">{eyebrow}</p>}
       <h1 className="text-2xl font-heading font-bold tracking-tight">{title}</h1>
       {subtitle && (
-        <p className="mt-1 text-sm text-muted-foreground max-w-lg">{subtitle}</p>
+        <p className="mt-1.5 text-sm text-muted-foreground max-w-lg leading-relaxed">{subtitle}</p>
       )}
       {children && <div className="mt-4 flex items-center gap-3">{children}</div>}
     </div>

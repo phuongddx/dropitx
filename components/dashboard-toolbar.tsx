@@ -10,7 +10,7 @@ import { InviteNotificationBell } from "@/components/invite-notification-bell";
  */
 export function DashboardToolbar() {
   return (
-    <div className="border-b border-border/50 bg-background/80 backdrop-blur-sm px-6 max-[720px]:px-4 py-3">
+    <div className="sticky top-0 z-30 border-b border-border/60 bg-background/80 backdrop-blur-md px-6 max-[720px]:px-4 py-3">
       <div className="flex items-center justify-between gap-4 max-w-[1200px] mx-auto w-full">
         <div className="flex-1 max-w-md">
           <SearchBar compact />

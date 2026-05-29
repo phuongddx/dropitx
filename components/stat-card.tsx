@@ -12,11 +12,11 @@ export function StatCard({ icon: Icon, value, label, className }: StatCardProps)
   return (
     <div
       className={cn(
-        "flex items-center gap-4 rounded-[var(--radius-card)] border border-border bg-card px-5 py-4",
+        "group flex items-center gap-4 rounded-[var(--radius-card)] border border-border/60 bg-card px-5 py-4 transition-all duration-300 hover:border-primary/20 hover:shadow-md hover:-translate-y-0.5",
         className
       )}
     >
-      <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-primary">
+      <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors duration-300 group-hover:bg-primary/15">
         <Icon className="size-5" />
       </div>
       <div className="min-w-0">

@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { DashboardShareCard } from "@/components/dashboard-share-card";
 import { TeamShareCard } from "@/components/team-share-card";
-import { FileText } from "lucide-react";
+import { FileText, Upload } from "lucide-react";
+import Link from "next/link";
 import type { Share } from "@/types/share";
 
 export type ShareWithPasswordFlag = Omit<Share, "password_hash"> & {
@@ -45,32 +46,39 @@ export function DashboardShareList({
 
   return (
     <div className="space-y-6">
-      {/* Filter dropdown */}
+      {/* Filter pills */}
       {teams.length > 0 && (
-        <div className="flex items-center gap-2">
-          <label htmlFor="team-filter" className="text-sm font-medium">
-            Showing:
-          </label>
-          <select
-            id="team-filter"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            className="h-10 rounded-md border border-input bg-transparent px-2.5 py-1 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={() => setFilter("personal")}
+            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+              filter === "personal"
+                ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20"
+                : "bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80"
+            }`}
           >
-            <option value="personal">Personal</option>
-            {teams.map((t) => (
-              <option key={t.slug} value={t.slug}>
-                {t.name}
-              </option>
-            ))}
-          </select>
+            Personal
+          </button>
+          {teams.map((t) => (
+            <button
+              key={t.slug}
+              onClick={() => setFilter(t.slug)}
+              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+                filter === t.slug
+                  ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20"
+                  : "bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80"
+              }`}
+            >
+              {t.name}
+            </button>
+          ))}
         </div>
       )}
 
       {/* Share list */}
       {filter === "personal" ? (
         personalShares.length === 0 ? (
-          <EmptyState message="No shares yet. Upload a file to get started." />
+          <EmptyState />
         ) : (
           <div className="space-y-3">
             {personalShares.map((share) => (
@@ -106,11 +114,23 @@ export function DashboardShareList({
   );
 }
 
-function EmptyState({ message }: { message: string }) {
+function EmptyState({ message }: { message?: string }) {
   return (
-    <div className="text-center py-12 text-muted-foreground">
-      <FileText className="size-12 mx-auto mb-3 opacity-50" />
-      <p>{message}</p>
+    <div className="flex flex-col items-center justify-center py-16 text-center">
+      <div className="size-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+        <FileText className="size-7 text-primary" />
+      </div>
+      <p className="text-foreground font-medium mb-1">No shares yet</p>
+      <p className="text-sm text-muted-foreground mb-4">
+        {message || "Upload a file to get started."}
+      </p>
+      <Link
+        href="/editor"
+        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium shadow-sm shadow-primary/20 hover:opacity-90 transition-opacity"
+      >
+        <Upload className="size-3.5" />
+        Create share
+      </Link>
     </div>
   );
 }
