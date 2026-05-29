@@ -14,6 +14,7 @@ import {
   Minus,
   Sun,
   Moon,
+  Image as ImageIcon,
 } from "lucide-react";
 
 interface EditorToolbarProps {
@@ -67,89 +68,124 @@ export function EditorToolbar({
   };
 
   return (
-    <div className="flex items-center gap-0.5 border-b border-border bg-background px-2 py-1">
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        title="Bold (Ctrl+B)"
-        onClick={() => handleAction(() => insertAtCursor(view!, "**", "**"))}
-      >
-        <Bold className="size-4" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        title="Italic (Ctrl+I)"
-        onClick={() => handleAction(() => insertAtCursor(view!, "*", "*"))}
-      >
-        <Italic className="size-4" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        title="Heading"
-        onClick={() =>
-          handleAction(() => insertLinePrefix(view!, "## "))
-        }
-      >
-        <Heading className="size-4" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        title="Link (Ctrl+K)"
-        onClick={() =>
-          handleAction(() => insertAtCursor(view!, "[", "](url)"))
-        }
-      >
-        <Link className="size-4" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        title="Code block"
-        onClick={() =>
-          handleAction(() => insertAtCursor(view!, "\n```\n", "\n```\n"))
-        }
-      >
-        <Code className="size-4" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        title="Bullet list"
-        onClick={() =>
-          handleAction(() => insertLinePrefix(view!, "- "))
-        }
-      >
-        <List className="size-4" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        title="Ordered list"
-        onClick={() =>
-          handleAction(() => insertLinePrefix(view!, "1. "))
-        }
-      >
-        <ListOrdered className="size-4" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        title="Horizontal rule"
-        onClick={() =>
-          handleAction(() => insertAtCursor(view!, "\n---\n", ""))
-        }
-      >
-        <Minus className="size-4" />
-      </Button>
+    <div className="flex items-center gap-0.5 border-b border-border/60 bg-surface/50 px-3 py-1.5">
+      {/* Format group */}
+      <div className="flex items-center gap-0.5">
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          title="Bold (Ctrl+B)"
+          className="rounded-lg"
+          onClick={() => handleAction(() => insertAtCursor(view!, "**", "**"))}
+        >
+          <Bold className="size-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          title="Italic (Ctrl+I)"
+          className="rounded-lg"
+          onClick={() => handleAction(() => insertAtCursor(view!, "*", "*"))}
+        >
+          <Italic className="size-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          title="Heading"
+          className="rounded-lg"
+          onClick={() =>
+            handleAction(() => insertLinePrefix(view!, "## "))
+          }
+        >
+          <Heading className="size-4" />
+        </Button>
+      </div>
+
+      <div className="w-px h-5 bg-border/60 mx-1" />
+
+      {/* Insert group */}
+      <div className="flex items-center gap-0.5">
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          title="Link (Ctrl+K)"
+          className="rounded-lg"
+          onClick={() =>
+            handleAction(() => insertAtCursor(view!, "[", "](url)"))
+          }
+        >
+          <Link className="size-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          title="Image"
+          className="rounded-lg"
+          onClick={() =>
+            handleAction(() => insertAtCursor(view!, "![alt](", ")"))
+          }
+        >
+          <ImageIcon className="size-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          title="Code block"
+          className="rounded-lg"
+          onClick={() =>
+            handleAction(() => insertAtCursor(view!, "\n```\n", "\n```\n"))
+          }
+        >
+          <Code className="size-4" />
+        </Button>
+      </div>
+
+      <div className="w-px h-5 bg-border/60 mx-1" />
+
+      {/* List group */}
+      <div className="flex items-center gap-0.5">
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          title="Bullet list"
+          className="rounded-lg"
+          onClick={() =>
+            handleAction(() => insertLinePrefix(view!, "- "))
+          }
+        >
+          <List className="size-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          title="Ordered list"
+          className="rounded-lg"
+          onClick={() =>
+            handleAction(() => insertLinePrefix(view!, "1. "))
+          }
+        >
+          <ListOrdered className="size-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          title="Horizontal rule"
+          className="rounded-lg"
+          onClick={() =>
+            handleAction(() => insertAtCursor(view!, "\n---\n", ""))
+          }
+        >
+          <Minus className="size-4" />
+        </Button>
+      </div>
 
       <div className="ml-auto">
         <Button
           variant="ghost"
           size="icon-sm"
           title="Toggle theme"
+          className="rounded-lg"
           onClick={onToggleTheme}
         >
           {theme === "dark" ? (

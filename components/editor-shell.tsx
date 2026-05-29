@@ -173,7 +173,12 @@ export function EditorShell() {
   if (!mounted) {
     return (
       <div className="flex h-[calc(100vh-3rem)] items-center justify-center bg-background">
-        <p className="text-muted-foreground font-mono text-sm">Loading editor...</p>
+        <div className="flex flex-col items-center gap-3">
+          <div className="size-8 rounded-xl bg-primary/10 flex items-center justify-center animate-pulse">
+            <div className="size-3 rounded-sm bg-primary" />
+          </div>
+          <p className="text-muted-foreground font-mono text-sm">Loading editor...</p>
+        </div>
       </div>
     );
   }
@@ -187,23 +192,23 @@ export function EditorShell() {
       />
 
       {/* Mobile tab bar */}
-      <div className="flex border-b border-border md:hidden">
+      <div className="flex border-b border-border/60 md:hidden bg-surface/30">
         <button
           onClick={() => setTab("write")}
-          className={`flex-1 py-2 text-center text-sm font-medium transition-colors duration-200 ${
+          className={`flex-1 py-2.5 text-center text-sm font-medium transition-all duration-200 ${
             tab === "write"
-              ? "border-b-2 border-primary text-foreground"
-              : "text-muted-foreground"
+              ? "border-b-2 border-primary text-primary bg-primary/5"
+              : "text-muted-foreground hover:text-foreground"
           }`}
         >
           Write
         </button>
         <button
           onClick={() => setTab("preview")}
-          className={`flex-1 py-2 text-center text-sm font-medium transition-colors duration-200 ${
+          className={`flex-1 py-2.5 text-center text-sm font-medium transition-all duration-200 ${
             tab === "preview"
-              ? "border-b-2 border-primary text-foreground"
-              : "text-muted-foreground"
+              ? "border-b-2 border-primary text-primary bg-primary/5"
+              : "text-muted-foreground hover:text-foreground"
           }`}
         >
           Preview
@@ -227,7 +232,7 @@ export function EditorShell() {
         </div>
 
         <div
-          className={`flex-1 overflow-hidden border-l border-border bg-background ${
+          className={`flex-1 overflow-hidden border-l border-border/60 bg-background ${
             tab !== "preview" ? "hidden md:block" : ""
           }`}
         >
