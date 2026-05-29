@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, Copy, Loader2, Lock, Unlock } from "lucide-react";
+import { Check, Copy, Loader2, Lock, Unlock, FileEdit, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { trackEvent, AnalyticsEvent } from "@/lib/analytics";
 import { authFetch, getAuthHeaders } from "@/lib/api-client";
@@ -112,17 +112,30 @@ export function EditorPublishBar({
   const readingTime = wordCount > 0 ? Math.ceil(wordCount / 200) : 0;
 
   return (
-    <div className="sticky bottom-0 z-20 flex items-center justify-between border-t border-border bg-background px-4 py-2">
-      <div className="flex items-center gap-4 text-xs text-muted-foreground">
-        <span>{charCount.toLocaleString()} chars</span>
-        <span>{wordCount.toLocaleString()} words</span>
-        {readingTime > 0 && <span>{readingTime} min read</span>}
+    <div className="sticky bottom-0 z-20 flex items-center justify-between border-t border-border/60 bg-surface/80 backdrop-blur-sm px-4 py-2">
+      <div className="flex items-center gap-3 text-xs text-muted-foreground">
+        <span className="font-mono">{charCount.toLocaleString()} chars</span>
+        <span className="text-border">·</span>
+        <span className="font-mono">{wordCount.toLocaleString()} words</span>
+        {readingTime > 0 && (
+          <>
+            <span className="text-border">·</span>
+            <span className="font-mono">{readingTime} min read</span>
+          </>
+        )}
         {isDirty && !publishedUrl && (
-          <span className="text-muted-foreground">Unsaved</span>
+          <>
+            <span className="text-border">·</span>
+            <span className="flex items-center gap-1 text-amber-500">
+              <span className="size-1.5 rounded-full bg-amber-500 animate-pulse" />
+              Unsaved
+            </span>
+          </>
         )}
         {mode === "edit" && editTitle && (
-          <Badge variant="outline" className="text-xs">
-            Editing: {editTitle}
+          <Badge variant="outline" className="text-xs gap-1">
+            <FileEdit className="size-3" />
+            {editTitle}
           </Badge>
         )}
       </div>
@@ -132,6 +145,7 @@ export function EditorPublishBar({
         <Button
           variant="ghost"
           size="icon-sm"
+          className="rounded-lg"
           onClick={() => setIsPrivate(!isPrivate)}
           title={isPrivate ? "Make public" : "Make private"}
         >
@@ -144,25 +158,28 @@ export function EditorPublishBar({
 
         {publishedUrl ? (
           <div className="flex items-center gap-2">
-            <code className="rounded bg-muted px-2 py-1 text-xs max-w-[200px] truncate">
+            <code className="rounded-lg bg-muted px-2.5 py-1 text-xs max-w-[200px] truncate font-mono">
               {publishedUrl}
             </code>
-            <Button size="icon-sm" variant="outline" onClick={copyUrl}>
-              {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
+            <Button size="icon-sm" variant="outline" className="rounded-lg" onClick={copyUrl}>
+              {copied ? <Check className="size-3 text-green-500" /> : <Copy className="size-3" />}
             </Button>
           </div>
         ) : !user ? (
-
           <a href="/auth/login?redirect=/editor">
-            <Button size="sm">Sign in to publish</Button>
+            <Button size="sm" className="gap-1.5">
+              <Sparkles className="size-3.5" />
+              Sign in to publish
+            </Button>
           </a>
         ) : (
           <Button
             size="sm"
+            className="gap-1.5 shadow-sm shadow-primary/20"
             disabled={publishing || !content.trim()}
             onClick={mode === "edit" ? handleUpdate : handlePublish}
           >
-            {publishing && <Loader2 className="mr-1 size-3 animate-spin" />}
+            {publishing && <Loader2 className="size-3 animate-spin" />}
             {mode === "edit" ? "Update" : "Publish"}
           </Button>
         )}
