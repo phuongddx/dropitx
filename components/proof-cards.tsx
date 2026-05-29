@@ -24,9 +24,9 @@ const FEATURES = [
 
 export function ProofCards() {
   return (
-    <section className="px-6 max-[720px]:px-4 py-20 max-w-[1200px] mx-auto">
+    <section className="px-6 max-[720px]:px-4 py-24 max-w-[1200px] mx-auto">
       {/* Section header */}
-      <div className="flex flex-col items-center text-center gap-3 mb-12">
+      <div className="flex flex-col items-center text-center gap-3 mb-14">
         <p className="eyebrow">Why DropItX</p>
         <h2 className="heading-fluid-md font-display font-bold tracking-tight">
           Everything you need
@@ -40,12 +40,18 @@ export function ProofCards() {
       {/* 3-column grid */}
       <div className="grid grid-cols-3 max-[1100px]:grid-cols-2 max-[920px]:grid-cols-1 gap-6">
         {FEATURES.map(({ icon: Icon, title, description }) => (
-          <Card key={title} shadow className="rounded-[var(--radius-card)]">
+          <Card
+            key={title}
+            shadow
+            className="group rounded-[var(--radius-card)] transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-primary/20"
+          >
             <CardHeader>
-              <div className="flex items-center justify-center size-10 rounded-xl bg-accent-soft mb-2">
-                <Icon className="size-5 text-primary" />
+              <div className="flex items-center gap-3 mb-2">
+                <div className="flex items-center justify-center size-10 rounded-xl bg-primary/10 transition-colors duration-300 group-hover:bg-primary/15">
+                  <Icon className="size-5 text-primary" />
+                </div>
+                <CardTitle className="text-base">{title}</CardTitle>
               </div>
-              <CardTitle className="text-base">{title}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground text-sm leading-relaxed">
