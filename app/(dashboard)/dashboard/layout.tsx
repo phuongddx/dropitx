@@ -40,17 +40,17 @@ export default async function DashboardLayout({
 
   return (
     <div className="flex min-h-screen">
-      {/* Sidebar — new design with brand header */}
-      <aside className="flex max-[920px]:hidden w-[232px] flex-col border-r border-accent-line bg-surface rounded-tr-[28px]">
+      {/* Sidebar */}
+      <aside className="flex max-[920px]:hidden w-[232px] flex-col border-r border-border/60 bg-surface/50 rounded-tr-[28px]">
         {/* Brand section */}
         <div className="px-5 pt-5 pb-4">
           <div className="flex items-center gap-2.5">
-            <div className="flex items-center justify-center size-8 rounded-lg border border-accent-line font-mono text-sm font-bold text-primary">
-              &gt;
+            <div className="flex items-center justify-center size-8 rounded-lg bg-primary text-primary-foreground text-xs font-bold shadow-sm shadow-primary/20">
+              D
             </div>
             <div>
-              <p className="font-mono text-sm font-bold text-foreground leading-tight">
-                dropitx
+              <p className="font-display text-sm font-bold text-foreground leading-tight">
+                DropItX
               </p>
               <p className="meta">Dashboard</p>
             </div>
@@ -62,7 +62,7 @@ export default async function DashboardLayout({
           <DashboardSidebarNav items={navItems} />
 
           {/* Teams section */}
-          <div className="pt-3 mt-3 border-t border-accent-line">
+          <div className="pt-3 mt-3 border-t border-border/60">
             <p className="eyebrow px-3 mb-1">
               Teams
             </p>
