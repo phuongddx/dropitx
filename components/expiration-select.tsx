@@ -10,11 +10,15 @@ import {
 import { Clock } from "lucide-react";
 
 export const EXPIRATION_OPTIONS = [
+  { value: "5m", label: "5 minutes" },
+  { value: "10m", label: "10 minutes" },
   { value: "1h", label: "1 hour" },
   { value: "6h", label: "6 hours" },
-  { value: "24h", label: "24 hours" },
-  { value: "7d", label: "7 days" },
-  { value: "30d", label: "30 days" },
+  { value: "12h", label: "12 hours" },
+  { value: "1d", label: "1 day" },
+  { value: "7d", label: "1 week" },
+  { value: "30d", label: "1 month" },
+  { value: "forever", label: "Forever" },
 ] as const;
 
 export type ExpirationValue = (typeof EXPIRATION_OPTIONS)[number]["value"];

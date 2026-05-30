@@ -20,6 +20,9 @@ export interface Share {
   max_downloads: number | null;
   download_count: number;
   group_id: string | null;
+  burn_after_reading: boolean;
+  is_encrypted: boolean;
+  burned: boolean;
 }
 
 export interface ShareGroup {

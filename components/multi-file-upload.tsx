@@ -113,7 +113,7 @@ export function MultiFileUpload() {
         };
         xhr.onerror = () => reject(new Error("Network error"));
 
-        xhr.open("POST", "/api/upload/batch");
+        xhr.open("POST", "/api/upload/multi");
         // Add auth header
         const { getAuthHeaders } = require("@/lib/api-client");
         getAuthHeaders().then((h: Record<string, string>) => {
