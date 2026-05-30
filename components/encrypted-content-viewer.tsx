@@ -43,12 +43,7 @@ export function EncryptedContentViewer({
       let content: string;
 
       if (fragment.isPassword) {
-        // Password-derived key: fragment contains salt.keyString
-        const parts = fragment.key.split(".");
-        if (parts.length !== 2) {
-          throw new Error("Invalid key format");
-        }
-        // We need the password to derive the key — prompt for it
+        // Password-derived key: need password to derive — prompt for it
         setState("need-password");
         return;
       } else {
@@ -59,7 +54,6 @@ export function EncryptedContentViewer({
 
       setDecryptedContent(content);
       setState("decrypted");
-      // Clear key from URL for security
       clearKeyFromFragment();
     } catch {
       setError("Failed to decrypt — key may be incorrect");
@@ -124,7 +118,7 @@ export function EncryptedContentViewer({
           />
           <Button
             onClick={handlePasswordDecrypt}
-            disabled={!password || state === "decrypting"}
+            disabled={!password}
             size="sm"
             className="gap-1.5"
           >

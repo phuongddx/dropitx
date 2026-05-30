@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 
 const STORAGE_KEY = "share-html-editor-draft";
-const DEBOUNCE_MS = 3000;
+const DEBOUNCE_MS = 2000;
 
 interface AutoSaveResult {
   savedAt: Date | null;

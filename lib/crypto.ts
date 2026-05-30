@@ -14,6 +14,11 @@ const IV_LENGTH = 12; // 96 bits recommended for AES-GCM
 const SALT_LENGTH = 16;
 const PBKDF2_ITERATIONS = 600_000;
 
+function randomBytes(n: number): Uint8Array {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return crypto.getRandomValues(new Uint8Array(n)) as any;
+}
+
 /** Generate a random AES-256-GCM key. */
 export async function generateRandomKey(): Promise<CryptoKey> {
   return crypto.subtle.generateKey(
@@ -29,7 +34,7 @@ export async function deriveKeyFromPassword(
   salt?: Uint8Array,
 ): Promise<{ key: CryptoKey; salt: Uint8Array }> {
   const encoder = new TextEncoder();
-  const saltBytes = salt ?? crypto.getRandomValues(new Uint8Array(SALT_LENGTH));
+  const saltBytes = salt ?? randomBytes(SALT_LENGTH);
 
   const keyMaterial = await crypto.subtle.importKey(
     "raw",
@@ -39,6 +44,7 @@ export async function deriveKeyFromPassword(
     ["deriveKey"],
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const key = await crypto.subtle.deriveKey(
     {
       name: "PBKDF2",
@@ -58,12 +64,12 @@ export async function deriveKeyFromPassword(
 /** Export a CryptoKey to a base64url string for URL fragment storage. */
 export async function exportKey(key: CryptoKey): Promise<string> {
   const raw = await crypto.subtle.exportKey("raw", key);
-  return uint8ToBase64url(new Uint8Array(raw));
+  return arrayBufferToBase64url(raw);
 }
 
 /** Import a base64url key string back to a CryptoKey. */
 export async function importKey(base64url: string): Promise<CryptoKey> {
-  const raw = base64urlToUint8(base64url);
+  const raw = base64urlToArrayBuffer(base64url);
   return crypto.subtle.importKey(
     "raw",
     raw,
@@ -84,7 +90,7 @@ export async function encrypt(
   salt?: Uint8Array,
 ): Promise<string> {
   const encoder = new TextEncoder();
-  const iv = crypto.getRandomValues(new Uint8Array(IV_LENGTH));
+  const iv = randomBytes(IV_LENGTH);
 
   const ciphertext = await crypto.subtle.encrypt(
     { name: ALGORITHM, iv },
@@ -92,45 +98,33 @@ export async function encrypt(
     encoder.encode(plaintext),
   );
 
-  // Pack: iv (12) + [salt (16)] + ciphertext+tag
-  const parts: Uint8Array[] = [iv];
-  if (salt) parts.push(salt);
-  parts.push(new Uint8Array(ciphertext));
+  const cipherBytes = new Uint8Array(ciphertext);
 
-  const totalLength = parts.reduce((sum, p) => sum + p.length, 0);
+  // Pack: iv (12) + [salt (16)] + ciphertext+tag
+  const totalLength = iv.length + (salt ? salt.length : 0) + cipherBytes.length;
   const packed = new Uint8Array(totalLength);
   let offset = 0;
-  for (const part of parts) {
-    packed.set(part, offset);
-    offset += part.length;
+  packed.set(iv, offset);
+  offset += iv.length;
+  if (salt) {
+    packed.set(salt, offset);
+    offset += salt.length;
   }
+  packed.set(cipherBytes, offset);
 
-  return uint8ToBase64url(packed);
+  return uint8ArrayToBase64url(packed);
 }
 
 /**
  * Decrypt a string produced by `encrypt`.
  * Automatically detects salt (password-derived) vs no salt (random key).
- * With salt: first 12 bytes = IV, next 16 = salt, rest = ciphertext+tag.
- * Without salt: first 12 bytes = IV, rest = ciphertext+tag.
- * We use the presence of salt in the packed data to distinguish.
- *
- * For password-derived keys, pass the password and the function will
- * extract the salt and re-derive the key.
  */
 export async function decrypt(
   packed: string,
   key: CryptoKey,
 ): Promise<string> {
-  const data = base64urlToUint8(packed);
+  const data = base64urlToUint8Array(packed);
   const iv = data.slice(0, IV_LENGTH);
-
-  // AES-256-GCM ciphertext always has a 16-byte auth tag appended.
-  // For a ~0 byte plaintext, ciphertext+tag = 16 bytes.
-  // With salt (16 bytes), min data size = 12 + 16 + 16 = 44.
-  // Without salt, min data size = 12 + 16 = 28.
-  // We'll try without salt first (more common for random key).
-  // If that fails and data is long enough, try with salt.
 
   try {
     const ciphertext = data.slice(IV_LENGTH);
@@ -142,9 +136,7 @@ export async function decrypt(
     return new TextDecoder().decode(decrypted);
   } catch {
     // Try treating bytes after IV as salt+ciphertext (password-derived)
-    // This path is hit when the key was derived from password and salt is embedded
     if (data.length > IV_LENGTH + SALT_LENGTH) {
-      const salt = data.slice(IV_LENGTH, IV_LENGTH + SALT_LENGTH);
       const ciphertext = data.slice(IV_LENGTH + SALT_LENGTH);
       const decrypted = await crypto.subtle.decrypt(
         { name: ALGORITHM, iv },
@@ -164,7 +156,7 @@ export async function decryptWithPassword(
   packed: string,
   password: string,
 ): Promise<string> {
-  const data = base64urlToUint8(packed);
+  const data = base64urlToUint8Array(packed);
   if (data.length <= IV_LENGTH + SALT_LENGTH) {
     throw new Error("Invalid encrypted data");
   }
@@ -213,7 +205,8 @@ export function clearKeyFromFragment(): void {
 
 // --- Base64url helpers ---
 
-function uint8ToBase64url(bytes: Uint8Array): string {
+function arrayBufferToBase64url(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
   let binary = "";
   for (let i = 0; i < bytes.length; i++) {
     binary += String.fromCharCode(bytes[i]);
@@ -221,7 +214,15 @@ function uint8ToBase64url(bytes: Uint8Array): string {
   return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
-function base64urlToUint8(str: string): Uint8Array {
+function uint8ArrayToBase64url(bytes: Uint8Array): string {
+  let binary = "";
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function base64urlToUint8Array(str: string): Uint8Array {
   const base64 = str.replace(/-/g, "+").replace(/_/g, "/");
   const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
   const binary = atob(padded);
@@ -230,4 +231,8 @@ function base64urlToUint8(str: string): Uint8Array {
     bytes[i] = binary.charCodeAt(i);
   }
   return bytes;
+}
+
+function base64urlToArrayBuffer(str: string): ArrayBuffer {
+  return base64urlToUint8Array(str).buffer;
 }

@@ -19,14 +19,11 @@ import { Badge } from "@/components/ui/badge";
 import { BookmarkToggle } from "@/components/bookmark-toggle";
 import { ShareViewedTracker } from "@/components/share-viewed-tracker";
 import { ShareAnalyticsTracker } from "@/components/share-analytics-tracker";
-import { ExpiredState } from "@/components/expired-state";
-import { BurnedState } from "@/components/burned-state";
-import { BurnWarningBanner } from "@/components/burn-warning-banner";
-import { BurnAfterReadingTracker } from "@/components/burn-after-reading-tracker";
-import { EncryptedContentViewer } from "@/components/encrypted-content-viewer";
-import { ExpiryBadge } from "@/components/expiry-badge";
-import { FileCode, FileText, Eye, Clock, Calendar, Shield, Flame } from "lucide-react";
-import type { Share } from "@/types/share";
+import { QrCodeButton } from "@/components/qr-code-button";
+import { SharePageClient } from "@/components/share-page-client";
+import { CommentsSection } from "@/components/comments-section";
+import { FileCode, FileText, Eye, Clock, Calendar } from "lucide-react";
+import type { Share, GroupShare } from "@/types/share";
 
 const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://dropitx.com";
 
@@ -40,14 +37,11 @@ export async function generateMetadata({ params }: SharePageProps): Promise<Meta
 
   const { data: share } = await adminClient
     .from("shares")
-    .select("id, slug, filename, title, view_count, created_at, is_private, password_hash, expires_at, burned")
+    .select("id, slug, filename, title, view_count, created_at, is_private, password_hash")
     .eq("slug", slug)
     .single<Share>();
 
   if (!share) return { title: "Not Found" };
-
-  if (share.burned) return { title: "Message Burned — DropItX" };
-  if (share.expires_at && new Date(share.expires_at) < new Date()) return { title: "Expired — DropItX" };
 
   // Red Team Fix: 5 — Don't leak OG tags for private/password-protected shares
   if (share.is_private || !!share.password_hash) {
@@ -102,13 +96,11 @@ function formatExpiresIn(expiresAt: string): string {
 
   if (diffMs <= 0) return "Expired";
 
-  const diffMinutes = Math.floor(diffMs / (1000 * 60));
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
 
   if (diffDays > 0) return `${diffDays} day${diffDays !== 1 ? "s" : ""}`;
-  if (diffHours > 0) return `${diffHours} hour${diffHours !== 1 ? "s" : ""}`;
-  return `${diffMinutes} minute${diffMinutes !== 1 ? "s" : ""}`;
+  return `${diffHours} hour${diffHours !== 1 ? "s" : ""}`;
 }
 
 function formatUploadDate(dateStr: string): string {
@@ -135,21 +127,13 @@ export default async function SharePage({ params }: SharePageProps) {
   const adminClient = createAdminClient();
   const { data: share, error: fetchError } = await adminClient
     .from("shares")
-    .select("id,slug,filename,storage_path,content_text,file_size,mime_type,delete_token,user_id,title,custom_slug,source,is_private,password_hash,created_at,updated_at,expires_at,view_count,burn_after_reading,is_encrypted,burned")
+    .select("id,slug,filename,storage_path,content_text,file_size,mime_type,delete_token,user_id,title,custom_slug,source,is_private,password_hash,created_at,updated_at,expires_at,view_count,group_id")
     .eq("slug", slug)
     .single<Share>();
 
   if (fetchError || !share) notFound();
 
-  // --- BURNED STATE ---
-  if (share.burned) {
-    return <BurnedState />;
-  }
-
-  // --- EXPIRED STATE ---
-  if (share.expires_at && new Date(share.expires_at) < new Date()) {
-    return <ExpiredState />;
-  }
+  if (share.expires_at && new Date(share.expires_at) < new Date()) notFound();
 
   // --- ACCESS GATE ---
   const authClient = createClient(cookieStore);
@@ -221,23 +205,22 @@ export default async function SharePage({ params }: SharePageProps) {
 
   const fileContent = await fileData.text();
   const isMarkdown = share.mime_type === "text/markdown";
-  const isExpired = share.expires_at ? new Date(share.expires_at) < new Date() : false;
+
+  // Fetch sibling files if this share belongs to a group
+  let groupFiles: GroupShare[] = [];
+  if (share.group_id) {
+    const { data: siblings } = await adminClient
+      .from("shares")
+      .select("slug,filename,mime_type,file_size,download_count,max_downloads")
+      .eq("group_id", share.group_id)
+      .order("created_at", { ascending: true });
+    if (siblings) groupFiles = siblings as GroupShare[];
+  }
 
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 md:p-6 max-w-[1200px] mx-auto w-full animate-fade-in">
       <ShareViewedTracker />
       <ShareAnalyticsTracker shareId={share.id} trackingToken={trackingToken} />
-
-      {/* Burn after reading tracker — client-side, fires after 3s view */}
-      {share.burn_after_reading && !isOwner && (
-        <BurnAfterReadingTracker slug={slug} />
-      )}
-
-      {/* Burn after reading warning banner */}
-      {share.burn_after_reading && (
-        <BurnWarningBanner />
-      )}
-
       {/* Metadata header */}
       <Card>
         <CardHeader className="gap-3">
@@ -256,19 +239,8 @@ export default async function SharePage({ params }: SharePageProps) {
               <Badge variant="outline">
                 {isMarkdown ? "Markdown" : "HTML"}
               </Badge>
-              {share.is_encrypted && (
-                <Badge variant="outline" className="gap-1 text-green-600 border-green-500/30">
-                  <Shield className="size-3" />
-                  E2E
-                </Badge>
-              )}
-              {share.burn_after_reading && (
-                <Badge variant="outline" className="gap-1 text-orange-600 border-orange-500/30">
-                  <Flame className="size-3" />
-                  Burn
-                </Badge>
-              )}
               <BookmarkToggle shareId={share.id} slug={share.slug} />
+              <QrCodeButton slug={share.slug} />
             </div>
           </div>
           <CardDescription className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
@@ -283,11 +255,12 @@ export default async function SharePage({ params }: SharePageProps) {
             {share.file_size && (
               <span>{formatFileSize(share.file_size)}</span>
             )}
-            <ExpiryBadge
-              expiresAt={share.expires_at}
-              isExpired={isExpired}
-              formatExpiresIn={formatExpiresIn}
-            />
+            {share.expires_at && (
+              <span className="flex items-center gap-1">
+                <Clock className="size-3" />
+                Expires in {formatExpiresIn(share.expires_at)}
+              </span>
+            )}
           </CardDescription>
           {/* Embed snippet — only for non-restricted public shares */}
           {!share.is_private && !share.password_hash && (
@@ -298,21 +271,43 @@ export default async function SharePage({ params }: SharePageProps) {
         </CardHeader>
       </Card>
 
-      {/* File viewer */}
-      <Card>
-        <CardContent className={isMarkdown ? "p-4 md:p-6" : "p-2"}>
-          {share.is_encrypted ? (
-            <EncryptedContentViewer
-              encryptedContent={fileContent}
-              isMarkdown={isMarkdown}
-            />
-          ) : isMarkdown ? (
-            <MarkdownViewerWrapper content={fileContent} />
-          ) : (
-            <HtmlViewer htmlContent={fileContent} />
-          )}
-        </CardContent>
-      </Card>
+      {/* File viewer with tabs for multi-file groups */}
+      {groupFiles.length > 1 ? (
+        <SharePageClient
+          groupFiles={groupFiles}
+          initialSlug={slug}
+          isAuthenticated={!!user}
+          shareId={share.id}
+        />
+      ) : (
+        <>
+          <Card>
+            <CardContent className={isMarkdown ? "p-4 md:p-6" : "p-2"}>
+              {isMarkdown ? (
+                <MarkdownViewerWrapper content={fileContent} />
+              ) : (
+                <HtmlViewer htmlContent={fileContent} />
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Comments section */}
+          <CommentsSectionWrapper shareId={share.id} slug={slug} isAuthenticated={!!user} />
+        </>
+      )}
     </div>
   );
+}
+
+/** Client wrapper to import CommentsSection for the server component boundary */
+function CommentsSectionWrapper({
+  shareId,
+  slug,
+  isAuthenticated,
+}: {
+  shareId: string;
+  slug: string;
+  isAuthenticated: boolean;
+}) {
+  return <CommentsSection shareId={shareId} slug={slug} isAuthenticated={isAuthenticated} />;
 }

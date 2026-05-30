@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Shield, ShieldOff, KeyRound, Loader2 } from "lucide-react";
 import { generateRandomKey, deriveKeyFromPassword, exportKey, setKeyInFragment } from "@/lib/crypto";
-import type { CryptoKey } from "crypto";
 
 export interface EncryptionState {
   enabled: boolean;

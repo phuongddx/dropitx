@@ -7,6 +7,7 @@ import dynamic from "next/dynamic";
 import { EditorToolbar } from "@/components/editor-toolbar";
 import { EditorPreview } from "@/components/editor-preview";
 import { EditorPublishBar } from "@/components/editor-publish-bar";
+import { useAutoSave } from "@/lib/use-auto-save";
 import { useEditorAutoSave } from "@/lib/use-editor-auto-save";
 import type { EditorPaneRef } from "@/components/editor-pane";
 import {
@@ -14,9 +15,12 @@ import {
   parseHeadings,
   type HeadingInfo,
 } from "@/lib/use-scroll-sync";
+import { VersionHistory } from "@/components/version-history";
 import { nanoid } from "nanoid";
 import { toast } from "sonner";
 import { authFetch } from "@/lib/api-client";
+import { History, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const EditorPane = dynamic(
   () =>
@@ -34,12 +38,18 @@ export function EditorShell() {
   const [tab, setTab] = useState<TabMode>("write");
   const [mounted, setMounted] = useState(false);
   const [editTitle, setEditTitle] = useState<string | undefined>();
+  const [showVersionHistory, setShowVersionHistory] = useState(false);
   const editorPaneRef = useRef<EditorPaneRef>(null);
   const previewContainerRef = useRef<HTMLDivElement>(null);
   const initialDraftRef = useRef<string | null>(null);
   const isDirty = content.length > 0 && content !== (initialDraftRef.current ?? "");
 
   const { hasDraft, restoreDraft, clearDraft } = useEditorAutoSave(content);
+  const autoSave = useAutoSave(content, {
+    namespace: editSlug ? `edit-${editSlug}` : "editor",
+    debounceMs: 2000,
+    enabled: mounted,
+  });
 
   useEffect(() => {
     setMounted(true);
@@ -185,11 +195,29 @@ export function EditorShell() {
 
   return (
     <div className="flex h-[calc(100vh-3rem)] flex-col bg-background">
-      <EditorToolbar
-        editorRef={editorViewRef}
-        theme={effectiveTheme}
-        onToggleTheme={toggleTheme}
-      />
+      <div className="flex items-center border-b border-border/60 bg-surface/50">
+        <div className="flex-1">
+          <EditorToolbar
+            editorRef={editorViewRef}
+            theme={effectiveTheme}
+            onToggleTheme={toggleTheme}
+          />
+        </div>
+        {/* Version history toggle — only in edit mode */}
+        {editSlug && (
+          <div className="pr-3 flex items-center">
+            <Button
+              variant={showVersionHistory ? "default" : "ghost"}
+              size="icon-sm"
+              className="rounded-lg"
+              onClick={() => setShowVersionHistory(!showVersionHistory)}
+              title="Version history"
+            >
+              <History className="size-4" />
+            </Button>
+          </div>
+        )}
+      </div>
 
       {/* Mobile tab bar */}
       <div className="flex border-b border-border/60 md:hidden bg-surface/30">
@@ -213,9 +241,21 @@ export function EditorShell() {
         >
           Preview
         </button>
+        {editSlug && (
+          <button
+            onClick={() => setShowVersionHistory(!showVersionHistory)}
+            className={`flex-1 py-2.5 text-center text-sm font-medium transition-all duration-200 ${
+              showVersionHistory
+                ? "border-b-2 border-primary text-primary bg-primary/5"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            History
+          </button>
+        )}
       </div>
 
-      {/* Editor + Preview layout */}
+      {/* Editor + Preview + Version History layout */}
       <div className="flex flex-1 overflow-hidden">
         <div
           className={`flex-1 overflow-hidden bg-background ${
@@ -242,6 +282,46 @@ export function EditorShell() {
             headings={headings}
           />
         </div>
+
+        {/* Version History sidebar */}
+        {showVersionHistory && editSlug && (
+          <div className="w-[320px] shrink-0 border-l border-border/60 overflow-y-auto bg-background hidden md:block">
+            <div className="flex items-center justify-between border-b border-border/60 px-3 py-2">
+              <span className="text-sm font-medium">Version History</span>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                className="rounded-lg"
+                onClick={() => setShowVersionHistory(false)}
+              >
+                <X className="size-4" />
+              </Button>
+            </div>
+            <div className="p-3">
+              <VersionHistory slug={editSlug} />
+            </div>
+          </div>
+        )}
+
+        {/* Mobile version history panel */}
+        {showVersionHistory && editSlug && (
+          <div className="flex-1 overflow-y-auto bg-background md:hidden">
+            <div className="flex items-center justify-between border-b border-border/60 px-3 py-2">
+              <span className="text-sm font-medium">Version History</span>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                className="rounded-lg"
+                onClick={() => setShowVersionHistory(false)}
+              >
+                <X className="size-4" />
+              </Button>
+            </div>
+            <div className="p-3">
+              <VersionHistory slug={editSlug} />
+            </div>
+          </div>
+        )}
       </div>
 
       <EditorPublishBar
@@ -250,7 +330,11 @@ export function EditorShell() {
         mode={editSlug ? "edit" : "create"}
         editSlug={editSlug || undefined}
         editTitle={editTitle}
-        onClearDraft={clearDraft}
+        draftSavedAt={autoSave.savedAt}
+        onClearDraft={() => {
+          clearDraft();
+          autoSave.clearDraft();
+        }}
       />
     </div>
   );
