@@ -14,9 +14,13 @@ const IV_LENGTH = 12; // 96 bits recommended for AES-GCM
 const SALT_LENGTH = 16;
 const PBKDF2_ITERATIONS = 600_000;
 
+/** Create a proper ArrayBuffer from Uint8Array (TS 5.x compat). */
+function toBuffer(bytes: Uint8Array): ArrayBuffer {
+  return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as unknown as ArrayBuffer;
+}
+
 function randomBytes(n: number): Uint8Array {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return crypto.getRandomValues(new Uint8Array(n)) as any;
+  return crypto.getRandomValues(new Uint8Array(n));
 }
 
 /** Generate a random AES-256-GCM key. */
@@ -38,17 +42,16 @@ export async function deriveKeyFromPassword(
 
   const keyMaterial = await crypto.subtle.importKey(
     "raw",
-    encoder.encode(password),
+    encoder.encode(password) as unknown as BufferSource,
     "PBKDF2",
     false,
     ["deriveKey"],
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const key = await crypto.subtle.deriveKey(
     {
       name: "PBKDF2",
-      salt: saltBytes,
+      salt: toBuffer(saltBytes) as unknown as BufferSource,
       iterations: PBKDF2_ITERATIONS,
       hash: "SHA-256",
     },
@@ -69,10 +72,10 @@ export async function exportKey(key: CryptoKey): Promise<string> {
 
 /** Import a base64url key string back to a CryptoKey. */
 export async function importKey(base64url: string): Promise<CryptoKey> {
-  const raw = base64urlToArrayBuffer(base64url);
+  const raw = base64urlToUint8Array(base64url);
   return crypto.subtle.importKey(
     "raw",
-    raw,
+    toBuffer(raw) as unknown as BufferSource,
     { name: ALGORITHM, length: KEY_LENGTH },
     false,
     ["encrypt", "decrypt"],
@@ -93,9 +96,9 @@ export async function encrypt(
   const iv = randomBytes(IV_LENGTH);
 
   const ciphertext = await crypto.subtle.encrypt(
-    { name: ALGORITHM, iv },
+    { name: ALGORITHM, iv: toBuffer(iv) as unknown as BufferSource },
     key,
-    encoder.encode(plaintext),
+    encoder.encode(plaintext) as unknown as BufferSource,
   );
 
   const cipherBytes = new Uint8Array(ciphertext);
@@ -124,24 +127,24 @@ export async function decrypt(
   key: CryptoKey,
 ): Promise<string> {
   const data = base64urlToUint8Array(packed);
-  const iv = data.slice(0, IV_LENGTH);
+  const iv = toBuffer(data.slice(0, IV_LENGTH));
 
   try {
-    const ciphertext = data.slice(IV_LENGTH);
+    const ciphertext = toBuffer(data.slice(IV_LENGTH));
     const decrypted = await crypto.subtle.decrypt(
-      { name: ALGORITHM, iv },
+      { name: ALGORITHM, iv: iv as unknown as BufferSource },
       key,
-      ciphertext,
+      ciphertext as unknown as BufferSource,
     );
     return new TextDecoder().decode(decrypted);
   } catch {
     // Try treating bytes after IV as salt+ciphertext (password-derived)
     if (data.length > IV_LENGTH + SALT_LENGTH) {
-      const ciphertext = data.slice(IV_LENGTH + SALT_LENGTH);
+      const ciphertext = toBuffer(data.slice(IV_LENGTH + SALT_LENGTH));
       const decrypted = await crypto.subtle.decrypt(
-        { name: ALGORITHM, iv },
+        { name: ALGORITHM, iv: iv as unknown as BufferSource },
         key,
-        ciphertext,
+        ciphertext as unknown as BufferSource,
       );
       return new TextDecoder().decode(decrypted);
     }
@@ -168,9 +171,9 @@ export async function decryptWithPassword(
   const { key } = await deriveKeyFromPassword(password, salt);
 
   const decrypted = await crypto.subtle.decrypt(
-    { name: ALGORITHM, iv },
+    { name: ALGORITHM, iv: toBuffer(iv) as unknown as BufferSource },
     key,
-    ciphertext,
+    toBuffer(ciphertext) as unknown as BufferSource,
   );
 
   return new TextDecoder().decode(decrypted);
@@ -234,5 +237,5 @@ function base64urlToUint8Array(str: string): Uint8Array {
 }
 
 function base64urlToArrayBuffer(str: string): ArrayBuffer {
-  return base64urlToUint8Array(str).buffer;
+  return toBuffer(base64urlToUint8Array(str));
 }
