@@ -7,6 +7,8 @@ import { Check, Copy, Loader2, Lock, Unlock, FileEdit, Sparkles } from "lucide-r
 import { toast } from "sonner";
 import { trackEvent, AnalyticsEvent } from "@/lib/analytics";
 import { authFetch, getAuthHeaders } from "@/lib/api-client";
+import { Input } from "@/components/ui/input";
+import { ExpirationSelect } from "@/components/expiration-select";
 
 interface EditorPublishBarProps {
   content: string;
@@ -36,6 +38,9 @@ export function EditorPublishBar({
   const [publishedUrl, setPublishedUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [isPrivate, setIsPrivate] = useState(false);
+  const [maxDownloads, setMaxDownloads] = useState("");
+  const [expiresIn, setExpiresIn] = useState("30d");
+  const [showOptions, setShowOptions] = useState(false);
 
   useEffect(() => {
     getAuthHeaders().then((h) => setUser(!!h.Authorization));
@@ -49,12 +54,16 @@ export function EditorPublishBar({
 
     setPublishing(true);
     try {
+      const body: Record<string, unknown> = {
+        content,
+        is_private: isPrivate,
+        expires_in: expiresIn,
+      };
+      if (maxDownloads) body.max_downloads = parseInt(maxDownloads, 10);
+
       const res = await authFetch("/api/publish", {
         method: "POST",
-        body: JSON.stringify({
-          content,
-          is_private: isPrivate,
-        }),
+        body: JSON.stringify(body),
       });
 
       if (!res.ok) {
@@ -73,16 +82,20 @@ export function EditorPublishBar({
     } finally {
       setPublishing(false);
     }
-  }, [content, isPrivate, onPublished, onClearDraft]);
+  }, [content, isPrivate, expiresIn, maxDownloads, onPublished, onClearDraft]);
 
   const handleUpdate = useCallback(async () => {
     if (!editSlug || !content.trim()) return;
 
     setPublishing(true);
     try {
+      const body: Record<string, unknown> = { content, is_private: isPrivate };
+      if (maxDownloads) body.max_downloads = parseInt(maxDownloads, 10);
+      body.expires_in = expiresIn;
+
       const res = await authFetch(`/api/shares/${editSlug}`, {
         method: "PATCH",
-        body: JSON.stringify({ content, is_private: isPrivate }),
+        body: JSON.stringify(body),
       });
 
       if (!res.ok) {
@@ -98,7 +111,7 @@ export function EditorPublishBar({
     } finally {
       setPublishing(false);
     }
-  }, [editSlug, content, isPrivate, onPublished]);
+  }, [editSlug, content, isPrivate, maxDownloads, expiresIn, onPublished]);
 
   const copyUrl = useCallback(async () => {
     if (!publishedUrl) return;
@@ -112,77 +125,120 @@ export function EditorPublishBar({
   const readingTime = wordCount > 0 ? Math.ceil(wordCount / 200) : 0;
 
   return (
-    <div className="sticky bottom-0 z-20 flex items-center justify-between border-t border-border/60 bg-surface/80 backdrop-blur-sm px-4 py-2">
-      <div className="flex items-center gap-3 text-xs text-muted-foreground">
-        <span className="font-mono">{charCount.toLocaleString()} chars</span>
-        <span className="text-border">·</span>
-        <span className="font-mono">{wordCount.toLocaleString()} words</span>
-        {readingTime > 0 && (
-          <>
-            <span className="text-border">·</span>
-            <span className="font-mono">{readingTime} min read</span>
-          </>
-        )}
-        {isDirty && !publishedUrl && (
-          <>
-            <span className="text-border">·</span>
-            <span className="flex items-center gap-1 text-amber-500">
-              <span className="size-1.5 rounded-full bg-amber-500 animate-pulse" />
-              Unsaved
-            </span>
-          </>
-        )}
-        {mode === "edit" && editTitle && (
-          <Badge variant="outline" className="text-xs gap-1">
-            <FileEdit className="size-3" />
-            {editTitle}
-          </Badge>
-        )}
-      </div>
-
-      <div className="flex items-center gap-2">
-        {/* Privacy toggle */}
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          className="rounded-lg"
-          onClick={() => setIsPrivate(!isPrivate)}
-          title={isPrivate ? "Make public" : "Make private"}
-        >
-          {isPrivate ? (
-            <Lock className="size-4 text-foreground" />
-          ) : (
-            <Unlock className="size-4 text-muted-foreground" />
-          )}
-        </Button>
-
-        {publishedUrl ? (
-          <div className="flex items-center gap-2">
-            <code className="rounded-lg bg-muted px-2.5 py-1 text-xs max-w-[200px] truncate font-mono">
-              {publishedUrl}
-            </code>
-            <Button size="icon-sm" variant="outline" className="rounded-lg" onClick={copyUrl}>
-              {copied ? <Check className="size-3 text-green-500" /> : <Copy className="size-3" />}
-            </Button>
+    <div className="sticky bottom-0 z-20 border-t border-border/60 bg-surface/80 backdrop-blur-sm">
+      {/* Options panel */}
+      {showOptions && (
+        <div className="flex items-end gap-4 px-4 py-3 border-b border-border/30">
+          <div className="flex-1 max-w-[180px]">
+            <label className="text-xs font-medium text-muted-foreground block mb-1">
+              Max downloads
+            </label>
+            <Input
+              type="number"
+              placeholder="Unlimited"
+              min="1"
+              value={maxDownloads}
+              onChange={(e) => setMaxDownloads(e.target.value)}
+              disabled={publishing}
+              className="h-8 text-sm"
+            />
           </div>
-        ) : !user ? (
-          <a href="/auth/login?redirect=/editor">
-            <Button size="sm" className="gap-1.5">
-              <Sparkles className="size-3.5" />
-              Sign in to publish
-            </Button>
-          </a>
-        ) : (
+          <div className="flex-1 max-w-[180px]">
+            <label className="text-xs font-medium text-muted-foreground block mb-1">
+              Expires in
+            </label>
+            <ExpirationSelect value={expiresIn} onChange={setExpiresIn} disabled={publishing} compact />
+          </div>
+        </div>
+      )}
+
+      {/* Main bar */}
+      <div className="flex items-center justify-between px-4 py-2">
+        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+          <span className="font-mono">{charCount.toLocaleString()} chars</span>
+          <span className="text-border">&middot;</span>
+          <span className="font-mono">{wordCount.toLocaleString()} words</span>
+          {readingTime > 0 && (
+            <>
+              <span className="text-border">&middot;</span>
+              <span className="font-mono">{readingTime} min read</span>
+            </>
+          )}
+          {isDirty && !publishedUrl && (
+            <>
+              <span className="text-border">&middot;</span>
+              <span className="flex items-center gap-1 text-amber-500">
+                <span className="size-1.5 rounded-full bg-amber-500 animate-pulse" />
+                Unsaved
+              </span>
+            </>
+          )}
+          {mode === "edit" && editTitle && (
+            <Badge variant="outline" className="text-xs gap-1">
+              <FileEdit className="size-3" />
+              {editTitle}
+            </Badge>
+          )}
+        </div>
+
+        <div className="flex items-center gap-2">
+          {/* Options toggle */}
           <Button
-            size="sm"
-            className="gap-1.5 shadow-sm shadow-primary/20"
-            disabled={publishing || !content.trim()}
-            onClick={mode === "edit" ? handleUpdate : handlePublish}
+            variant="ghost"
+            size="icon-sm"
+            className="rounded-lg"
+            onClick={() => setShowOptions(!showOptions)}
+            title="Publish options"
           >
-            {publishing && <Loader2 className="size-3 animate-spin" />}
-            {mode === "edit" ? "Update" : "Publish"}
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
           </Button>
-        )}
+
+          {/* Privacy toggle */}
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            className="rounded-lg"
+            onClick={() => setIsPrivate(!isPrivate)}
+            title={isPrivate ? "Make public" : "Make private"}
+          >
+            {isPrivate ? (
+              <Lock className="size-4 text-foreground" />
+            ) : (
+              <Unlock className="size-4 text-muted-foreground" />
+            )}
+          </Button>
+
+          {publishedUrl ? (
+            <div className="flex items-center gap-2">
+              <code className="rounded-lg bg-muted px-2.5 py-1 text-xs max-w-[200px] truncate font-mono">
+                {publishedUrl}
+              </code>
+              <Button size="icon-sm" variant="outline" className="rounded-lg" onClick={copyUrl}>
+                {copied ? <Check className="size-3 text-green-500" /> : <Copy className="size-3" />}
+              </Button>
+            </div>
+          ) : !user ? (
+            <a href="/auth/login?redirect=/editor">
+              <Button size="sm" className="gap-1.5">
+                <Sparkles className="size-3.5" />
+                Sign in to publish
+              </Button>
+            </a>
+          ) : (
+            <Button
+              size="sm"
+              className="gap-1.5 shadow-sm shadow-primary/20"
+              disabled={publishing || !content.trim()}
+              onClick={mode === "edit" ? handleUpdate : handlePublish}
+            >
+              {publishing && <Loader2 className="size-3 animate-spin" />}
+              {mode === "edit" ? "Update" : "Publish"}
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );

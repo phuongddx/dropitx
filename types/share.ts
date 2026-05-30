@@ -17,6 +17,25 @@ export interface Share {
   updated_at: string;
   expires_at: string;
   view_count: number;
+  max_downloads: number | null;
+  download_count: number;
+  group_id: string | null;
+}
+
+export interface ShareGroup {
+  id: string;
+  slug: string;
+  user_id: string | null;
+  created_at: string;
+}
+
+export interface GroupShare {
+  slug: string;
+  filename: string;
+  mime_type: string;
+  file_size: number | null;
+  download_count: number;
+  max_downloads: number | null;
 }
 
 export interface SearchResult {
