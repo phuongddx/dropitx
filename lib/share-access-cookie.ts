@@ -4,9 +4,13 @@ import { cookies } from "next/headers";
 const COOKIE_MAX_AGE = 24 * 60 * 60; // 24 hours in seconds
 
 function getSecret(): string {
-  const secret = process.env.SHARE_ACCESS_SECRET;
+  const secret =
+    process.env.SHARE_ACCESS_SECRET ||
+    process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!secret || secret.length < 32) {
-    throw new Error("SHARE_ACCESS_SECRET must be set and at least 32 characters");
+    throw new Error(
+      "SHARE_ACCESS_SECRET (or SUPABASE_SERVICE_ROLE_KEY) must be set and at least 32 characters",
+    );
   }
   return secret;
 }
