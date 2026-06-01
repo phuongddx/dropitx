@@ -9,7 +9,7 @@ function getSupabase() {
 }
 
 export function getApiUrl(path: string): string {
-  return `${API_URL}${path}`;
+  return `${API_URL.trim()}${path}`;
 }
 
 export async function getAuthHeaders(): Promise<Record<string, string>> {
