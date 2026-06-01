@@ -37,6 +37,12 @@ export function PasswordGate({ slug, title }: PasswordGateProps) {
       });
 
       if (res.ok) {
+        // Set access cookie so the server-side page gate passes on reload
+        try {
+          await fetch(`/api/shares/${slug}/access-cookie`, { method: "POST" });
+        } catch {
+          // Cookie-set failed is non-fatal; page will still show the gate
+        }
         window.location.reload();
         return;
       }
