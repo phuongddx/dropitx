@@ -1,33 +1,75 @@
+import Link from "next/link";
+
+const FOOTER = [
+  {
+    heading: "PRODUCT",
+    links: [
+      { label: "Features", href: "#" },
+      { label: "Pricing", href: "#" },
+      { label: "Explore", href: "/search" },
+      { label: "Changelog", href: "#" },
+    ],
+  },
+  {
+    heading: "COMPANY",
+    links: [
+      { label: "About", href: "#" },
+      { label: "Blog", href: "#" },
+      { label: "Careers", href: "#" },
+      { label: "Contact", href: "#" },
+    ],
+  },
+  {
+    heading: "LEGAL",
+    links: [
+      { label: "Privacy", href: "#" },
+      { label: "Terms", href: "#" },
+      { label: "Security", href: "#" },
+      { label: "Status", href: "#" },
+    ],
+  },
+];
+
 export function LandingFooter() {
   return (
-    <footer className="border-t border-border/60 px-6 max-[720px]:px-4 py-10 max-w-[1200px] mx-auto w-full">
-      <div className="flex items-center justify-between max-[920px]:flex-col max-[920px]:gap-4">
-        <div className="flex items-center gap-2.5">
-          <span className="flex items-center justify-center size-7 rounded-lg bg-primary text-primary-foreground text-xs font-bold">
-            D
-          </span>
-          <span className="font-display text-sm font-semibold text-foreground">
-            DropItX
-          </span>
-          <span className="text-xs text-muted-foreground ml-2">
-            © {new Date().getFullYear()}
-          </span>
+    <footer className="border-t border-border px-6 py-10 text-sm text-muted-foreground">
+      <div className="mx-auto max-w-[1120px]">
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+          <div className="col-span-2 md:col-span-1">
+            <div className="flex items-center gap-2">
+              <span className="flex size-6 items-center justify-center rounded-md border-[1.5px] border-foreground">
+                <span className="size-2 rounded-[2px] bg-foreground" />
+              </span>
+              <span className="font-bold tracking-tight text-foreground">
+                Drop<span className="text-primary">ItX</span>
+              </span>
+            </div>
+            <p className="meta mt-3 max-w-[240px]">
+              Secure document links with view tracking. Built for teams who care who reads what.
+            </p>
+          </div>
+          {FOOTER.map((col) => (
+            <div key={col.heading}>
+              <p className="meta mb-2">{col.heading}</p>
+              <div className="flex flex-col gap-1">
+                {col.links.map((l) => (
+                  <Link
+                    key={l.label}
+                    href={l.href}
+                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    {l.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
-
-        <div className="flex items-center gap-4">
-          <a
-            href="https://github.com/phuongddx/dropitx"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <svg className="size-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-          </a>
-          <span className="text-xs text-muted-foreground">
-            Built with Next.js
-          </span>
+        <div className="meta mt-8 border-t border-border pt-5">
+          © {new Date().getFullYear()} DropItX Inc. · v1.4.1
         </div>
       </div>
     </footer>
   );
 }
+

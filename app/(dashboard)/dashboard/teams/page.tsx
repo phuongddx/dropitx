@@ -2,12 +2,9 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Users, Plus, Clock } from "lucide-react";
-import { PageHeader } from "@/components/page-header";
-import { EmptyStateCard } from "@/components/empty-state-card";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import type { TeamRole } from "@/types/team";
 
 interface TeamWithRole {
@@ -31,11 +28,11 @@ function formatDate(iso: string): string {
 export default async function TeamsPage() {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) redirect("/auth/login");
 
-  const { data: memberships, error: membersError } = await supabase
+  const { data: memberships } = await supabase
     .from("team_members")
     .select("role, teams(id, name, slug, created_by, plan, created_at)")
     .eq("user_id", user.id);
@@ -55,50 +52,61 @@ export default async function TeamsPage() {
   });
 
   return (
-    <div className="space-y-6 max-w-[1200px]">
-      <PageHeader
-        eyebrow="/dashboard/teams"
-        title="Teams"
-        subtitle="Collaborate with others on shared drops"
-      >
-        <Link href="/dashboard/teams/new">
-          <Button variant="pill" size="sm">
-            <Plus className="size-4" />
-            Create Team
-          </Button>
+    <div className="mx-auto max-w-[1200px] space-y-5">
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <h1 className="text-[22px] font-bold tracking-tight">Teams</h1>
+          <p className="mt-1 text-[13px] text-muted-foreground">
+            Collaborate with others on shared drops.
+          </p>
+        </div>
+        <Link
+          href="/dashboard/teams/new"
+          className={cn(buttonVariants({ size: "sm" }), "gap-1.5")}
+        >
+          <Plus className="size-3.5" />
+          Create Team
         </Link>
-      </PageHeader>
+      </div>
 
       {teams.length === 0 ? (
-        <EmptyStateCard
-          icon={Users}
-          title="No teams yet"
-          description="Create a team to collaborate with others on shared drops."
-        />
+        <div className="grid place-items-center rounded-lg border border-dashed border-border bg-card py-16 text-center">
+          <span className="mb-3 flex size-12 items-center justify-center rounded-lg border border-border">
+            <Users className="size-5 text-muted-foreground" />
+          </span>
+          <p className="font-semibold">No teams yet</p>
+          <p className="mb-4 mt-1 text-sm text-muted-foreground">
+            Create a team to collaborate with others on shared drops.
+          </p>
+          <Link href="/dashboard/teams/new" className={cn(buttonVariants({ size: "sm" }), "gap-1.5")}>
+            <Plus className="size-3.5" />
+            Create Team
+          </Link>
+        </div>
       ) : (
-        <div className="grid grid-cols-2 max-[920px]:grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {teams.map((team) => (
-            <Link key={team.id} href={`/dashboard/teams/${team.slug}`}>
-              <Card className="rounded-[var(--radius-card)] shadow-[var(--shadow)] transition-colors duration-200 cursor-pointer">
-                <CardContent className="p-4 space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Users className="size-5 text-primary shrink-0" />
-                    <p className="font-medium truncate flex-1">{team.name}</p>
-                    <Badge variant={team.role} className="shrink-0 text-xs">
-                      {team.role}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <Clock className="size-3" />
-                      Created {formatDate(team.created_at)}
-                    </span>
-                    <Badge variant="ghost" className="text-xs">
-                      {team.plan}
-                    </Badge>
-                  </div>
-                </CardContent>
-              </Card>
+            <Link
+              key={team.id}
+              href={`/dashboard/teams/${team.slug}`}
+              className="block rounded-lg border border-border bg-card p-5 transition-colors hover:border-primary/40 hover:bg-accent/30"
+            >
+              <div className="flex items-center gap-2.5">
+                <Users className="size-5 shrink-0 text-primary" />
+                <p className="flex-1 truncate font-medium">{team.name}</p>
+                <span className="rounded border border-border bg-background px-2 py-0.5 text-xs font-semibold text-muted-foreground">
+                  {team.role}
+                </span>
+              </div>
+              <div className="mt-3 flex items-center gap-3 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1">
+                  <Clock className="size-3" />
+                  Created {formatDate(team.created_at)}
+                </span>
+                <span className="rounded bg-muted px-1.5 py-0.5 font-semibold uppercase">
+                  {team.plan}
+                </span>
+              </div>
             </Link>
           ))}
         </div>
@@ -106,3 +114,4 @@ export default async function TeamsPage() {
     </div>
   );
 }
+

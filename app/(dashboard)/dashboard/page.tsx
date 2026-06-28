@@ -2,9 +2,6 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { DashboardShareList } from "@/components/dashboard-share-list";
-import { PageHeader } from "@/components/page-header";
-import { StatCard } from "@/components/stat-card";
-import { FileText, Eye, HardDrive } from "lucide-react";
 import type { Share } from "@/types/share";
 
 export type ShareWithPasswordFlag = Omit<Share, "password_hash"> & { has_password: boolean };
@@ -22,14 +19,12 @@ export default async function DashboardPage() {
 
   if (!user) redirect("/auth/login");
 
-  // Personal shares
   const { data: shares } = await supabase
     .from("shares")
     .select("*")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
-  // Strip password_hash from client data; expose only a boolean flag
   const shareList: ShareWithPasswordFlag[] = (shares ?? []).map((s: Share) => {
     const { password_hash, ...rest } = s;
     return { ...rest, has_password: !!password_hash };
@@ -38,7 +33,6 @@ export default async function DashboardPage() {
   const totalViews = shareList.reduce((sum, s) => sum + s.view_count, 0);
   const totalSize = shareList.reduce((sum, s) => sum + (s.file_size ?? 0), 0);
 
-  // Fetch user's team memberships for filter
   const { data: memberships } = await supabase
     .from("team_members")
     .select("team_id, teams(slug, name)")
@@ -50,7 +44,6 @@ export default async function DashboardPage() {
     return { id: m.team_id as string, slug: t?.slug ?? "", name: t?.name ?? "" };
   });
 
-  // Fetch team shares for all teams in parallel (avoids N+1)
   const teamShareQueries = teams.map(async (team) => {
     const { data: teamShares } = await supabase
       .from("team_shares")
@@ -62,27 +55,28 @@ export default async function DashboardPage() {
   const teamShareResults = await Promise.all(teamShareQueries);
 
   const teamShareMap: Record<string, unknown[]> = {};
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   for (const { slug, shares } of teamShareResults) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     teamShareMap[slug] = shares as any[];
   }
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        eyebrow="/dashboard"
-        title="Shares"
-        subtitle="Manage your shared files and view performance metrics."
-      />
-
-      {/* Stats — always show personal share stats */}
-      <div className="grid grid-cols-3 max-[920px]:grid-cols-1 gap-4 mb-6">
-        <StatCard icon={FileText} value={totalShares} label="Shares" />
-        <StatCard icon={Eye} value={totalViews} label="Views" />
-        <StatCard icon={HardDrive} value={formatFileSize(totalSize)} label="Storage" />
+    <div className="space-y-5">
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <h1 className="text-[22px] font-bold tracking-tight">Shares</h1>
+          <p className="mt-1 text-[13px] text-muted-foreground">
+            Pick a share on the left to inspect its link, access, and viewers.
+          </p>
+        </div>
       </div>
 
-      {/* Share list with team filter */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <StatTile label="Total Shares" value={totalShares.toLocaleString()} />
+        <StatTile label="Total Views" value={totalViews.toLocaleString()} />
+        <StatTile label="Storage Used" value={formatFileSize(totalSize)} />
+      </div>
+
       <DashboardShareList
         personalShares={shareList}
         teams={teams.map((t) => ({ slug: t.slug, name: t.name }))}
@@ -91,3 +85,16 @@ export default async function DashboardPage() {
     </div>
   );
 }
+
+function StatTile({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center gap-3.5 rounded-lg border border-border bg-card px-4 py-3.5">
+      <div className="size-9 shrink-0 rounded-md border border-border" />
+      <div>
+        <p className="text-xs text-muted-foreground">{label}</p>
+        <p className="font-mono text-xl font-bold tracking-tight">{value}</p>
+      </div>
+    </div>
+  );
+}
+

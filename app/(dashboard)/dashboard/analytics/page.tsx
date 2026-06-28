@@ -2,10 +2,6 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient, createAdminClient } from "@/utils/supabase/server";
 import { AnalyticsTopPerformers } from "@/components/analytics/analytics-top-performers";
-import { AnalyticsEmptyState } from "@/components/analytics/analytics-empty-state";
-import { PageHeader } from "@/components/page-header";
-import { StatCard } from "@/components/stat-card";
-import { Eye, Users, TrendingUp, FileText } from "lucide-react";
 import type { TopShare } from "@/types/analytics";
 import type { Share } from "@/types/share";
 
@@ -16,13 +12,11 @@ export default async function GlobalAnalyticsPage() {
 
   if (!user) redirect("/auth/login");
 
-  // Fetch all user shares for aggregate stats
   const { data: shares } = await supabase
     .from("shares")
     .select("id, view_count")
     .eq("user_id", user.id);
 
-  // Fetch top performing shares via RPC
   const adminClient = createAdminClient();
   const { data: topShares } = await adminClient.rpc("get_user_top_shares", {
     p_user_id: user.id,
@@ -42,29 +36,68 @@ export default async function GlobalAnalyticsPage() {
   const hasData = topSharesList.some((s) => s.total_views > 0);
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        eyebrow="/dashboard/analytics"
-        title="Analytics"
-      />
-
-      {/* Overview stats */}
-      <div className="grid grid-cols-2 max-[920px]:grid-cols-2 max-[720px]:grid-cols-1 gap-4">
-        <StatCard icon={Eye} value={totalViews.toLocaleString()} label="Total Views" />
-        <StatCard icon={Users} value={totalUniqueViews.toLocaleString()} label="Unique Visitors" />
-        <StatCard icon={FileText} value={sharesWithViews} label="Shares with Views" />
-        <StatCard icon={TrendingUp} value={avgViewsPerShare} label="Avg Views/Share" />
+    <div className="space-y-5">
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <h1 className="text-[22px] font-bold tracking-tight">Analytics</h1>
+          <p className="mt-1 text-[13px] text-muted-foreground">
+            Track how your shares are performing.
+          </p>
+        </div>
+        <div className="flex items-center gap-1 rounded-md border border-border bg-card p-0.5">
+          {["7d", "30d", "90d"].map((r) => (
+            <button
+              key={r}
+              type="button"
+              className="rounded px-2.5 py-1 text-xs font-semibold text-muted-foreground hover:text-foreground data-[active=true]:bg-foreground data-[active=true]:text-background"
+              data-active={r === "30d"}
+            >
+              {r}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Top performers or empty state */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <StatTile label="Total Views" value={totalViews.toLocaleString()} />
+        <StatTile label="Unique Visitors" value={totalUniqueViews.toLocaleString()} />
+        <StatTile label="Shares with Views" value={sharesWithViews.toString()} />
+        <StatTile label="Avg Views/Share" value={avgViewsPerShare.toString()} />
+      </div>
+
+      {/* Views-over-time placeholder */}
+      <div className="rounded-lg border border-border bg-card p-5">
+        <p className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/80">
+          Views over time
+        </p>
+        <div className="grid h-[180px] place-items-center rounded-md border border-dashed border-border bg-muted/30 text-xs uppercase tracking-wider text-muted-foreground/70">
+          [ views-over-time chart ]
+        </div>
+      </div>
+
       {hasData ? (
-        <div className="space-y-4">
-          <h2 className="font-mono text-lg font-semibold">Top Performers (30d)</h2>
+        <div className="space-y-3">
+          <h2 className="font-mono text-sm font-semibold">Top Performers (30d)</h2>
           <AnalyticsTopPerformers shares={topSharesList} />
         </div>
       ) : (
-        <AnalyticsEmptyState />
+        <div className="grid place-items-center rounded-lg border border-dashed border-border bg-card py-16 text-center">
+          <p className="font-semibold">No data yet</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Once your shares start getting views, you&apos;ll see them ranked here.
+          </p>
+        </div>
       )}
     </div>
   );
 }
+
+function StatTile({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg border border-border bg-card p-4">
+      <p className="text-[11px] text-muted-foreground">{label}</p>
+      <p className="mt-1.5 font-mono text-lg font-bold tracking-tight">{value}</p>
+    </div>
+  );
+}
+

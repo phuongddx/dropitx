@@ -7,8 +7,9 @@ import { AnalyticsViewChart } from "@/components/analytics/analytics-view-chart"
 import { AnalyticsReferrerChart } from "@/components/analytics/analytics-referrer-chart";
 import { AnalyticsGeoChart } from "@/components/analytics/analytics-geo-chart";
 import { AnalyticsEmptyState } from "@/components/analytics/analytics-empty-state";
-import { PageHeader } from "@/components/page-header";
 import { ArrowLeft, Link as LinkIcon, Copy } from "lucide-react";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import type { ShareAnalytics, ViewTimeSeriesPoint, ReferrerBreakdown, GeoBreakdown } from "@/types/analytics";
 
 interface PerShareAnalyticsPageProps {
@@ -31,7 +32,6 @@ export default async function PerShareAnalyticsPage({ params }: PerShareAnalytic
 
   if (!user) redirect("/auth/login");
 
-  // Verify ownership server-side — no client-supplied userId
   const { data: share } = await supabase
     .from("shares")
     .select("id, user_id, slug, title, filename")
@@ -41,7 +41,6 @@ export default async function PerShareAnalyticsPage({ params }: PerShareAnalytic
 
   if (!share) notFound();
 
-  // Fetch all aggregated data in parallel via direct RPCs (no API route)
   const adminClient = createAdminClient();
   const [analyticsRes, timeseriesRes, referrersRes, geoRes] = await Promise.all([
     adminClient.rpc("get_share_analytics", { p_share_id: share.id, p_days: 30 }),
@@ -60,62 +59,63 @@ export default async function PerShareAnalyticsPage({ params }: PerShareAnalytic
   const hasData = analytics.total_views > 0;
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <PageHeader
-        eyebrow="/dashboard/analytics"
-        title={title}
-        subtitle={`/${share.slug}`}
-      >
+    <div className="space-y-5">
+      <div className="flex items-start gap-3">
         <Link
           href="/dashboard/analytics"
-          className="rounded-lg p-2 hover:bg-muted transition-colors"
+          className={cn(buttonVariants({ variant: "outline", size: "sm" }), "mt-0.5 gap-1.5")}
         >
-          <ArrowLeft className="size-4" />
+          <ArrowLeft className="size-3.5" /> Back
         </Link>
-      </PageHeader>
+        <div className="min-w-0">
+          <h1 className="truncate text-[20px] font-bold tracking-tight">{title}</h1>
+          <p className="font-mono text-xs text-muted-foreground">/{share.slug}</p>
+        </div>
+      </div>
 
-      {/* Share URL quick copy */}
-      <div className="flex items-center gap-2 rounded-[var(--radius-card)] border border-border bg-card p-3">
-        <p className="eyebrow shrink-0">Share URL</p>
-        <LinkIcon className="size-4 text-muted-foreground shrink-0" />
-        <span className="text-sm truncate flex-1 font-mono">{shareUrl}</span>
+      <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-3">
+        <LinkIcon className="size-3.5 shrink-0 text-muted-foreground" />
+        <code className="flex-1 truncate font-mono text-xs text-muted-foreground">{shareUrl}</code>
         <button
-          className="copy-url-btn rounded-md p-1.5 hover:bg-muted transition-colors"
+          type="button"
+          className="copy-url-btn rounded-md p-1.5 hover:bg-muted"
           data-url={shareUrl}
           title="Copy link"
         >
-          <Copy className="size-4" />
+          <Copy className="size-3.5" />
         </button>
       </div>
 
       {hasData ? (
         <>
-          {/* Stats cards */}
           <AnalyticsStatsCards analytics={analytics} />
 
-          {/* Views over time */}
-          <div className="rounded-[var(--radius-card)] border border-border bg-card p-4">
-            <h2 className="text-sm font-semibold mb-4">Views Over Time (30d)</h2>
+          <div className="rounded-lg border border-border bg-card p-5">
+            <p className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/80">
+              Views over time (30d)
+            </p>
             <AnalyticsViewChart data={timeseries} />
           </div>
 
-          {/* Two-column: Referrers + Geo */}
-          <div className="grid grid-cols-2 max-[920px]:grid-cols-1 gap-4">
-            <div className="rounded-[var(--radius-card)] border border-border bg-card p-4">
-              <h2 className="text-sm font-semibold mb-4">Traffic Sources</h2>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="rounded-lg border border-border bg-card p-5">
+              <p className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/80">
+                Traffic sources
+              </p>
               {referrers.length > 0 ? (
                 <AnalyticsReferrerChart data={referrers} />
               ) : (
-                <p className="text-sm text-muted-foreground text-center py-8">No referrer data</p>
+                <p className="py-8 text-center text-sm text-muted-foreground">No referrer data</p>
               )}
             </div>
-            <div className="rounded-[var(--radius-card)] border border-border bg-card p-4">
-              <h2 className="text-sm font-semibold mb-4">Geography</h2>
+            <div className="rounded-lg border border-border bg-card p-5">
+              <p className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/80">
+                Geography
+              </p>
               {geo.length > 0 ? (
                 <AnalyticsGeoChart data={geo} />
               ) : (
-                <p className="text-sm text-muted-foreground text-center py-8">No geo data</p>
+                <p className="py-8 text-center text-sm text-muted-foreground">No geo data</p>
               )}
             </div>
           </div>
@@ -126,3 +126,4 @@ export default async function PerShareAnalyticsPage({ params }: PerShareAnalytic
     </div>
   );
 }
+

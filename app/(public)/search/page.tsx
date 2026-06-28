@@ -74,22 +74,22 @@ export default function SearchPage() {
   }, []);
 
   return (
-    <div className="flex flex-1 flex-col items-center bg-background">
-      <main className="flex w-full max-w-[1200px] flex-col gap-6 px-6 py-8">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground font-mono">
-          Search
-        </h1>
+    <div className="mx-auto w-full max-w-[1120px] flex-1 px-6 py-8">
+      <h1 className="text-[22px] font-bold tracking-tight">Search</h1>
 
+      <div className="mt-4">
         <SearchBar initialValue={query} />
+      </div>
 
-        {error && (
-          <p className="text-sm text-destructive" role="alert">
-            {error}
-          </p>
-        )}
+      {error && (
+        <p className="mt-4 text-sm text-destructive" role="alert">
+          {error}
+        </p>
+      )}
 
+      <div className="mt-6">
         <SearchResults results={results} isLoading={isLoading} />
-      </main>
+      </div>
     </div>
   );
 }

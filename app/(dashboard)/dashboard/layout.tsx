@@ -1,10 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import { TeamNav } from "@/components/team-nav";
-import { DashboardSidebarNav } from "@/components/dashboard-sidebar-nav";
-import { DashboardMobileNav } from "@/components/dashboard-mobile-nav";
-import { DashboardToolbar } from "@/components/dashboard-toolbar";
+import { DashboardShell } from "@/components/dashboard-shell";
 
 export default async function DashboardLayout({
   children,
@@ -19,12 +16,21 @@ export default async function DashboardLayout({
 
   if (!user) redirect("/auth/login");
 
-  const navItems = [
-    { href: "/dashboard", label: "History", icon: "FileText" },
-    { href: "/dashboard/analytics", label: "Analytics", icon: "BarChart3" },
-    { href: "/dashboard/favorites", label: "Favorites", icon: "Heart" },
-    { href: "/dashboard/profile", label: "Profile", icon: "User" },
-  ];
+  // Fetch user displayName/email
+  const displayName =
+    (user.user_metadata as { display_name?: string; full_name?: string } | undefined)
+      ?.display_name ??
+    (user.user_metadata as { display_name?: string; full_name?: string } | undefined)
+      ?.full_name ??
+    user.email?.split("@")[0] ??
+    "User";
+  const email = user.email ?? "";
+  const initials = displayName
+    .split(/\s+/)
+    .map((s) => s[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
 
   // Fetch user's teams for sidebar nav
   const { data: memberships } = await supabase
@@ -39,48 +45,12 @@ export default async function DashboardLayout({
   });
 
   return (
-    <div className="flex min-h-screen">
-      {/* Sidebar */}
-      <aside className="flex max-[920px]:hidden w-[232px] flex-col border-r border-border/60 bg-surface/50 rounded-tr-[28px]">
-        {/* Brand section */}
-        <div className="px-5 pt-5 pb-4">
-          <div className="flex items-center gap-2.5">
-            <div className="flex items-center justify-center size-8 rounded-lg bg-primary text-primary-foreground text-xs font-bold shadow-sm shadow-primary/20">
-              D
-            </div>
-            <div>
-              <p className="font-display text-sm font-bold text-foreground leading-tight">
-                DropItX
-              </p>
-              <p className="meta">Dashboard</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Nav links */}
-        <div className="flex-1 px-3 space-y-1">
-          <DashboardSidebarNav items={navItems} />
-
-          {/* Teams section */}
-          <div className="pt-3 mt-3 border-t border-border/60">
-            <p className="eyebrow px-3 mb-1">
-              Teams
-            </p>
-            <TeamNav teams={teams} />
-          </div>
-        </div>
-      </aside>
-
-      {/* Mobile bottom nav */}
-      <DashboardMobileNav items={navItems} />
-
-      {/* Main content area */}
-      <main className="flex-1 overflow-auto">
-        <DashboardToolbar />
-        <div className="p-6 max-[920px]:p-4 pb-6 max-[920px]:pb-24 max-w-[1200px] mx-auto w-full">
-          {children}
-        </div>
-      </main>
-    </div>
+    <DashboardShell
+      user={{ displayName, email, initials }}
+      teams={teams}
+    >
+      {children}
+    </DashboardShell>
   );
 }
+
