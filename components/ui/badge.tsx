@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const badgeVariants = cva(
-  "group/badge inline-flex h-5 w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-sm border border-transparent px-2 py-0.5 text-xs font-medium whitespace-nowrap transition-colors duration-200 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none [&>svg]:size-3!",
+  "group/badge inline-flex h-5 w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-full border border-transparent px-2.5 py-0.5 text-xs font-normal whitespace-nowrap transition-colors duration-200 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none [&>svg]:size-3!",
   {
     variants: {
       variant: {
@@ -15,27 +15,24 @@ const badgeVariants = cva(
         destructive:
           "bg-destructive/10 text-destructive focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:focus-visible:ring-destructive/40 [a]:hover:bg-destructive/20",
         outline:
-          "border-border text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground",
+          "border-[oklch(1_0_0/15%)] text-foreground [a]:hover:bg-[oklch(1_0_0/5%)]",
         ghost:
-          "hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50",
+          "hover:bg-[oklch(1_0_0/5%)] hover:text-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         /* File type badges */
-        html: "bg-accent-soft text-primary border-accent-line rounded-full",
-        markdown:
-          "bg-accent-soft text-primary border-accent-line rounded-full",
+        html: "border-[oklch(1_0_0/15%)] text-muted-foreground",
+        markdown: "border-[oklch(1_0_0/15%)] text-muted-foreground",
         /* Status badges */
         success:
-          "bg-success/10 text-success rounded-full dark:bg-success/20",
+          "bg-success/10 text-success dark:bg-success/20",
         warn:
-          "bg-[oklch(0.82_0.14_80_/_15%)] text-[oklch(0.65_0.17_80)] rounded-full dark:bg-[oklch(0.65_0.17_80_/_20%)] dark:text-[oklch(0.82_0.14_80)]",
+          "bg-[oklch(0.82_0.14_80_/_15%)] text-[oklch(0.82_0.14_80)] dark:bg-[oklch(0.65_0.17_80_/_20%)] dark:text-[oklch(0.82_0.14_80)]",
         danger:
-          "bg-destructive/10 text-destructive rounded-full dark:bg-destructive/20",
+          "bg-destructive/10 text-destructive dark:bg-destructive/20",
         /* Role badges */
-        owner: "bg-primary text-primary-foreground rounded-full",
-        editor:
-          "bg-accent-soft text-primary rounded-full",
-        viewer:
-          "bg-secondary text-secondary-foreground rounded-full",
+        owner: "bg-primary text-primary-foreground",
+        editor: "border-[oklch(1_0_0/15%)] text-foreground",
+        viewer: "bg-secondary text-secondary-foreground",
       },
     },
     defaultVariants: {
