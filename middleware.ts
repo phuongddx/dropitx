@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { updateSession } from "@/utils/supabase/middleware";
 
 const securityHeaders: Record<string, string> = {
   "x-content-type-options": "nosniff",
@@ -9,8 +9,10 @@ const securityHeaders: Record<string, string> = {
   "permissions-policy": "camera=(), microphone=(), geolocation=()",
 };
 
-export function middleware(request: NextRequest) {
-  const response = NextResponse.next();
+export async function middleware(request: NextRequest) {
+  // Refresh the Supabase session first — the returned response carries any
+  // rotated auth cookies and must be the one sent to the browser.
+  const response = await updateSession(request);
 
   // Apply security headers to every response
   for (const [key, value] of Object.entries(securityHeaders)) {
