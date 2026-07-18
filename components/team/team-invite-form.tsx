@@ -248,13 +248,13 @@ export function TeamInviteForm() {
     const inviteUrl = `${appUrl}/invite/accept?token=${inviteResult.token}`;
 
     return (
-      <Card className="border-green-200 bg-green-50">
+      <Card className="border-success/20 bg-success/5">
         <CardContent className="pt-6">
           <div className="text-center space-y-4">
-            <CheckCircle className="h-12 w-12 text-green-600 mx-auto" />
+            <CheckCircle className="h-12 w-12 text-success mx-auto" />
             <div>
-              <h3 className="text-lg font-semibold text-green-800">Invite Created Successfully!</h3>
-              <p className="text-green-600">Invite sent to {email}</p>
+              <h3 className="text-lg font-semibold text-success">Invite Created Successfully!</h3>
+              <p className="text-success">Invite sent to {email}</p>
             </div>
 
             <div className="bg-white border rounded-lg p-4 space-y-3">
@@ -527,12 +527,12 @@ interface RateLimitDisplayProps {
 function RateLimitDisplay({ info }: RateLimitDisplayProps) {
   if (!info.is_limited) {
     return (
-      <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-        <div className="flex items-center gap-2 text-green-800">
+      <div className="bg-success/5 border border-success/20 rounded-lg p-3">
+        <div className="flex items-center gap-2 text-success">
           <CheckCircle className="h-4 w-4" />
           <span className="text-sm font-medium">Rate limit OK</span>
         </div>
-        <div className="mt-2 text-xs text-green-700">
+        <div className="mt-2 text-xs text-success">
           Hourly: {info.hourly.remaining}/{info.hourly.limit} remaining
         </div>
       </div>

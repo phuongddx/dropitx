@@ -19,9 +19,9 @@ export function HeroSection() {
 
   return (
     <section className="relative overflow-hidden px-6 max-[720px]:px-4 pb-24 pt-16 max-w-[1200px] mx-auto">
-      {/* Dot-grid background */}
+      {/* Dot-grid background — slightly stronger for orange tint */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.035] dark:opacity-[0.06]"
+        className="pointer-events-none absolute inset-0 opacity-[0.06] dark:opacity-[0.09]"
         style={{
           backgroundImage: "radial-gradient(circle, currentColor 1px, transparent 1px)",
           backgroundSize: "24px 24px",
@@ -39,7 +39,15 @@ export function HeroSection() {
           <h1 className="heading-fluid-lg font-display font-bold tracking-tight">
             Drop files.
             <br />
-            <span className="text-primary">Share instantly.</span>
+            <span
+              className="bg-clip-text text-transparent"
+              style={{
+                backgroundImage:
+                  "linear-gradient(135deg, var(--primary), oklch(0.85 0.14 60))",
+              }}
+            >
+              Share instantly.
+            </span>
           </h1>
 
           <p className="text-muted-foreground text-lg max-w-md leading-relaxed">

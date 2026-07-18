@@ -210,7 +210,7 @@ export function UploadDropzone({
       case "success":
         return (
           <div className="animate-scale-in">
-            <CheckCircle2 className={`${base} text-green-500`} />
+            <CheckCircle2 className={`${base} text-success`} />
           </div>
         );
       case "error":
@@ -264,7 +264,7 @@ export function UploadDropzone({
       ? "border-2 border-destructive/50 bg-destructive/[0.03]"
       : "",
     state === "success"
-      ? "border-2 border-green-500/50 bg-green-500/[0.03]"
+      ? "border-2 border-success/50 bg-success/5"
       : "",
     state === "uploading"
       ? "border-2 border-primary/30 animate-border-pulse cursor-wait"
@@ -338,7 +338,7 @@ export function UploadDropzone({
                 : state === "uploading"
                   ? "text-primary/70"
                   : state === "success"
-                    ? "text-green-600"
+                    ? "text-success"
                     : "text-muted-foreground"
             }`}
           >

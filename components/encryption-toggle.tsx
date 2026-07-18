@@ -112,13 +112,13 @@ export function EncryptionToggle({
           title={enabled ? "Disable encryption" : "Enable E2E encryption"}
         >
           {enabled ? (
-            <Shield className="size-4 text-green-600" />
+            <Shield className="size-4 text-success" />
           ) : (
             <ShieldOff className="size-4 text-muted-foreground" />
           )}
         </Button>
         {enabled && ready && (
-          <span className="text-xs text-green-600 font-medium">E2E</span>
+          <span className="text-xs text-success font-medium">E2E</span>
         )}
       </div>
     );
@@ -129,7 +129,7 @@ export function EncryptionToggle({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           {enabled ? (
-            <Shield className="size-4 text-green-600" />
+            <Shield className="size-4 text-success" />
           ) : (
             <ShieldOff className="size-4 text-muted-foreground" />
           )}
@@ -231,8 +231,8 @@ export function EncryptionToggle({
       )}
 
       {enabled && ready && (
-        <div className="rounded-lg border border-green-500/30 bg-green-500/5 p-3">
-          <p className="text-xs text-green-700 dark:text-green-400">
+        <div className="rounded-lg border border-success/30 bg-success/5 p-3">
+          <p className="text-xs text-success">
             Content will be encrypted before upload. The decryption key is in
             the URL fragment (#key=...) and never sent to the server.
             Share the full URL including the key part.

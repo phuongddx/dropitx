@@ -46,45 +46,27 @@ export function HomePage() {
       {/* Hero */}
       <section className="px-6 py-18">
         <div className="mx-auto max-w-[820px] text-center">
-          <p className="eyebrow">Document sharing, reimagined</p>
-          <h1 className="heading-fluid-lg mt-4">
+          <p className="eyebrow animate-hero" style={{ animationDelay: "0ms" }}>Document sharing, reimagined</p>
+          <h1 className="heading-fluid-md mt-4 animate-hero" style={{ animationDelay: "80ms" }}>
             Upload a file. Share a link.
             <br />
             <span className="text-muted-foreground">Watch who opens it.</span>
           </h1>
-          <p className="mx-auto mt-5 max-w-[560px] text-lg text-muted-foreground">
+          <p className="mx-auto mt-5 max-w-[560px] text-lg text-muted-foreground animate-hero" style={{ animationDelay: "160ms" }}>
             Password-protected links, real-time view tracking, and a clean preview —
             for briefs, decks, contracts, and anything you used to email.
           </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link href="/auth/login" className={cn(buttonVariants({ size: "lg" }), "gap-2")}>
+          <div className="mt-8 flex flex-wrap justify-center gap-3 animate-hero" style={{ animationDelay: "240ms" }}>
+            <Link href="/auth/login" className={cn(buttonVariants({ size: "lg" }), "gap-2 cta-glow")}>
               Upload your first drop <ArrowRight className="size-4" />
             </Link>
             <Link href="/s/example" className={cn(buttonVariants({ variant: "outline", size: "lg" }))}>
               See a live share
             </Link>
           </div>
-          <p className="meta mt-4">No credit card · Free up to 100 drops/mo</p>
+          <p className="meta mt-4 animate-hero" style={{ animationDelay: "320ms" }}>No credit card · Free up to 100 drops/mo</p>
         </div>
 
-        {/* Hero product screenshot placeholder */}
-        <div className="mx-auto mt-12 flex h-[360px] max-w-[1120px] items-center justify-center rounded-lg border border-dashed border-border bg-muted/40 text-xs uppercase tracking-wider text-muted-foreground">
-          [ hero product screenshot — 1120 × 360 ]
-        </div>
-
-        {/* Trusted by */}
-        <div className="mx-auto mt-10 flex max-w-[1120px] flex-wrap items-center justify-center gap-8">
-          <span className="meta">Trusted by teams at</span>
-          {[120, 96, 140, 88, 120].map((w, i) => (
-            <div
-              key={i}
-              className="flex h-16 items-center justify-center rounded-md border border-dashed border-border bg-muted/30 text-xs uppercase text-muted-foreground"
-              style={{ width: w }}
-            >
-              LOGO
-            </div>
-          ))}
-        </div>
       </section>
 
       {/* How it works */}
@@ -98,13 +80,12 @@ export function HomePage() {
           </div>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {STEPS.map((s) => (
-              <div key={s.num} className="rounded-lg border border-border bg-background p-6">
+              <div key={s.num} className="rounded-lg border border-border bg-background p-6 card-lift">
                 <span className="flex size-7 items-center justify-center rounded-full border border-border font-mono text-xs font-semibold text-muted-foreground">
                   {s.num}
                 </span>
                 <h3 className="mt-4 text-lg font-semibold">{s.title}</h3>
                 <p className="mt-2 text-sm text-muted-foreground">{s.body}</p>
-                <div className="mt-5 h-[120px] rounded-md border border-dashed border-border bg-muted/30" />
               </div>
             ))}
           </div>
@@ -127,7 +108,7 @@ export function HomePage() {
           </div>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {FEATURES.map((f) => (
-              <div key={f.title} className="rounded-lg border border-border bg-card p-6">
+              <div key={f.title} className="rounded-lg border border-border bg-card p-6 card-lift">
                 <span className="flex size-9 items-center justify-center rounded-lg border-[1.5px] border-foreground">
                   <f.icon className="size-4" />
                 </span>

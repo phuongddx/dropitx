@@ -92,7 +92,7 @@ export function QrCodeButton({
           <div className="flex gap-2 w-full">
             <Button variant="outline" className="flex-1 gap-1.5" onClick={handleCopy}>
               {copied ? (
-                <Check className="size-3.5 text-green-500" />
+                <Check className="size-3.5 text-success" />
               ) : (
                 <Copy className="size-3.5" />
               )}

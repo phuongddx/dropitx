@@ -111,7 +111,7 @@ export function getFileTypeColor(filename: string, mimeType?: string): string {
   if (["mp3", "wav", "flac"].includes(ext) || mime.startsWith("audio/")) return "bg-amber-500/10 text-amber-600 border-amber-500/20";
   if (["zip", "rar", "7z"].includes(ext)) return "bg-orange-500/10 text-orange-600 border-orange-500/20";
   if (ext === "pdf" || mime === "application/pdf") return "bg-red-500/10 text-red-600 border-red-500/20";
-  if (["xlsx", "xls", "csv"].includes(ext)) return "bg-green-500/10 text-green-600 border-green-500/20";
+  if (["xlsx", "xls", "csv"].includes(ext)) return "bg-success/10 text-success border-success/20";
   return "bg-muted text-muted-foreground";
 }
 

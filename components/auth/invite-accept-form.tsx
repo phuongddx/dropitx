@@ -218,8 +218,8 @@ export function InviteAcceptForm() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="p-3 bg-green-100 rounded-full">
-              <CheckCircle className="h-12 w-12 text-green-600" />
+            <div className="p-3 bg-success/10 rounded-full">
+              <CheckCircle className="h-12 w-12 text-success" />
             </div>
           </div>
           <CardTitle className="text-2xl">Join Team</CardTitle>
@@ -274,7 +274,7 @@ export function InviteAcceptForm() {
           <Button
             onClick={handleAccept}
             disabled={accepting}
-            className="w-full bg-green-600 hover:bg-green-700"
+            className="w-full bg-success hover:bg-success/90"
             size="lg"
           >
             {accepting ? (

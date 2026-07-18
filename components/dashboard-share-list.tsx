@@ -49,7 +49,7 @@ function fileType(mime: string): "pdf" | "doc" | "img" | "code" | "zip" | "file"
 const FILE_ICON_CLASS: Record<string, string> = {
   pdf: "bg-red-50 border-red-200 dark:bg-red-950/40 dark:border-red-900",
   doc: "bg-blue-50 border-blue-200 dark:bg-blue-950/40 dark:border-blue-900",
-  img: "bg-green-50 border-green-200 dark:bg-green-950/40 dark:border-green-900",
+  img: "bg-success/5 border-success/20",
   code: "bg-purple-50 border-purple-200 dark:bg-purple-950/40 dark:border-purple-900",
   zip: "bg-yellow-50 border-yellow-200 dark:bg-yellow-950/40 dark:border-yellow-900",
   file: "bg-slate-50 border-slate-200 dark:bg-slate-900 dark:border-slate-700",
@@ -205,7 +205,7 @@ export function DashboardShareList({
                           <Lock className="size-2.5" /> Pwd
                         </span>
                       ) : (
-                        <span className="text-green-600 dark:text-green-400">Public</span>
+                        <span className="text-success">Public</span>
                       )}
                     </div>
                   </div>
@@ -241,7 +241,7 @@ export function DashboardShareList({
                         <Lock className="size-3" /> Password protected
                       </span>
                     ) : (
-                      <span className="text-green-600 dark:text-green-400">Public</span>
+                      <span className="text-success">Public</span>
                     )}
                   </div>
                   <h3 className="mt-1 text-[17px] font-bold tracking-tight">

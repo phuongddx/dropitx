@@ -30,7 +30,7 @@ const VARIANT_CONFIG: Record<
   },
   already_used: {
     icon: CheckCircle,
-    iconColor: "text-green-500",
+    iconColor: "text-success",
     title: "Invite Already Used",
   },
   expired: {

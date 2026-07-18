@@ -13,7 +13,7 @@ function Alert({
       role="alert"
       className={cn(
         "relative flex w-full items-start gap-3 rounded-lg border border-border px-4 py-3 text-sm",
-        variant === "destructive" && "border-red-500/50 text-red-600",
+        variant === "destructive" && "border-destructive/50 text-destructive",
         className
       )}
       {...props}

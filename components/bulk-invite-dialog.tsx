@@ -263,7 +263,7 @@ export function BulkInviteDialog({
               <h4 className="font-medium mb-3">Invite Summary</h4>
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
-                  <div className="text-2xl font-bold text-green-600">{results.success.length}</div>
+                  <div className="text-2xl font-bold text-success">{results.success.length}</div>
                   <div className="text-xs text-muted-foreground">Success</div>
                 </div>
                 <div>
@@ -281,7 +281,7 @@ export function BulkInviteDialog({
             {results.success.length > 0 && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <h4 className="font-medium text-green-700 flex items-center gap-2">
+                  <h4 className="font-medium text-success flex items-center gap-2">
                     <CheckCircle className="size-4" />
                     Successfully Invited ({results.success.length})
                   </h4>
@@ -297,7 +297,7 @@ export function BulkInviteDialog({
                 </div>
                 <div className="max-h-32 overflow-y-auto space-y-1">
                   {results.success.map(email => (
-                    <div key={email} className="text-sm text-green-700 bg-green-50 p-2 rounded">
+                    <div key={email} className="text-sm text-success bg-success/10 p-2 rounded">
                       ✓ {email}
                     </div>
                   ))}

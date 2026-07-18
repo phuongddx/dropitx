@@ -15,23 +15,23 @@ const badgeVariants = cva(
         destructive:
           "bg-destructive/10 text-destructive focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:focus-visible:ring-destructive/40 [a]:hover:bg-destructive/20",
         outline:
-          "border-[oklch(1_0_0/15%)] text-foreground [a]:hover:bg-[oklch(1_0_0/5%)]",
+          "border-primary/15 text-foreground [a]:hover:bg-primary/8",
         ghost:
-          "hover:bg-[oklch(1_0_0/5%)] hover:text-foreground",
+          "hover:bg-primary/8 hover:text-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         /* File type badges */
-        html: "border-[oklch(1_0_0/15%)] text-muted-foreground",
-        markdown: "border-[oklch(1_0_0/15%)] text-muted-foreground",
+        html: "border-primary/15 text-muted-foreground",
+        markdown: "border-primary/15 bg-primary/12 text-primary",
         /* Status badges */
         success:
           "bg-success/10 text-success dark:bg-success/20",
         warn:
-          "bg-[oklch(0.82_0.14_80_/_15%)] text-[oklch(0.82_0.14_80)] dark:bg-[oklch(0.65_0.17_80_/_20%)] dark:text-[oklch(0.82_0.14_80)]",
+          "bg-warning/15 text-warning dark:bg-warning/20 dark:text-warning",
         danger:
           "bg-destructive/10 text-destructive dark:bg-destructive/20",
         /* Role badges */
         owner: "bg-primary text-primary-foreground",
-        editor: "border-[oklch(1_0_0/15%)] text-foreground",
+        editor: "border-primary/15 text-foreground",
         viewer: "bg-secondary text-secondary-foreground",
       },
     },

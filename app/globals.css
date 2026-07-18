@@ -60,53 +60,54 @@
 
 :root,
 .dark {
-  /* xAI design system — dark-first monochrome */
-  --background: oklch(0.04 0 0);                 /* #0A0A0A canvas */
-  --foreground: oklch(1 0 0);                    /* #FFFFFF ink */
-  --card: oklch(0.11 0 0);                       /* #191919 canvas-card */
-  --card-foreground: oklch(1 0 0);
-  --popover: oklch(0.10 0.002 270);              /* #1A1C20 canvas-soft */
-  --popover-foreground: oklch(1 0 0);
-  --primary: oklch(1 0 0);                       /* white — the only "color" */
-  --primary-foreground: oklch(0.04 0 0);         /* near-black on white */
-  --secondary: oklch(0.10 0.002 270);            /* #1A1C20 */
-  --secondary-foreground: oklch(1 0 0);
-  --muted: oklch(0.10 0.002 270);
-  --muted-foreground: oklch(0.55 0.004 270);     /* #7D8187 body-mid */
-  --accent: oklch(0.14 0.002 270);               /* canvas-mid surface */
-  --accent-foreground: oklch(1 0 0);
-  --success: oklch(0.62 0.17 155);
-  --success-foreground: oklch(1 0 0);
-  --destructive: oklch(0.58 0.22 27);
-  --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.16 0.002 270);               /* #212327 hairline */
-  --input: oklch(0.14 0.002 270);
-  --ring: oklch(0.55 0 0);                       /* neutral ring */
-  --chart-1: oklch(1 0 0);                       /* white */
-  --chart-2: oklch(0.65 0.17 42);                /* sunset orange */
-  --chart-3: oklch(0.65 0.17 285);               /* dusk purple */
-  --chart-4: oklch(0.75 0.04 250);               /* breeze blue */
-  --chart-5: oklch(0.85 0.13 42);                /* sunset soft */
+  /* DropItX Orange design system — dark-first warm amber on charcoal */
+  --background: oklch(0.15 0.005 56);            /* #1E1B17 deep warm charcoal */
+  --foreground: oklch(0.97 0.003 56);            /* #F8F6F2 warm white */
+  --card: oklch(0.19 0.006 56);                  /* #26221D */
+  --card-foreground: oklch(0.97 0.003 56);
+  --popover: oklch(0.17 0.005 56);               /* #221E19 */
+  --popover-foreground: oklch(0.97 0.003 56);
+  --primary: oklch(0.75 0.17 55);                /* #F59E0B signature orange */
+  --primary-foreground: oklch(0.15 0.005 56);
+  --secondary: oklch(0.22 0.007 56);             /* #2B2722 */
+  --secondary-foreground: oklch(0.97 0.003 56);
+  --muted: oklch(0.22 0.007 56);
+  --muted-foreground: oklch(0.65 0.01 56);       /* #8A847A */
+  --accent: oklch(0.75 0.17 55);                 /* same as primary */
+  --accent-foreground: oklch(0.15 0.005 56);
+  --success: oklch(0.70 0.16 155);
+  --success-foreground: oklch(0.97 0.003 56);
+  --warning: oklch(0.80 0.15 85);
+  --destructive: oklch(0.62 0.22 27);
+  --destructive-foreground: oklch(0.97 0.003 56);
+  --border: oklch(0.27 0.008 56);                /* #353029 */
+  --input: oklch(0.22 0.007 56);
+  --ring: oklch(0.75 0.17 55);                   /* orange focus ring */
+  --chart-1: oklch(0.75 0.17 55);                /* orange (was white) */
+  --chart-2: oklch(0.65 0.17 155);
+  --chart-3: oklch(0.70 0.15 250);
+  --chart-4: oklch(0.80 0.15 85);
+  --chart-5: oklch(0.65 0.17 300);
   --radius: 0.5rem;                              /* 8px */
   --radius-card: 8px;
   --radius-section: 8px;
-  --sidebar: oklch(0.04 0 0);                    /* match canvas */
-  --sidebar-foreground: oklch(1 0 0);
-  --sidebar-primary: oklch(1 0 0);
-  --sidebar-primary-foreground: oklch(0.04 0 0);
-  --sidebar-accent: oklch(0.10 0.002 270);       /* canvas-soft hover */
-  --sidebar-accent-foreground: oklch(1 0 0);
-  --sidebar-border: oklch(0.16 0.002 270);
-  --sidebar-ring: oklch(0.55 0 0);
+  --sidebar: oklch(0.15 0.005 56);
+  --sidebar-foreground: oklch(0.97 0.003 56);
+  --sidebar-primary: oklch(0.75 0.17 55);
+  --sidebar-primary-foreground: oklch(0.15 0.005 56);
+  --sidebar-accent: oklch(0.22 0.007 56);
+  --sidebar-accent-foreground: oklch(0.97 0.003 56);
+  --sidebar-border: oklch(0.27 0.008 56);
+  --sidebar-ring: oklch(0.75 0.17 55);
 
-  /* xAI extended tokens */
-  --accent-soft: oklch(0.14 0.002 270);
-  --accent-line: oklch(0.24 0.003 270);
-  --fg-soft: oklch(0.90 0 0);                    /* near-white for hover fills */
-  --surface: oklch(0.11 0 0);                    /* canvas-card surface */
-  --shadow: 0 0 0 0 transparent;                 /* xAI uses no shadows */
-  --upload-pulse-dim: oklch(1 0 0 / 20%);
-  --upload-pulse-bright: oklch(1 0 0 / 50%);
+  /* DropItX extended tokens */
+  --accent-soft: oklch(0.22 0.007 56);
+  --accent-line: oklch(0.32 0.01 56);
+  --fg-soft: oklch(0.90 0.003 56);
+  --surface: oklch(0.19 0.006 56);
+  --shadow: 0 0 0 0 transparent;                 /* keep no shadows */
+  --upload-pulse-dim: oklch(0.75 0.17 55 / 20%);
+  --upload-pulse-bright: oklch(0.75 0.17 55 / 50%);
 }
 
 @layer base {
@@ -121,7 +122,7 @@
   }
 }
 
-/* Utility classes — xAI monochrome system */
+/* Utility classes — DropItX Orange system */
 @layer utilities {
   .eyebrow {
     @apply font-mono text-[11px] uppercase font-medium text-muted-foreground;
@@ -173,6 +174,45 @@
 @keyframes border-pulse {
   0%, 100% { border-color: var(--upload-pulse-dim); }
   50% { border-color: var(--upload-pulse-bright); }
+}
+
+/* Landing page entrance animations */
+@keyframes hero-fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes hero-scale-in {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-hero {
+  opacity: 0;
+  animation: hero-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-hero-scale {
+  opacity: 0;
+  animation: hero-scale-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Card hover lift for step/feature cards */
+.card-lift {
+  transition: transform 0.25s ease-out, border-color 0.25s ease-out, background-color 0.25s ease-out;
+}
+.card-lift:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary);
+}
+
+/* CTA button glow pulse */
+@keyframes cta-glow {
+  0%, 100% { box-shadow: 0 0 0 0 oklch(0.75 0.17 55 / 0%); }
+  50% { box-shadow: 0 0 24px 0 oklch(0.75 0.17 55 / 25%); }
+}
+.cta-glow {
+  animation: cta-glow 3s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {

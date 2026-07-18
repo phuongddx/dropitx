@@ -95,8 +95,8 @@ export function EncryptedContentViewer({
   if (state === "need-password") {
     return (
       <div className="flex flex-col items-center justify-center gap-4 py-12">
-        <div className="flex size-12 items-center justify-center rounded-xl bg-green-500/10">
-          <Lock className="size-6 text-green-600" />
+        <div className="flex size-12 items-center justify-center rounded-xl bg-success/10">
+          <Lock className="size-6 text-success" />
         </div>
         <div className="text-center space-y-1">
           <h3 className="text-sm font-semibold">Encrypted Content</h3>

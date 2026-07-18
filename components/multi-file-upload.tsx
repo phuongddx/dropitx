@@ -214,7 +214,7 @@ export function MultiFileUpload() {
                           </div>
                         )}
                         {qf.status === "done" && (
-                          <CheckCircle2 className="size-3.5 text-green-500" />
+                          <CheckCircle2 className="size-3.5 text-success" />
                         )}
                         {qf.status === "error" && (
                           <XCircle className="size-3.5 text-destructive" />
@@ -283,10 +283,10 @@ export function MultiFileUpload() {
 
       {/* Result */}
       {result && (
-        <Card className="border-green-500/30 bg-green-500/5">
+        <Card className="border-success/30 bg-success/5">
           <CardContent className="p-4 space-y-3">
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="size-5 text-green-500" />
+              <CheckCircle2 className="size-5 text-success" />
               <span className="text-sm font-medium">Upload complete!</span>
             </div>
             <div className="flex items-center gap-2">
@@ -295,7 +295,7 @@ export function MultiFileUpload() {
               </code>
               <Button size="icon-sm" variant="outline" onClick={copyUrl}>
                 {copied ? (
-                  <Check className="size-3 text-green-500" />
+                  <Check className="size-3 text-success" />
                 ) : (
                   <Copy className="size-3" />
                 )}

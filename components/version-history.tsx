@@ -172,7 +172,7 @@ export function VersionHistory({ slug }: VersionHistoryProps) {
                     <span className="text-sm font-medium">
                       Version {version.version_num}
                       {version.version_num === versions[0]?.version_num && (
-                        <span className="ml-1.5 text-xs text-green-600 font-normal">
+                        <span className="ml-1.5 text-xs text-success font-normal">
                           (current)
                         </span>
                       )}

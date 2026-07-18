@@ -32,11 +32,11 @@ export function getEventIcon(eventType: TeamEventType): LucideIcon {
 export function getEventColor(eventType: TeamEventType): string {
   const colorMap: Record<TeamEventType, string> = {
     "invite.created": "text-blue-500",
-    "invite.accepted": "text-green-500",
+    "invite.accepted": "text-success",
     "invite.declined": "text-yellow-500",
     "invite.revoked": "text-red-500",
     "invite.expired": "text-muted-foreground",
-    "member.joined": "text-green-500",
+    "member.joined": "text-success",
     "member.left": "text-yellow-500",
     "member.role_changed": "text-blue-500",
     "member.removed": "text-red-500",

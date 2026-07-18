@@ -43,7 +43,7 @@ export function UploadProgress({
           className={cn(
             "h-full rounded-full transition-all duration-500 ease-out",
             isComplete
-              ? "bg-green-500"
+              ? "bg-success"
               : "bg-primary"
           )}
           style={{ width: `${Math.min(percentage, 100)}%` }}
@@ -70,7 +70,7 @@ export function UploadProgress({
             <span className="font-mono">{formatEta(eta)} remaining</span>
           )}
           {isComplete && (
-            <span className="text-green-500 font-medium">Complete</span>
+            <span className="text-success font-medium">Complete</span>
           )}
         </div>
       </div>

@@ -237,8 +237,8 @@ export function EditorPublishBar({
           {draftSavedAt && !publishedUrl && (
             <>
               <span className="text-border">&middot;</span>
-              <span className="flex items-center gap-1 text-green-600">
-                <span className="size-1.5 rounded-full bg-green-500" />
+              <span className="flex items-center gap-1 text-success">
+                <span className="size-1.5 rounded-full bg-success" />
                 Draft saved
               </span>
             </>
@@ -251,7 +251,7 @@ export function EditorPublishBar({
           )}
           {/* Status indicators */}
           {encryptionState.enabled && (
-            <Badge variant="outline" className="text-xs gap-1 text-green-600 border-green-500/30">
+            <Badge variant="outline" className="text-xs gap-1 text-success border-success/30">
               <Lock className="size-3" />
               E2E
             </Badge>
@@ -299,7 +299,7 @@ export function EditorPublishBar({
                 {publishedUrl}
               </code>
               <Button size="icon-sm" variant="outline" className="rounded-lg" onClick={copyUrl}>
-                {copied ? <Check className="size-3 text-green-500" /> : <Copy className="size-3" />}
+                {copied ? <Check className="size-3 text-success" /> : <Copy className="size-3" />}
               </Button>
             </div>
           ) : !user ? (

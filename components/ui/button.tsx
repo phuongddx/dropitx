@@ -11,16 +11,16 @@ const buttonVariants = cva(
         default:
           "bg-primary text-primary-foreground [a]:hover:bg-primary/80",
         outline:
-          "border-[oklch(1_0_0/15%)] bg-transparent text-foreground hover:border-[oklch(1_0_0/30%)] hover:bg-[oklch(1_0_0/5%)] aria-expanded:bg-[oklch(1_0_0/5%)] aria-expanded:text-foreground",
+          "border-primary/15 bg-transparent text-foreground hover:border-primary/30 hover:bg-primary/8 aria-expanded:bg-primary/8 aria-expanded:text-foreground",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80 aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
         ghost:
-          "hover:bg-[oklch(1_0_0/5%)] hover:text-foreground aria-expanded:bg-[oklch(1_0_0/5%)] aria-expanded:text-foreground",
+          "hover:bg-primary/8 hover:text-foreground aria-expanded:bg-primary/8 aria-expanded:text-foreground",
         destructive:
           "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
         link: "text-primary underline-offset-4 hover:underline",
         pill:
-          "rounded-full border-[oklch(1_0_0/15%)] bg-transparent text-foreground hover:border-[oklch(1_0_0/30%)] hover:bg-[oklch(1_0_0/5%)] hover:-translate-y-px",
+          "rounded-full border-primary/15 bg-transparent text-foreground hover:border-primary/30 hover:bg-primary/8 hover:-translate-y-px",
       },
       size: {
         default:
