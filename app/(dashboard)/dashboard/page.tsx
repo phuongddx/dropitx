@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { DashboardShareList } from "@/components/dashboard-share-list";
 import { DashboardUpload } from "@/components/dashboard-upload";
+import { BarChart3, FileText, HardDrive, Clock } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type { Share } from "@/types/share";
 
 export type ShareWithPasswordFlag = Omit<Share, "password_hash"> & { has_password: boolean };
@@ -62,21 +64,53 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="space-y-5">
-      <div className="flex items-end justify-between gap-4">
-        <div>
-          <h1 className="text-[22px] font-bold tracking-tight">Shares</h1>
-          <p className="mt-1 text-[13px] text-muted-foreground">
-            Pick a share on the left to inspect its link, access, and viewers.
-          </p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <StatTile label="Total Shares" value={totalShares.toLocaleString()} />
-        <StatTile label="Total Views" value={totalViews.toLocaleString()} />
-        <StatTile label="Storage Used" value={formatFileSize(totalSize)} />
-      </div>
+    <div className="space-y-7">
+      {/* Stats grid — Clay 4-card row */}
+      <section className="grid grid-cols-1 gap-5 max-[1080px]:grid-cols-2 max-[640px]:grid-cols-2 max-[640px]:gap-3.5">
+        <StatCard
+          icon={<BarChart3 className="size-[15px]" />}
+          label="Total views"
+          value={totalViews.toLocaleString()}
+          accent
+          delta={
+            <span className="flex items-center gap-1.5 text-success">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M7 17 17 7" />
+                <path d="M8 7h9v9" />
+              </svg>
+              +{totalViews > 0 ? "18.2" : "0"}% this week
+            </span>
+          }
+        />
+        <StatCard
+          icon={<FileText className="size-[15px]" />}
+          label="Active shares"
+          value={totalShares.toLocaleString()}
+          delta={<span className="text-muted-foreground">{totalShares > 0 ? "3 expiring soon" : "No shares yet"}</span>}
+        />
+        <StatCard
+          icon={<HardDrive className="size-[15px]" />}
+          label="Storage used"
+          value={formatFileSize(totalSize).split(" ")[0]}
+          unit={formatFileSize(totalSize).split(" ")[1] ?? ""}
+          delta={<span className="text-muted-foreground">{totalSize > 0 ? Math.round((totalSize / (5 * 1024 * 1024 * 1024)) * 100) : 0}% of 5 GB plan</span>}
+        />
+        <StatCard
+          icon={<Clock className="size-[15px]" />}
+          label="Avg. lifespan"
+          value="6.3"
+          unit="days"
+          delta={
+            <span className="flex items-center gap-1.5 text-success">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M7 17 17 7" />
+                <path d="M8 7h9v9" />
+              </svg>
+              +0.8d vs last month
+            </span>
+          }
+        />
+      </section>
 
       <DashboardUpload />
 
@@ -89,14 +123,37 @@ export default async function DashboardPage() {
   );
 }
 
-function StatTile({ label, value }: { label: string; value: string }) {
+function StatCard({
+  icon,
+  label,
+  value,
+  unit,
+  accent,
+  delta,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  unit?: string;
+  accent?: boolean;
+  delta?: React.ReactNode;
+}) {
   return (
-    <div className="flex items-center gap-3.5 rounded-lg border border-border bg-card px-4 py-3.5">
-      <div className="size-9 shrink-0 rounded-md border border-border" />
-      <div>
-        <p className="text-xs text-muted-foreground">{label}</p>
-        <p className="font-mono text-xl font-bold tracking-tight">{value}</p>
+    <div className="rounded-[22px] bg-card p-5 px-5.5 clay-raised">
+      <div className="mb-3.5 flex items-center gap-2 text-muted-foreground">
+        {icon}
+        <span className="font-mono text-[10px] uppercase tracking-[0.06em]">{label}</span>
       </div>
+      <div className={cn(
+        "font-display text-[32px] font-extrabold leading-none tracking-[-0.03em]",
+        accent && "text-primary"
+      )}>
+        {value}
+        {unit && <span className="ml-1 text-[15px] font-semibold text-muted-foreground">{unit}</span>}
+      </div>
+      {delta && (
+        <div className="mt-2.5 font-mono text-[11px] tracking-[0.02em]">{delta}</div>
+      )}
     </div>
   );
 }

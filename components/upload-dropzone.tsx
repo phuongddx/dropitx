@@ -2,9 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Upload, FileUp, Loader2, CheckCircle2, XCircle, X } from "lucide-react";
+import { Upload, Loader2, CheckCircle2, XCircle, X } from "lucide-react";
 import { trackEvent, AnalyticsEvent } from "@/lib/analytics";
 import { authFetch } from "@/lib/api-client";
 import { getFileIcon, formatFileSize, canPreview } from "@/lib/file-utils";
@@ -198,32 +196,6 @@ export function UploadDropzone({
     setQueuedFiles((prev) => prev.filter((f) => f.id !== id));
   };
 
-  const stateIcon = () => {
-    if (selectedFile && state === "idle" && !multiple) {
-      const Icon = getFileIcon(selectedFile.name, selectedFile.type);
-      return <Icon className="size-10 text-primary" />;
-    }
-    const base = "size-10 transition-all duration-200";
-    switch (state) {
-      case "uploading":
-        return <Loader2 className={`${base} animate-spin text-primary`} />;
-      case "success":
-        return (
-          <div className="animate-scale-in">
-            <CheckCircle2 className={`${base} text-success`} />
-          </div>
-        );
-      case "error":
-        return <XCircle className={`${base} text-destructive`} />;
-      default:
-        return dragActive ? (
-          <FileUp className={`${base} text-primary scale-110`} />
-        ) : (
-          <Upload className={`${base} text-muted-foreground`} />
-        );
-    }
-  };
-
   const stateText = () => {
     if (multiple && queuedFiles.length > 0 && state === "idle") {
       return `${queuedFiles.length} file${queuedFiles.length !== 1 ? "s" : ""} selected`;
@@ -253,127 +225,123 @@ export function UploadDropzone({
   };
 
   const cardClasses = [
-    "cursor-pointer transition-colors duration-200",
+    "cursor-pointer transition-all duration-200 rounded-[34px] border-2",
     state === "idle" && !dragActive
-      ? "border-dashed border-2 border-border hover:border-primary/50"
+      ? "border-dashed border-border bg-card hover:border-primary/50 hover:bg-primary/[0.04] clay-raised"
       : "",
     dragActive
-      ? "border-solid border-2 border-primary bg-primary/[0.03]"
+      ? "border-solid border-primary bg-primary/[0.04]"
       : "",
     state === "error"
-      ? "border-2 border-destructive/50 bg-destructive/[0.03]"
+      ? "border-destructive/50 bg-destructive/[0.03]"
       : "",
     state === "success"
-      ? "border-2 border-success/50 bg-success/5"
+      ? "border-success/50 bg-success/5"
       : "",
     state === "uploading"
-      ? "border-2 border-primary/30 animate-border-pulse cursor-wait"
+      ? "border-primary/30 animate-border-pulse cursor-wait"
       : "",
   ]
     .filter(Boolean)
     .join(" ");
 
   return (
-    <div className="space-y-3">
-      <Card {...getRootProps()} className={cardClasses}>
-        <CardContent className="flex flex-col items-center justify-center gap-5 py-14">
-          <div className="relative">{stateIcon()}</div>
+    <div className="space-y-4">
+      <div {...getRootProps()} className={cardClasses}>
+        <div className="flex items-center gap-5 p-6 max-[640px]:flex-col max-[640px]:items-start">
+          {/* Icon tile */}
+          <div className="grid size-13 shrink-0 place-items-center rounded-[22px] bg-primary/16 text-primary clay-raised">
+            {state === "uploading" ? (
+              <Loader2 className="size-6 animate-spin" />
+            ) : state === "success" ? (
+              <CheckCircle2 className="size-6 text-success" />
+            ) : state === "error" ? (
+              <XCircle className="size-6 text-destructive" />
+            ) : (
+              <Upload className={cn("size-6 transition-transform", dragActive && "scale-110")} />
+            )}
+          </div>
 
-          {/* Image preview (single mode) */}
-          {previewUrl && state !== "uploading" && !multiple && (
-            <div className="relative size-20 rounded-lg overflow-hidden border">
-              <img
-                src={previewUrl}
-                alt="Preview"
-                className="size-full object-cover"
-              />
-            </div>
-          )}
+          {/* Text */}
+          <div className="min-w-0 flex-1">
+            {selectedFile && state === "idle" && !multiple ? (
+              <>
+                <p className="font-display text-[17px] font-bold tracking-[-0.01em]">{selectedFile.name}</p>
+                <p className="mt-0.5 text-sm text-muted-foreground">
+                  {formatFileSize(selectedFile.size)} · {selectedFile.type || "unknown type"}
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="font-display text-[17px] font-bold tracking-[-0.01em]">
+                  {state === "error" ? "Upload failed" : "Drop a file to share instantly"}
+                </p>
+                <p className="mt-0.5 text-sm text-muted-foreground">
+                  {stateText()}
+                </p>
+                <p className="mt-2.5 font-mono text-[10.5px] uppercase tracking-[0.06em] text-muted-foreground">
+                  50 MB max · .md · .markdown · .html
+                </p>
+              </>
+            )}
+          </div>
 
-          {/* File info when selected (single mode) */}
-          {selectedFile && state === "idle" && !multiple && (
-            <div className="text-center">
-              <p className="text-sm font-medium">{selectedFile.name}</p>
-              <p className="text-xs text-muted-foreground">
-                {formatFileSize(selectedFile.size)} &middot; {selectedFile.type || "unknown type"}
-              </p>
-            </div>
-          )}
-
-          {/* Multi-file list when idle */}
-          {multiple && queuedFiles.length > 0 && state === "idle" && (
-            <div className="w-full max-w-sm space-y-1.5">
-              {queuedFiles.map((qf) => {
-                const Icon = getFileIcon(qf.file.name, qf.file.type);
-                return (
-                  <div
-                    key={qf.id}
-                    className="flex items-center gap-2.5 rounded-lg border px-3 py-2"
-                  >
-                    <Icon className="size-4 shrink-0 text-muted-foreground" />
-                    <span className="flex-1 text-sm truncate">{qf.file.name}</span>
-                    <span className="text-xs text-muted-foreground shrink-0">
-                      {formatFileSize(qf.file.size)}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        removeQueuedFile(qf.id);
-                      }}
-                      className="shrink-0 rounded-sm p-0.5 hover:bg-muted transition-colors"
-                    >
-                      <X className="size-3.5 text-muted-foreground" />
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          <p
-            className={`text-center text-sm transition-colors duration-200 ${
-              state === "error"
-                ? "text-destructive"
-                : state === "uploading"
-                  ? "text-primary/70"
-                  : state === "success"
-                    ? "text-success"
-                    : "text-muted-foreground"
-            }`}
-          >
-            {stateText()}
-          </p>
-
+          {/* Action button */}
           {state === "idle" && (
-            <Button
+            <button
               type="button"
-              variant="outline"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                open();
-              }}
+              onClick={(e) => { e.stopPropagation(); open(); }}
+              className="inline-flex h-9 items-center gap-2 rounded-full bg-background px-4 text-sm font-semibold clay-raised transition-transform hover:-translate-y-px max-[640px]:w-full max-[640px]:justify-center"
             >
               {multiple ? "Choose files" : "Choose file"}
-            </Button>
+            </button>
           )}
           {(state === "success" || state === "error") && (
-            <Button
+            <button
               type="button"
-              variant="outline"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                resetState();
-              }}
+              onClick={(e) => { e.stopPropagation(); resetState(); }}
+              className="inline-flex h-9 items-center gap-2 rounded-full bg-background px-4 text-sm font-semibold clay-raised transition-transform hover:-translate-y-px max-[640px]:w-full max-[640px]:justify-center"
             >
               {state === "success" ? "Upload another" : "Try again"}
-            </Button>
+            </button>
           )}
-        </CardContent>
+        </div>
+
+        {/* Image preview (single mode) */}
+        {previewUrl && state !== "uploading" && !multiple && (
+          <div className="px-6 pb-4">
+            <div className="relative size-20 overflow-hidden rounded-[14px] border border-border">
+              <img src={previewUrl} alt="Preview" className="size-full object-cover" />
+            </div>
+          </div>
+        )}
+
+        {/* Multi-file list when idle */}
+        {multiple && queuedFiles.length > 0 && state === "idle" && (
+          <div className="space-y-1.5 px-6 pb-4">
+            {queuedFiles.map((qf) => {
+              const Icon = getFileIcon(qf.file.name, qf.file.type);
+              return (
+                <div key={qf.id} className="flex items-center gap-2.5 rounded-[14px] border border-border bg-background px-3 py-2 clay-raised">
+                  <Icon className="size-4 shrink-0 text-muted-foreground" />
+                  <span className="flex-1 truncate text-sm">{qf.file.name}</span>
+                  <span className="shrink-0 font-mono text-xs text-muted-foreground">
+                    {formatFileSize(qf.file.size)}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); removeQueuedFile(qf.id); }}
+                    className="shrink-0 rounded-sm p-0.5 transition-colors hover:bg-muted"
+                  >
+                    <X className="size-3.5 text-muted-foreground" />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        )}
         <input {...getInputProps()} />
-      </Card>
+      </div>
     </div>
   );
 }

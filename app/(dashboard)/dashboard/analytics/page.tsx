@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient, createAdminClient } from "@/utils/supabase/server";
 import { AnalyticsTopPerformers } from "@/components/analytics/analytics-top-performers";
+import { cn } from "@/lib/utils";
 import type { TopShare } from "@/types/analytics";
 import type { Share } from "@/types/share";
 
@@ -36,20 +37,20 @@ export default async function GlobalAnalyticsPage() {
   const hasData = topSharesList.some((s) => s.total_views > 0);
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div className="flex items-end justify-between gap-4">
         <div>
-          <h1 className="text-[22px] font-bold tracking-tight">Analytics</h1>
+          <h1 className="font-display text-[22px] font-bold tracking-tight">Analytics</h1>
           <p className="mt-1 text-[13px] text-muted-foreground">
             Track how your shares are performing.
           </p>
         </div>
-        <div className="flex items-center gap-1 rounded-md border border-border bg-card p-0.5">
+        <div className="flex items-center gap-1 rounded-full bg-card p-1 clay-raised">
           {["7d", "30d", "90d"].map((r) => (
             <button
               key={r}
               type="button"
-              className="rounded px-2.5 py-1 text-xs font-semibold text-muted-foreground hover:text-foreground data-[active=true]:bg-foreground data-[active=true]:text-background"
+              className="rounded-full px-3 py-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:text-foreground data-[active=true]:bg-primary data-[active=true]:text-primary-foreground"
               data-active={r === "30d"}
             >
               {r}
@@ -58,19 +59,19 @@ export default async function GlobalAnalyticsPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <StatTile label="Total Views" value={totalViews.toLocaleString()} />
+      <div className="grid grid-cols-2 gap-5 sm:grid-cols-4">
+        <StatTile label="Total Views" value={totalViews.toLocaleString()} accent />
         <StatTile label="Unique Visitors" value={totalUniqueViews.toLocaleString()} />
         <StatTile label="Shares with Views" value={sharesWithViews.toString()} />
         <StatTile label="Avg Views/Share" value={avgViewsPerShare.toString()} />
       </div>
 
       {/* Views-over-time placeholder */}
-      <div className="rounded-lg border border-border bg-card p-5">
-        <p className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/80">
+      <div className="rounded-[22px] bg-card p-5 clay-raised">
+        <p className="mb-3 font-mono text-[11px] font-medium uppercase tracking-[0.07em] text-muted-foreground">
           Views over time
         </p>
-        <div className="grid h-[180px] place-items-center rounded-md border border-dashed border-border bg-muted/30 text-xs uppercase tracking-wider text-muted-foreground/70">
+        <div className="grid h-[180px] place-items-center rounded-[14px] border border-dashed border-border bg-background text-xs uppercase tracking-wider text-muted-foreground/70">
           [ views-over-time chart ]
         </div>
       </div>
@@ -81,8 +82,8 @@ export default async function GlobalAnalyticsPage() {
           <AnalyticsTopPerformers shares={topSharesList} />
         </div>
       ) : (
-        <div className="grid place-items-center rounded-lg border border-dashed border-border bg-card py-16 text-center">
-          <p className="font-semibold">No data yet</p>
+        <div className="grid place-items-center rounded-[34px] border-2 border-dashed border-border bg-card py-16 text-center clay-raised">
+          <p className="font-display text-lg font-bold">No data yet</p>
           <p className="mt-1 text-sm text-muted-foreground">
             Once your shares start getting views, you&apos;ll see them ranked here.
           </p>
@@ -92,11 +93,16 @@ export default async function GlobalAnalyticsPage() {
   );
 }
 
-function StatTile({ label, value }: { label: string; value: string }) {
+function StatTile({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
-      <p className="text-[11px] text-muted-foreground">{label}</p>
-      <p className="mt-1.5 font-mono text-lg font-bold tracking-tight">{value}</p>
+    <div className="rounded-[22px] bg-card p-5 clay-raised">
+      <p className="font-mono text-[10px] uppercase tracking-[0.06em] text-muted-foreground">{label}</p>
+      <p className={cn(
+        "mt-3.5 font-display text-[32px] font-extrabold leading-none tracking-[-0.03em]",
+        accent && "text-primary"
+      )}>
+        {value}
+      </p>
     </div>
   );
 }

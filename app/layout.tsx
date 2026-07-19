@@ -37,7 +37,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${geistMono.variable} dark h-full antialiased`}
+      className={`${inter.variable} ${geistMono.variable} h-full antialiased`}
       style={{ ["--font-display" as string]: "var(--font-sans)" }}
     >
       <body className="min-h-full flex flex-col">

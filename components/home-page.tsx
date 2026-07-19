@@ -1,168 +1,286 @@
 import Link from "next/link";
 import { LandingFooter } from "@/components/landing-footer";
-import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Lock, BarChart3, Users, ArrowRight } from "lucide-react";
+import {
+  Zap,
+  Lock,
+  BarChart3,
+  ArrowRight,
+  Upload,
+  ShieldCheck,
+  Eye,
+  Check,
+} from "lucide-react";
 
 const STEPS = [
   {
-    num: "01",
-    title: "Upload",
-    body: "Drag any file — PDF, DOCX, MD, images, code. We generate a hosted preview instantly.",
+    num: "1",
+    title: "Drop or write",
+    body: "Upload a Markdown/HTML file, or compose one in the built-in editor.",
   },
   {
-    num: "02",
-    title: "Share",
-    body: "Grab a link. Add a password. Set an expiry. Decide who can comment or download.",
+    num: "2",
+    title: "Set the rules",
+    body: "Add a password, an expiry, or burn-after-reading — optional, one toggle each.",
   },
   {
-    num: "03",
-    title: "Track",
-    body: "See who opened it, how long they stayed, and where they dropped off — in real time.",
+    num: "3",
+    title: "Share & track",
+    body: "Copy the link. Watch views, referrers, and reads roll into your dashboard.",
   },
 ];
 
 const FEATURES = [
   {
+    icon: Zap,
+    title: "Instant links",
+    body: "Drag a file, get a shareable URL before you blink. No folders, no exports — just a link that renders perfectly.",
+  },
+  {
     icon: Lock,
-    title: "Password protection",
-    body: "Per-link passwords, one-time view codes, and domain lock. Revoke access any time.",
+    title: "Private by default",
+    body: "Password gates, expiry dates, and burn-after-reading. Share sensitive drafts without leaving them exposed.",
   },
   {
     icon: BarChart3,
-    title: "View analytics",
-    body: "Unique viewers, dwell time, scroll depth, and drop-off — exported to CSV in one click.",
+    title: "Real analytics",
+    body: "Views over time, referrers, and top performers — know which links land and which need a nudge.",
+  },
+];
+
+const PRICING = [
+  {
+    name: "Free",
+    price: "$0",
+    desc: "For quick, occasional shares.",
+    features: ["Up to 10 active links", "1 GB storage", "Basic view counts"],
+    cta: "Get started",
+    featured: false,
   },
   {
-    icon: Users,
-    title: "Team collaboration",
-    body: "Shared workspaces, role-based permissions, and comments that thread by paragraph.",
+    name: "Pro",
+    price: "$9",
+    desc: "For creators sharing every day.",
+    features: ["Unlimited links", "5 GB storage", "Full analytics + referrers", "Passwords, expiry, burn"],
+    cta: "Go Pro",
+    featured: true,
+  },
+  {
+    name: "Team",
+    price: "$29",
+    desc: "For teams sharing together.",
+    features: ["Everything in Pro", "Shared team spaces", "Roles & invites"],
+    cta: "Start a team",
+    featured: false,
   },
 ];
 
 export function HomePage() {
   return (
     <div className="flex flex-col bg-background">
-      {/* Hero */}
-      <section className="px-6 py-18">
-        <div className="mx-auto max-w-[820px] text-center">
-          <p className="eyebrow animate-hero" style={{ animationDelay: "0ms" }}>Document sharing, reimagined</p>
-          <h1 className="heading-fluid-md mt-4 animate-hero" style={{ animationDelay: "80ms" }}>
-            Upload a file. Share a link.
-            <br />
-            <span className="text-muted-foreground">Watch who opens it.</span>
-          </h1>
-          <p className="mx-auto mt-5 max-w-[560px] text-lg text-muted-foreground animate-hero" style={{ animationDelay: "160ms" }}>
-            Password-protected links, real-time view tracking, and a clean preview —
-            for briefs, decks, contracts, and anything you used to email.
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3 animate-hero" style={{ animationDelay: "240ms" }}>
-            <Link href="/auth/login" className={cn(buttonVariants({ size: "lg" }), "gap-2 cta-glow")}>
-              Upload your first drop <ArrowRight className="size-4" />
+      {/* Nav */}
+      <nav className="sticky top-0 z-10 bg-background/86 backdrop-blur-[12px]">
+        <div className="mx-auto flex max-w-[1120px] items-center gap-5 px-8 py-4 max-[640px]:px-4">
+          <Link href="/" className="flex items-center gap-3 font-extrabold tracking-[-0.02em]">
+            <span className="grid size-[34px] place-items-center rounded-[14px] bg-primary text-primary-foreground clay-raised">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 3v12" />
+                <path d="m7 10 5 5 5-5" />
+                <path d="M5 21h14" />
+              </svg>
+            </span>
+            Drop<span className="text-primary">ItX</span>
+          </Link>
+          <div className="ml-3.5 hidden gap-1.5 max-[860px]:hidden">
+            <Link href="#features" className="rounded-full px-3.5 py-2 text-sm font-semibold text-fg-soft transition-colors hover:bg-card hover:text-foreground">Features</Link>
+            <Link href="#how" className="rounded-full px-3.5 py-2 text-sm font-semibold text-fg-soft transition-colors hover:bg-card hover:text-foreground">How it works</Link>
+            <Link href="#pricing" className="rounded-full px-3.5 py-2 text-sm font-semibold text-fg-soft transition-colors hover:bg-card hover:text-foreground">Pricing</Link>
+            <Link href="/editor" className="rounded-full px-3.5 py-2 text-sm font-semibold text-fg-soft transition-colors hover:bg-card hover:text-foreground">Editor</Link>
+          </div>
+          <div className="ml-auto flex items-center gap-2.5">
+            <Link
+              href="/auth/login"
+              className="inline-flex h-10 items-center rounded-full bg-card px-4.5 text-sm font-semibold clay-raised transition-transform hover:-translate-y-px"
+            >
+              Sign in
             </Link>
-            <Link href="/s/example" className={cn(buttonVariants({ variant: "outline", size: "lg" }))}>
-              See a live share
+            <Link
+              href="/dashboard"
+              className="inline-flex h-10 items-center rounded-full bg-primary px-4.5 text-sm font-semibold text-primary-foreground transition-transform hover:-translate-y-px"
+            >
+              Get started
             </Link>
           </div>
-          <p className="meta mt-4 animate-hero" style={{ animationDelay: "320ms" }}>No credit card · Free up to 100 drops/mo</p>
+        </div>
+      </nav>
+
+      {/* Hero */}
+      <header className="mx-auto grid max-w-[1120px] gap-12 px-8 py-18 max-[860px]:grid-cols-1 max-[860px]:gap-8 max-[640px]:px-4">
+        <div className="max-[860px]:text-center">
+          <span className="inline-flex items-center gap-2 rounded-full bg-card px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.08em] text-meta clay-raised mb-5.5">
+            <span className="size-[7px] rounded-full bg-success" />
+            Markdown &amp; HTML sharing
+          </span>
+          <h1 className="font-display text-[clamp(40px,6vw,68px)] font-black leading-[1.02] tracking-[-0.035em]">
+            Drop files.<br />
+            <span className="text-primary">Share instantly.</span>
+          </h1>
+          <p className="mx-auto mt-5 max-w-[44ch] text-[19px] leading-[1.55] text-muted-foreground max-[860px]:mx-auto">
+            Turn any Markdown or HTML file into a beautiful, trackable public link in one drag. Passwords, expiry, burn-after-reading — all built in.
+          </p>
+          <div className="mt-7.5 flex flex-wrap gap-3 max-[860px]:justify-center">
+            <Link
+              href="/dashboard"
+              className="inline-flex h-12 items-center gap-2.5 rounded-full bg-primary px-6.5 text-[15px] font-bold text-primary-foreground transition-transform hover:-translate-y-px"
+            >
+              Start sharing free
+              <ArrowRight className="size-[17px]" />
+            </Link>
+            <Link
+              href="/editor"
+              className="inline-flex h-12 items-center gap-2.5 rounded-full bg-card px-6.5 text-[15px] font-bold clay-raised transition-transform hover:-translate-y-px"
+            >
+              Open editor
+            </Link>
+          </div>
+          <div className="mt-6.5 flex gap-5.5 font-mono text-xs tracking-[0.02em] text-muted-foreground max-[860px]:justify-center">
+            <span><b className="font-bold text-foreground">50 MB</b> max per file</span>
+            <span><b className="font-bold text-foreground">12,847</b> links live</span>
+            <span><b className="font-bold text-foreground">No card</b> to start</span>
+          </div>
         </div>
 
+        {/* Hero drop card */}
+        <div className="rounded-[34px] bg-card p-6.5 clay-raised">
+          <div className="rounded-[22px] border-2 border-dashed border-border bg-background p-8.5 text-center">
+            <div className="mx-auto mb-3.5 grid size-14 place-items-center rounded-[22px] bg-primary/16 text-primary clay-raised">
+              <Upload className="size-6.5" />
+            </div>
+            <p className="text-base font-bold">Drop a file to share</p>
+            <p className="mt-1 text-[13px] text-muted-foreground">.md · .markdown · .html — up to 50 MB</p>
+          </div>
+          <div className="mt-3 flex items-center gap-3 rounded-[14px] bg-background p-3 clay-raised">
+            <span className="grid size-8.5 shrink-0 place-items-center rounded-[11px] bg-primary/9 text-primary">
+              <Upload className="size-4" />
+            </span>
+            <div>
+              <p className="text-[13.5px] font-semibold">project-proposal.md</p>
+              <p className="font-mono text-[11px] text-muted-foreground">45.2 KB · uploaded</p>
+            </div>
+            <span className="ml-auto font-mono text-[11px] font-semibold text-primary">Copy link ↗</span>
+          </div>
+        </div>
+      </header>
+
+      {/* Features / proof */}
+      <section id="features" className="mx-auto max-w-[1120px] px-8 py-16 max-[640px]:px-4">
+        <div className="mx-auto mb-11 max-w-[60ch] text-center">
+          <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-meta">Why DropItX</p>
+          <h2 className="mt-3 font-display text-[clamp(28px,4vw,40px)] font-extrabold tracking-[-0.03em]">
+            Sharing that respects your work.
+          </h2>
+          <p className="mt-2.5 text-[17px] text-muted-foreground">
+            Every link is fast, private by default, and tells you exactly who&apos;s reading.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 gap-5 max-[860px]:grid-cols-1">
+          {FEATURES.map((f) => (
+            <div key={f.title} className="rounded-[22px] bg-card p-6.5 clay-raised">
+              <div className="mb-4 grid size-[46px] place-items-center rounded-[14px] bg-primary/16 text-primary clay-raised">
+                <f.icon className="size-[22px]" />
+              </div>
+              <h3 className="font-display text-lg font-bold tracking-[-0.01em]">{f.title}</h3>
+              <p className="mt-1.5 text-sm leading-[1.55] text-muted-foreground">{f.body}</p>
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* How it works */}
-      <section className="border-y border-border bg-card py-12">
-        <div className="mx-auto max-w-[1120px] px-6">
-          <div className="mb-10 text-center">
-            <p className="eyebrow">How it works</p>
-            <h2 className="mt-3 text-[32px] font-bold tracking-tight">
-              Three steps. Under thirty seconds.
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            {STEPS.map((s) => (
-              <div key={s.num} className="rounded-lg border border-border bg-background p-6 card-lift">
-                <span className="flex size-7 items-center justify-center rounded-full border border-border font-mono text-xs font-semibold text-muted-foreground">
-                  {s.num}
-                </span>
-                <h3 className="mt-4 text-lg font-semibold">{s.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{s.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="py-18 px-6" id="features">
-        <div className="mx-auto max-w-[1120px]">
-          <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <p className="eyebrow">Built in</p>
-              <h2 className="mt-3 text-[32px] font-bold tracking-tight">
-                Everything you used four tools for.
-              </h2>
-            </div>
-            <Link href="#" className={buttonVariants({ variant: "ghost" })}>
-              All features →
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            {FEATURES.map((f) => (
-              <div key={f.title} className="rounded-lg border border-border bg-card p-6 card-lift">
-                <span className="flex size-9 items-center justify-center rounded-lg border-[1.5px] border-foreground">
-                  <f.icon className="size-4" />
-                </span>
-                <h3 className="mt-4 text-lg font-semibold">{f.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{f.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonial */}
-      <section className="border-y border-border bg-muted/40 py-12">
-        <div className="mx-auto grid max-w-[1120px] grid-cols-1 items-center gap-12 px-6 md:grid-cols-2">
-          <div>
-            <p className="eyebrow">Why teams switch</p>
-            <h2 className="mt-4 text-[30px] font-bold leading-tight tracking-tight">
-              &ldquo;We replaced Drive links, DocuSign drafts, and a Loom habit with one tab.&rdquo;
-            </h2>
-            <p className="mt-4 text-sm text-muted-foreground">
-              — Maya Okafor, Head of Design Ops at Northwind
-            </p>
-            <div className="mt-6 flex">
-              {[0, 1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="size-8 -ml-2 rounded-full border-2 border-background bg-muted first:ml-0"
-                  style={{ marginLeft: i === 0 ? 0 : -8 }}
-                />
-              ))}
-            </div>
-            <p className="meta mt-3">Joined by 8,400+ teams this quarter</p>
-          </div>
-          <div className="h-[280px] rounded-md border border-dashed border-border bg-background" />
-        </div>
-      </section>
-
-      {/* Final CTA */}
-      <section className="px-6 py-18 text-center">
-        <div className="mx-auto max-w-[640px]">
-          <h2 className="text-[34px] font-bold tracking-tight">
-            Your next file deserves more than a Drive link.
+      <section id="how" className="mx-auto max-w-[1120px] px-8 py-16 max-[640px]:px-4">
+        <div className="mx-auto mb-11 max-w-[60ch] text-center">
+          <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-meta">Three steps</p>
+          <h2 className="mt-3 font-display text-[clamp(28px,4vw,40px)] font-extrabold tracking-[-0.03em]">
+            From file to link in seconds.
           </h2>
-          <p className="mt-3 text-muted-foreground">
-            Upload in seconds. Know the moment it&apos;s opened.
-          </p>
-          <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <Link href="/auth/login" className={cn(buttonVariants({ size: "lg" }), "gap-2")}>
-              Upload your first drop <ArrowRight className="size-4" />
-            </Link>
-            <Link href="/auth/login" className={cn(buttonVariants({ variant: "outline", size: "lg" }))}>
-              Log in
-            </Link>
-          </div>
+        </div>
+        <div className="grid grid-cols-1 gap-5 max-[860px]:grid-cols-1">
+          {STEPS.map((s) => (
+            <div key={s.num} className="rounded-[22px] bg-card p-6 clay-raised">
+              <div className="mb-3.5 grid size-7.5 place-items-center rounded-full bg-primary font-mono text-xs font-bold text-primary-foreground">
+                {s.num}
+              </div>
+              <h4 className="text-base font-bold">{s.title}</h4>
+              <p className="mt-1.5 text-[13.5px] text-muted-foreground">{s.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Pricing */}
+      <section id="pricing" className="mx-auto max-w-[1120px] px-8 py-16 max-[640px]:px-4">
+        <div className="mx-auto mb-11 max-w-[60ch] text-center">
+          <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-meta">Pricing</p>
+          <h2 className="mt-3 font-display text-[clamp(28px,4vw,40px)] font-extrabold tracking-[-0.03em]">
+            Start free. Grow when you do.
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 items-start gap-5 max-[860px]:grid-cols-1">
+          {PRICING.map((p) => (
+            <div
+              key={p.name}
+              className={cn(
+                "flex flex-col gap-1.5 rounded-[34px] bg-card p-7.5 px-6.5 clay-raised",
+                p.featured && "outline-2 outline-offset-[-2px] outline-primary"
+              )}
+            >
+              {p.featured && (
+                <span className="mb-1 inline-flex w-fit items-center rounded-full bg-primary/16 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.05em] text-primary">
+                  Most popular
+                </span>
+              )}
+              <p className="font-mono text-[11px] uppercase tracking-[0.07em] text-meta">{p.name}</p>
+              <div className="font-display text-[44px] font-black leading-none tracking-[-0.03em]">
+                {p.price}<small className="ml-1 text-[15px] font-semibold text-muted-foreground">/mo</small>
+              </div>
+              <p className="mb-4 mt-1.5 text-sm text-muted-foreground">{p.desc}</p>
+              <ul className="mb-5.5 flex flex-col gap-2.75">
+                {p.features.map((feat) => (
+                  <li key={feat} className="flex items-start gap-2.5 text-sm text-fg-soft">
+                    <Check className="mt-0.5 size-4 shrink-0 text-primary" strokeWidth={2.4} />
+                    {feat}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/dashboard"
+                className={cn(
+                  "inline-flex h-10 items-center justify-center rounded-full px-5 text-sm font-bold transition-transform hover:-translate-y-px",
+                  p.featured
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-card text-foreground clay-raised"
+                )}
+              >
+                {p.cta}
+              </Link>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="mx-auto max-w-[1120px] px-8 py-9 max-[640px]:px-4">
+        <div className="rounded-[34px] bg-primary px-10 py-14 text-center text-primary-foreground clay-raised">
+          <h2 className="font-display text-[clamp(26px,4vw,38px)] font-extrabold tracking-[-0.03em]">
+            Your next link is one drop away.
+          </h2>
+          <p className="mt-3 text-[17px] opacity-90">Free to start. No credit card. Cancel anytime.</p>
+          <Link
+            href="/dashboard"
+            className="mt-6.5 inline-flex h-12 items-center rounded-full bg-card px-6.5 text-[15px] font-bold text-primary transition-transform hover:-translate-y-px"
+          >
+            Drop your first file →
+          </Link>
         </div>
       </section>
 
