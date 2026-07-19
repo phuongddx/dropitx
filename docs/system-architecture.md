@@ -2,7 +2,7 @@
 
 ## Overview
 
-DropItX is a Next.js 16 application (App Router) deployed on Vercel as a pure frontend. All API logic runs on a FastAPI backend (`dropitx-api.onrender.com`) with Supabase (PostgreSQL + Storage) and Upstash Redis (rate limiting). Features include team workspaces, analytics dashboard, password-protected shares, rich embedding via oEmbed, and programmatic access via REST API. Supports two auth models: JWT Bearer token (browser) and API key (programmatic). Version 2.3.0 migrated all API routes from Next.js to FastAPI.
+DropItX is a Next.js 16 application (App Router) deployed on Vercel as a pure frontend. All API logic runs on a FastAPI backend (`dropitx-api.onrender.com`) with Supabase (PostgreSQL + Storage) and Upstash Redis (rate limiting). Features include team workspaces, analytics dashboard, password-protected shares, end-to-end encryption, burn-after-reading, version history, multi-file support, comments, QR code generation, rich embedding via oEmbed, and programmatic access via REST API. Supports two auth models: JWT Bearer token (browser) and API key (programmatic). Latest release features xAI dark monochrome design system.
 
 ## Architecture Diagram
 

@@ -38,8 +38,8 @@ export async function GET(
           flexDirection: "column",
           justifyContent: "center",
           padding: "60px",
-          backgroundColor: "#0f0f0f",
-          color: "#ffffff",
+          backgroundColor: "#f7eee6",
+          color: "#2b211c",
           fontFamily: "sans-serif",
         }}
       >
@@ -52,11 +52,11 @@ export async function GET(
             justifyContent: "space-between",
             marginTop: 40,
             fontSize: 20,
-            color: "#888888",
+            color: "#8a7a70",
           }}
         >
           <span>{share.view_count ?? 0} views</span>
-          <span style={{ color: "#FF5701" }}>DropItX</span>
+          <span style={{ color: "#b46a46" }}>DropItX</span>
         </div>
       </div>
     ),

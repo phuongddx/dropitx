@@ -6,12 +6,16 @@ Standards for the DropItX codebase. Next.js 16 + TypeScript strict + Tailwind CS
 
 ## File Naming
 
-- **kebab-case** for all files: `upload-dropzone.tsx`, `rate-limit.ts`, `api-auth.ts`
-- UI primitives in `components/ui/`: `button.tsx`, `card.tsx`
-- Feature components in `components/`: `search-bar.tsx`, `editor-shell.tsx`
-- Supabase utils in `utils/supabase/`: `client.ts`, `server.ts`, `middleware.ts`
-- Editor extensions in `lib/editor-extensions/`
-- Config files: `eslint.config.mjs`, `tsconfig.json`
+| Type | Convention | Example |
+|------|-----------|---------|
+| React Components | PascalCase | `UploadDropzone.tsx`, `EditorShell.tsx`, `ShareCard.tsx` |
+| Utilities / Hooks | kebab-case | `api-client.ts`, `crypto.ts`, `use-auth-user.ts` |
+| UI Primitives (shadcn) | kebab-case | `button.tsx`, `card.tsx`, `dialog.tsx` |
+| Supabase Utils | kebab-case | `client.ts`, `server.ts`, `middleware.ts` |
+| Pages (Next.js App Router) | `page.tsx`, `layout.tsx`, `route.ts` | No rename |
+| Type Files | kebab-case | `share.ts`, `team.ts`, `analytics.ts` |
+| Config Files | natural | `eslint.config.mjs`, `tsconfig.json`, `next.config.ts` |
+| Migrations | timestamp + kebab-case | `20260424000001_add_editor_columns.sql` |
 
 ## Project Structure
 
@@ -137,15 +141,16 @@ Never use the admin client in client components — server-only.
 
 - Tailwind CSS 4 utility classes only — no custom CSS-in-JS
 - OKLCH color tokens via CSS custom properties in `app/globals.css`
-- Token layers: `@theme inline` → Tailwind namespace bindings, `:root` → light mode, `.dark` → dark mode
+- Token layers: `@theme inline` → Tailwind namespace bindings, `:root` and `.dark` → same dark-only system
 - Token naming: `--{namespace}-{property}-{variant}` (e.g., `--primary`, `--accent-soft`, `--sidebar-ring`)
 - `cn()` from `lib/utils.ts` for conditional class merging (clsx + tailwind-merge)
 - Component variants via `class-variance-authority`
-- Dark mode: `.dark` class on `<html>` (next-themes). Same hue (47), higher L, lower C.
-- **Font usage**: `font-display` for headings (Playfair Display), `font-sans` for body (Inter), `font-mono` for code (JetBrains Mono)
-- **Chart colors**: Use `--chart-1` through `--chart-5` tokens for data visualization — NOT monochrome orange
-- **WARNING**: `bg-purple-500` uses Tailwind's default color palette, NOT CSS variables. Always use `bg-primary` for accent color
-- Agentic design system — `--primary` is orange (#FF5701, `oklch(0.655 0.222 47)`)
+- Dark mode: `dark` class always present on `<html>` — xAI system is dark-only by design
+- **Font usage**: `font-sans` (Inter) for all text/headings, `font-mono` (Geist Mono) for labels/code/metadata
+- **Chart colors**: Use `--chart-1` through `--chart-5` tokens for data visualization — distinct hues, not monochrome
+- **WARNING**: `bg-purple-500` uses Tailwind's default color palette, NOT CSS variables. Always use `bg-primary` (white) for accents
+- xAI dark monochrome design system — `--primary` is white (`oklch(1 0 0)`), `--background` is near-black (`oklch(0.04 0 0)`)
+- **No shadows**: `--shadow` is transparent; use borders instead (`--border` for hairline dividers)
 - 8pt spacing grid: use even Tailwind spacing values
 
 ## Security

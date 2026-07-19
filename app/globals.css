@@ -46,68 +46,142 @@
   --color-accent-line: var(--accent-line);
   --color-fg-soft: var(--fg-soft);
   --color-surface: var(--surface);
-  --radius-sm: calc(var(--radius) * 0.33);
-  --radius-md: calc(var(--radius) * 0.67);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.33);
-  --radius-2xl: calc(var(--radius) * 1.67);
-  --radius-card: var(--radius-card);
-  --radius-section: var(--radius-section);
-  --animate-fade-in: fade-in 0.2s ease-out;
-  --animate-slide-up: slide-up 0.2s ease-out;
+  --color-surface-warm: var(--surface-warm);
+  --color-meta: var(--meta);
+  --color-border-soft: var(--border-soft);
+  /* Clay radii — generous, rounded */
+  --radius-sm: 14px;
+  --radius-md: 22px;
+  --radius-lg: 34px;
+  --radius-xl: 34px;
+  --radius-2xl: 34px;
+  --radius-card: 22px;
+  --radius-section: 34px;
+  --radius-pill: 9999px;
+  --animate-fade-in: fade-in 150ms cubic-bezier(0.2, 0, 0, 1);
+  --animate-slide-up: slide-up 240ms cubic-bezier(0.2, 0, 0, 1);
   --animate-border-pulse: border-pulse 2s ease-in-out infinite;
 }
 
-:root,
-.dark {
-  /* DropItX Orange design system — dark-first warm amber on charcoal */
-  --background: oklch(0.15 0.005 56);            /* #1E1B17 deep warm charcoal */
-  --foreground: oklch(0.97 0.003 56);            /* #F8F6F2 warm white */
-  --card: oklch(0.19 0.006 56);                  /* #26221D */
-  --card-foreground: oklch(0.97 0.003 56);
-  --popover: oklch(0.17 0.005 56);               /* #221E19 */
-  --popover-foreground: oklch(0.97 0.003 56);
-  --primary: oklch(0.75 0.17 55);                /* #F59E0B signature orange */
-  --primary-foreground: oklch(0.15 0.005 56);
-  --secondary: oklch(0.22 0.007 56);             /* #2B2722 */
-  --secondary-foreground: oklch(0.97 0.003 56);
-  --muted: oklch(0.22 0.007 56);
-  --muted-foreground: oklch(0.65 0.01 56);       /* #8A847A */
-  --accent: oklch(0.75 0.17 55);                 /* same as primary */
-  --accent-foreground: oklch(0.15 0.005 56);
-  --success: oklch(0.70 0.16 155);
-  --success-foreground: oklch(0.97 0.003 56);
-  --warning: oklch(0.80 0.15 85);
-  --destructive: oklch(0.62 0.22 27);
-  --destructive-foreground: oklch(0.97 0.003 56);
-  --border: oklch(0.27 0.008 56);                /* #353029 */
-  --input: oklch(0.22 0.007 56);
-  --ring: oklch(0.75 0.17 55);                   /* orange focus ring */
-  --chart-1: oklch(0.75 0.17 55);                /* orange (was white) */
-  --chart-2: oklch(0.65 0.17 155);
-  --chart-3: oklch(0.70 0.15 250);
-  --chart-4: oklch(0.80 0.15 85);
-  --chart-5: oklch(0.65 0.17 300);
-  --radius: 0.5rem;                              /* 8px */
-  --radius-card: 8px;
-  --radius-section: 8px;
-  --sidebar: oklch(0.15 0.005 56);
-  --sidebar-foreground: oklch(0.97 0.003 56);
-  --sidebar-primary: oklch(0.75 0.17 55);
-  --sidebar-primary-foreground: oklch(0.15 0.005 56);
-  --sidebar-accent: oklch(0.22 0.007 56);
-  --sidebar-accent-foreground: oklch(0.97 0.003 56);
-  --sidebar-border: oklch(0.27 0.008 56);
-  --sidebar-ring: oklch(0.75 0.17 55);
+/* ============================================================
+   CLAY DESIGN SYSTEM — light-first warm cream + terracotta.
+   Organic shapes, soft gradients, art-directed layout.
+   56 tokens per the Open Design token contract.
+   ============================================================ */
+:root {
+  /* --- Surface --- */
+  --background: #f7eee6;              /* page bg, warm cream */
+  --foreground: #2b211c;              /* primary text, near-black brown */
+  --card: #fff8f1;                    /* card surface, lighter cream */
+  --card-foreground: #2b211c;
+  --popover: #fff8f1;
+  --popover-foreground: #2b211c;
+  --surface: #fff8f1;                 /* Clay --surface */
+  --surface-warm: #ead6c7;            /* Clay --surface-warm */
 
-  /* DropItX extended tokens */
-  --accent-soft: oklch(0.22 0.007 56);
-  --accent-line: oklch(0.32 0.01 56);
-  --fg-soft: oklch(0.90 0.003 56);
-  --surface: oklch(0.19 0.006 56);
-  --shadow: 0 0 0 0 transparent;                 /* keep no shadows */
-  --upload-pulse-dim: oklch(0.75 0.17 55 / 20%);
-  --upload-pulse-bright: oklch(0.75 0.17 55 / 50%);
+  /* --- Accent (terracotta clay) --- */
+  --primary: #b46a46;                 /* Clay --accent */
+  --primary-foreground: #ffffff;      /* Clay --accent-on */
+  --secondary: #ead6c7;               /* surface-warm as secondary */
+  --secondary-foreground: #2b211c;
+  --muted: #eaded4;                   /* Clay --border-soft */
+  --muted-foreground: #8a7a70;        /* Clay --muted */
+  --accent: #b46a46;
+  --accent-foreground: #ffffff;
+  --accent-soft: #ead6c7;
+  --accent-line: #dac8b9;
+
+  /* --- Text shades --- */
+  --fg-soft: #5a4b43;                 /* Clay --fg-2 */
+  --meta: #b46a46;                    /* Clay --meta */
+
+  /* --- Border --- */
+  --border: #dac8b9;                  /* Clay --border */
+  --border-soft: #eaded4;             /* Clay --border-soft */
+  --input: #dac8b9;
+  --ring: #b46a46;                    /* terracotta focus */
+
+  /* --- Semantic --- */
+  --success: #4d8f5a;
+  --success-foreground: #ffffff;
+  --warning: #c88735;
+  --destructive: #b84c4c;
+  --destructive-foreground: #ffffff;
+
+  /* --- Charts (Clay-inspired vivid swatches) --- */
+  --chart-1: #b46a46;                 /* terracotta */
+  --chart-2: #4d8f5a;                 /* matcha */
+  --chart-3: #5b9bd5;                 /* blueberry */
+  --chart-4: #c88735;                 /* lemon gold */
+  --chart-5: #8b5cf6;                 /* ube */
+
+  /* --- Radius (generous, organic) --- */
+  --radius: 22px;
+
+  /* --- Sidebar (cream) --- */
+  --sidebar: #fff8f1;
+  --sidebar-foreground: #2b211c;
+  --sidebar-primary: #b46a46;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #ead6c7;
+  --sidebar-accent-foreground: #2b211c;
+  --sidebar-border: #dac8b9;
+  --sidebar-ring: #b46a46;
+
+  /* --- Clay elevation: multi-layer with inset highlight --- */
+  --shadow: 8px 10px 24px rgba(128, 92, 70, 0.18), -8px -8px 20px rgba(255, 255, 255, 0.70);
+  --elev-flat: none;
+  --elev-ring: 0 0 0 1px var(--border);
+  --elev-raised: 8px 10px 24px rgba(128, 92, 70, 0.18), -8px -8px 20px rgba(255, 255, 255, 0.70);
+  --focus-ring: 0 0 0 4px rgba(180, 106, 70, 0.24);
+
+  /* --- Upload pulse (terracotta-tinted) --- */
+  --upload-pulse-dim: rgba(180, 106, 70, 0.20);
+  --upload-pulse-bright: rgba(180, 106, 70, 0.50);
+
+  /* --- Motion (Clay timings) --- */
+  --motion-fast: 150ms;
+  --motion-base: 240ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Dark variant — Clay is light-first; this is a muted warm-dark companion,
+   kept only so explicit .dark usage still renders sanely. */
+.dark {
+  --background: #2b211c;
+  --foreground: #f7eee6;
+  --card: #3a2e26;
+  --card-foreground: #f7eee6;
+  --popover: #3a2e26;
+  --popover-foreground: #f7eee6;
+  --surface: #3a2e26;
+  --surface-warm: #4a3a30;
+  --primary: #d4926c;
+  --primary-foreground: #2b211c;
+  --secondary: #4a3a30;
+  --secondary-foreground: #f7eee6;
+  --muted: #4a3a30;
+  --muted-foreground: #b8a89c;
+  --accent: #d4926c;
+  --accent-foreground: #2b211c;
+  --accent-soft: #4a3a30;
+  --accent-line: #5a4b43;
+  --fg-soft: #d8c8bc;
+  --border: #5a4b43;
+  --border-soft: #4a3a30;
+  --input: #5a4b43;
+  --ring: #d4926c;
+  --sidebar: #3a2e26;
+  --sidebar-foreground: #f7eee6;
+  --sidebar-primary: #d4926c;
+  --sidebar-primary-foreground: #2b211c;
+  --sidebar-accent: #4a3a30;
+  --sidebar-accent-foreground: #f7eee6;
+  --sidebar-border: #5a4b43;
+  --sidebar-ring: #d4926c;
+  --shadow: 8px 10px 24px rgba(0, 0, 0, 0.40);
+  --upload-pulse-dim: rgba(212, 146, 108, 0.20);
+  --upload-pulse-bright: rgba(212, 146, 108, 0.50);
 }
 
 @layer base {
@@ -115,40 +189,68 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground transition-colors duration-200;
+    @apply bg-background text-foreground;
+    transition: background-color var(--motion-base) var(--ease-standard),
+                color var(--motion-base) var(--ease-standard);
   }
   html {
     @apply font-sans;
   }
+  /* Clay focus ring on all focusable elements */
+  *:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
 }
 
-/* Utility classes — DropItX Orange system */
+/* Utility classes — Clay system */
 @layer utilities {
   .eyebrow {
     @apply font-mono text-[11px] uppercase font-medium text-muted-foreground;
-    letter-spacing: 0.0875em; /* 1.4px at 16px base */
+    letter-spacing: 0.0875em;
   }
   .meta {
-    @apply font-mono text-xs text-muted-foreground;
+    @apply font-mono text-xs;
+    color: var(--meta);
     letter-spacing: 0.075em;
   }
   .heading-fluid-lg {
-    font-size: clamp(40px, 6vw, 96px);
-    line-height: 1;
-    letter-spacing: -0.025em;
-    font-weight: 400;
+    font-size: clamp(40px, 6vw, 76px);   /* Clay --text-4xl cap */
+    line-height: 1.06;                   /* Clay --leading-tight */
+    letter-spacing: -0.025em;            /* Clay --tracking-display */
+    font-weight: 600;
   }
   .heading-fluid-md {
-    font-size: clamp(28px, 4vw, 48px);
-    line-height: 1;
-    letter-spacing: -0.0125em;
-    font-weight: 400;
+    font-size: clamp(28px, 4vw, 36px);   /* Clay --text-2xl */
+    line-height: 1.06;
+    letter-spacing: -0.015em;
+    font-weight: 600;
   }
   .section-card {
     border-radius: var(--radius-card);
     border: 1px solid var(--border);
     background: var(--card);
+    box-shadow: var(--shadow);
   }
+  /* Clay soft raised elevation */
+  .clay-raised {
+    box-shadow: var(--elev-raised);
+  }
+  .clay-ring {
+    box-shadow: var(--elev-ring);
+  }
+  /* Clay dashed-border companion (mixed border styles) */
+  .clay-dashed {
+    border: 1px dashed var(--border);
+  }
+  /* Clay swatch accents (named like flavors) */
+  .clay-matcha   { background-color: #a8d8b9; }
+  .clay-slushie  { background-color: #b8dce8; }
+  .clay-lemon    { background-color: #f5e29c; }
+  .clay-ube      { background-color: #c9b8e8; }
+  .clay-pomegranate { background-color: #f0b8c0; }
+  .clay-blueberry   { background-color: #b8c8e8; }
+  .clay-dragonfruit { background-color: #e8b8d8; }
 }
 
 @keyframes fade-in {
@@ -157,7 +259,7 @@
 }
 
 @keyframes slide-up {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -189,27 +291,46 @@
 
 .animate-hero {
   opacity: 0;
-  animation: hero-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: hero-fade-up 0.45s var(--ease-standard) forwards;
 }
 
 .animate-hero-scale {
   opacity: 0;
-  animation: hero-scale-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: hero-scale-in 0.4s var(--ease-standard) forwards;
 }
 
-/* Card hover lift for step/feature cards */
+/* Clay card hover: lift + warm shadow, no tilt for cards */
 .card-lift {
-  transition: transform 0.25s ease-out, border-color 0.25s ease-out, background-color 0.25s ease-out;
+  transition: transform var(--motion-base) var(--ease-standard),
+              border-color var(--motion-base) var(--ease-standard),
+              box-shadow var(--motion-base) var(--ease-standard);
 }
 .card-lift:hover {
   transform: translateY(-4px);
   border-color: var(--primary);
+  box-shadow: var(--elev-raised);
 }
 
-/* CTA button glow pulse */
+/* Clay playful button hover: rotateZ(-8deg) + translateY(-80%) + hard offset shadow.
+   Apply .clay-hover to CTAs and playful buttons. */
+.clay-hover {
+  transition: transform var(--motion-fast) var(--ease-standard),
+              background-color var(--motion-fast) var(--ease-standard),
+              box-shadow var(--motion-fast) var(--ease-standard);
+}
+.clay-hover:hover {
+  transform: rotate(-8deg) translateY(-80%);
+  box-shadow: -7px 7px 0 rgba(0, 0, 0, 1);
+}
+.clay-hover:active {
+  transform: rotate(-4deg) translateY(-40%);
+  box-shadow: -4px 4px 0 rgba(0, 0, 0, 1);
+}
+
+/* CTA glow pulse (terracotta-tinted) */
 @keyframes cta-glow {
-  0%, 100% { box-shadow: 0 0 0 0 oklch(0.75 0.17 55 / 0%); }
-  50% { box-shadow: 0 0 24px 0 oklch(0.75 0.17 55 / 25%); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(180, 106, 70, 0%); }
+  50% { box-shadow: 0 0 24px 0 rgba(180, 106, 70, 25%); }
 }
 .cta-glow {
   animation: cta-glow 3s ease-in-out infinite;
@@ -224,5 +345,9 @@
   .animate-border-pulse {
     animation: none;
     border-color: var(--primary);
+  }
+  .clay-hover:hover {
+    transform: none;
+    box-shadow: var(--elev-raised);
   }
 }

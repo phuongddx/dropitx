@@ -1,72 +1,47 @@
-# Codebase Summary
+# DropItX - Codebase Summary
 
-## Overview
+## Project Overview
 
-DropItX is a Next.js 16 (App Router) application for uploading HTML/Markdown files, writing in a built-in Markdown editor, and generating short shareable links. Features include team workspaces, analytics dashboard, password-protected shares, rich embedding via oEmbed, and programmatic access via REST API and CLI. Deployed on Vercel with Supabase (PostgreSQL + Storage) and Upstash Redis.
+**DropItX** is a Next.js 16 frontend for secure file sharing with inline editing, advanced privacy controls, and team collaboration. Upload HTML and Markdown files, write with an integrated CodeMirror 6 editor, generate short shareable links with optional passwords, and manage content programmatically via REST API or CLI. Supports end-to-end encryption, burn-after-reading, version history, comments, QR code sharing, and analytics.
+
+**Status**: v1.4.1 (2026-04-26) — Production ready with comprehensive feature set.
 
 ## Technology Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Framework | Next.js 16 (App Router), React 19, TypeScript strict |
-| Editor | CodeMirror 6, loaded via `next/dynamic` (ssr: false) |
-| Viewer | `react-markdown` + `remark-gfm` + shiki |
-| Database | Supabase PostgreSQL (RLS), Storage (S3-compatible) |
-| Auth | Supabase Auth (Google + GitHub OAuth + email/password, PKCE), `@supabase/ssr` |
-| Styling | Tailwind CSS 4, shadcn/ui, OKLCH color tokens |
-| Rate limiting | Upstash Redis |
-| File upload | `react-dropzone` |
-| Theming | `next-themes` |
-| Analytics | Vercel Analytics + custom `analytics_events` table |
-| CLI | `packages/cli/` — TypeScript ESM, binary `dropitx` |
+| Component | Technology |
+|-----------|-----------|
+| **Frontend Framework** | Next.js 16 (App Router), React 19, TypeScript 5 (strict) |
+| **Editor** | CodeMirror 6 + markdown extensions (loaded via `next/dynamic` with SSR disabled) |
+| **Viewer** | `react-markdown` + `remark-gfm` + Shiki syntax highlighting |
+| **Styling** | Tailwind CSS 4 + shadcn/ui + xAI dark monochrome tokens (OKLCH) |
+| **Database** | Supabase PostgreSQL with Row-Level Security (RLS), S3-compatible Storage |
+| **Auth** | Supabase Auth (Google OAuth, GitHub OAuth, email/password with PKCE) |
+| **Backend API** | FastAPI (Python) on Render — all business logic except OG image generation |
+| **File Upload** | `react-dropzone` (≤ 50 MB files) |
+| **Theme** | `next-themes` (light/dark mode) |
+| **Analytics** | Vercel Analytics + custom `analytics_events` table |
+| **Rate Limiting** | Upstash Redis (10 req/min IP-based) |
+| **CLI** | `packages/cli/` — TypeScript ESM, binary `dropitx` |
+| **Encryption** | Web Crypto API (AES-256-GCM, client-side) |
 
-## Recent Major Changes
-
-### v2.4.0 (2026-05-24) - UI/UX Redesign & Design System
-- **Route group reorganization**: Pages split into `(public)` and `(dashboard)` route groups
-- **Landing page redesign**: HeroSection, ProofCards, WorkflowSteps, CtaSection, LandingFooter
-- **Dashboard restyle**: New sidebar layout with DashboardSidebarNav, DashboardMobileNav, DashboardToolbar
-- **Agentic design system**: Orange primary (#FF5701), Playfair Display headings, warm gray neutrals
-- **New components**: hero-canvas, stat-card, empty-state-card, page-header, badge
-- **OG image route**: Moved to dynamic `[slug]` route
-
-### v2.3.0 (2026-05-02) - FastAPI Migration
-- **All Next.js API routes removed**: 24 route handlers (~2,400 lines) deleted
-- **Frontend is now pure client**: Calls FastAPI backend via `authFetch()` with JWT Bearer auth
-- **`lib/api-client.ts`**: Singleton Supabase client + JWT injection + 401 retry
-- **Only remaining route**: `app/api/og-image/[slug]/route.tsx`
-- **Removed lib files**: `api-auth.ts`, `rate-limit.ts`, `validate-editor-content.ts`, `extract-text.ts`, `extract-title-from-markdown.ts`
-- **New env var**: `NEXT_PUBLIC_API_URL=https://dropitx-api.onrender.com`
-
-### v2.2.0-v2.2.1 (2026-04-29) - Team Invite Enhancement
-- Enhanced invite form, bulk invite, accept/decline flow
-- Invite notification bell with auto-refresh
-- Team RPC client + token security utilities
-- Auto-signup accept flow for unauthenticated users
-
-## File Structure Overview
+## Directory Structure
 
 ```
-app/
-├── layout.tsx, globals.css, not-found.tsx, error.tsx, loading.tsx
-├── (public)/
-│   ├── layout.tsx                      # Public layout (header + footer)
-│   ├── page.tsx                        # Landing page (HeroSection → ProofCards → WorkflowSteps → CTA)
-│   ├── editor/page.tsx                 # Markdown editor (SSR-disabled)
-│   ├── s/[slug]/page.tsx               # Public share viewer
-│   ├── s/[slug]/loading.tsx
-│   ├── embed/[slug]/page.tsx           # oEmbed viewer
-│   ├── search/page.tsx                 # Full-text search
-│   ├── search/loading.tsx
-│   ├── invite/accept/page.tsx          # Team invite acceptance
-│   ├── auth/login/page.tsx             # Email/password + OAuth
-│   ├── auth/callback/route.ts          # PKCE code exchange
-│   ├── auth/confirm/route.ts           # Email confirmation
+app/                           # Next.js App Router (routes + layouts)
+├── (public)/                  # Public routes (landing, editor, shares, auth)
+│   ├── page.tsx              # Landing page (HeroSection + ProofCards + WorkflowSteps + CTA)
+│   ├── editor/page.tsx       # Markdown editor with live preview
+│   ├── s/[slug]/page.tsx     # Share viewer (handles .html/.md/.encrypted)
+│   ├── embed/[slug]/page.tsx # oEmbed viewer
+│   ├── search/page.tsx       # Full-text search results
+│   ├── auth/login/page.tsx   # Email/password + OAuth login
 │   ├── auth/reset-password/page.tsx
-│   └── auth/update-password/page.tsx
-├── (dashboard)/
-│   ├── dashboard/layout.tsx            # Dashboard layout (sidebar nav)
-│   ├── dashboard/page.tsx              # Share list + stats + API keys
+│   ├── auth/update-password/page.tsx
+│   ├── auth/callback/route.ts # PKCE code exchange
+│   ├── auth/confirm/route.ts  # Email confirmation
+│   └── invite/accept/page.tsx # Team invite acceptance
+├── (dashboard)/              # Protected dashboard routes (redirect unauthenticated)
+│   ├── dashboard/page.tsx    # Share list + stats
 │   ├── dashboard/profile/page.tsx
 │   ├── dashboard/favorites/page.tsx
 │   ├── dashboard/analytics/page.tsx
@@ -76,275 +51,304 @@ app/
 │   ├── dashboard/teams/[slug]/page.tsx
 │   ├── dashboard/teams/[slug]/members/page.tsx
 │   └── dashboard/teams/[slug]/settings/page.tsx
-└── api/
-    └── og-image/[slug]/route.tsx       # OG image generation (only Next.js API route)
+├── api/
+│   └── og-image/[slug]/route.tsx   # OG image generation (only Next.js API route)
+├── layout.tsx, error.tsx, not-found.tsx, loading.tsx
+├── globals.css, markdown-viewer.css, favicon.ico
+└── [root middleware in middleware.ts for auth redirect]
 
-components/
-├── ui/{button,card,input,textarea,dialog,select,badge,alert,sonner,skeleton,popover}.tsx
-├── hero-section.tsx, hero-canvas.tsx, cta-section.tsx       # Landing page sections
-├── proof-cards.tsx, workflow-steps.tsx, landing-footer.tsx   # Landing page sections
-├── home-page.tsx                                            # Landing page orchestrator
-├── page-header.tsx, stat-card.tsx, empty-state-card.tsx     # Shared UI
-├── editor-shell.tsx, editor-pane.tsx, editor-preview.tsx
-├── editor-toolbar.tsx, editor-publish-bar.tsx
-├── upload-dropzone.tsx, share-link.tsx, copy-button.tsx
-├── search-bar.tsx, search-results.tsx
-├── html-viewer.tsx, markdown-viewer.tsx, markdown-viewer-wrapper.tsx
-├── dashboard-share-card.tsx, dashboard-share-list.tsx, bookmark-toggle.tsx
-├── dashboard-sidebar-nav.tsx, dashboard-mobile-nav.tsx      # Dashboard navigation
-├── dashboard-toolbar.tsx                                    # Dashboard toolbar
-├── api-key-manager.tsx, profile-form.tsx
-├── auth-user-menu.tsx, theme-provider.tsx, vercel-analytics.tsx
-├── header-bar.tsx, header-nav.tsx, header-mobile-drawer.tsx
-├── password-gate.tsx, share-password-form.tsx
-├── share-viewed-tracker.tsx, share-analytics-tracker.tsx
-├── embed-viewed-tracker.tsx, embed-snippet.tsx
-├── analytics/{stats-cards,view-chart,geo-chart,referrer-chart,top-performers,empty-state}.tsx
-├── create-team-form.tsx, team-member-row.tsx, team-nav.tsx, team-share-card.tsx
-├── invite-member-dialog.tsx, enhanced-invite-dialog.tsx, bulk-invite-dialog.tsx
-├── invite-notification-bell.tsx, invite-status-card.tsx, invite-accept-form.tsx
-├── members-page-client.tsx, team-activity-feed.tsx
-└── team/team-invite-form.tsx
+components/                    # React components (composable, feature-organized)
+├── ui/                        # Primitives: button, card, input, dialog, select, etc.
+├── [Feature areas]/
+│   ├── editor-*.tsx          # Editor components (pane, preview, toolbar, publish-bar)
+│   ├── share-*.tsx           # Share components (password-gate, link, analytics-tracker)
+│   ├── encryption-*.tsx      # Encryption UI (toggle, viewer)
+│   ├── burn-*.tsx            # Burn-after-reading (toggle, tracker, warning, state)
+│   ├── expiration-*.tsx      # Expiration select + badge + state
+│   ├── comments-section.tsx  # Comments/discussion
+│   ├── version-history.tsx   # Version history viewer
+│   ├── file-*.tsx            # Multi-file support (tabs, list-sidebar, multi-file-upload)
+│   ├── qr-code-button.tsx    # QR code modal
+│   ├── upload-*.tsx          # Upload (dropzone, progress)
+│   ├── markdown-viewer.tsx, html-viewer.tsx
+│   ├── search-*.tsx          # Search (bar, results)
+│   ├── dashboard-*.tsx       # Dashboard (sidebar-nav, mobile-nav, toolbar, share-card, share-list)
+│   ├── analytics/*.tsx       # Analytics (stats-cards, view-chart, geo-chart, top-performers)
+│   ├── auth-*.tsx, password-*.tsx # Auth + password
+│   ├── team-*.tsx            # Team features (nav, member-row, invite-form, activity-feed)
+│   ├── invite-*.tsx          # Invite system (dialog, bulk, accept-form, notification-bell)
+│   ├── header-*.tsx          # Header (bar, nav, mobile-drawer)
+│   ├── landing-*.tsx, hero-*.tsx, proof-cards.tsx, workflow-steps.tsx, cta-section.tsx
+│   └── theme-provider.tsx, vercel-analytics.tsx
 
-lib/
-├── api-client.ts                      # authFetch() with JWT Bearer + 401 retry
-├── api-key.ts                         # API key utilities
-├── api-utils.ts                       # API helper functions
-├── utils.ts, nanoid.ts
-├── password.ts                        # Password hashing helpers
-├── share-access-cookie.ts             # Password access cookie management
-├── team-utils.ts, team-rpc.ts, team-event-utils.ts
-├── token-security.ts, invite-utils.ts
+lib/                           # Utilities and helpers
+├── api-client.ts            # authFetch() + JWT Bearer + 401 retry for FastAPI
+├── crypto.ts                # Web Crypto API (AES-256-GCM encrypt/decrypt, key generation)
+├── draft-storage.ts         # localStorage draft persistence (autosave)
+├── file-utils.ts            # File handling (multi-file logic)
+├── share-access-cookie.ts   # Password access cookie (HMAC-SHA256)
 ├── analytics-track.ts, analytics.ts
+├── team-rpc.ts, team-utils.ts, team-event-utils.ts
+├── token-security.ts        # Invite token generation/validation
+├── use-auth-user.ts         # Custom hook for current user
+├── use-auto-save.ts, use-editor-auto-save.ts
+├── editor-extensions/       # CodeMirror extensions (slash-commands, image-drop, image-preview)
+├── api-utils.ts, api-key.ts
 ├── oembed-utils.ts, referrer-parser.ts
-├── shiki-highlighter.ts, slugify-handle.ts
-├── nav-links.ts, validation.ts, validate-custom-slug.ts
-├── use-auth-user.ts, use-editor-auto-save.ts, use-scroll-sync.ts
-└── editor-extensions.ts, editor-extensions/(image-drop, image-preview, slash-commands)
+├── password.ts, nanoid.ts, slugify-handle.ts, validation.ts
+├── nav-links.ts, shiki-highlighter.ts
+└── use-scroll-sync.ts, invite-utils.ts
 
-utils/supabase/
-├── client.ts, server.ts, middleware.ts
+hooks/                        # Custom React hooks
+├── use-auth-user.ts
+├── use-email-validation.ts
+├── use-team.ts
+└── use-toast.ts
 
-types/
-└── share.ts, team.ts, team-event.ts, analytics.ts
+utils/supabase/              # Supabase client factories
+├── client.ts               # Browser client (with middleware auth)
+├── server.ts               # Server client (SSR-disabled, uses createClient)
+└── middleware.ts           # Auth middleware (refresh & session management)
 
-packages/cli/
-├── package.json, tsconfig.json
-└── src/
-    ├── index.ts                       # CLI entry (binary: dropitx)
-    └── commands/login,publish,update,delete,list,whoami
+types/                        # TypeScript interfaces
+├── share.ts, team.ts, team-event.ts, analytics.ts
 
-supabase/
-├── schema.sql, config.toml
-└── migrations/
-    ├── 20260423000001_add_auth_tables.sql
-    ├── 20260424000001_add_editor_columns.sql
-    ├── 20260424000002_add_api_keys.sql
-    ├── 20260424000003_private_search_filter.sql
-    ├── 20260425000001_add_share_password.sql
-    ├── 20260425045621_rate-limits-supabase.sql
-    ├── 20260426000001_share_views.sql
-    ├── 20260426000002_teams.sql
-    ├── 20260428000001_fix_team_owner_trigger_rls.sql
-    ├── 20260428000002_fix_team_members_rls_recursion.sql
-    ├── 20260428000003_fix_teams_insert_policy.sql
-    ├── 20260428000004_fix_rls_policies_use_anon_role.sql
-    ├── 20260428000005_fix_stable_to_volatile_rls_functions.sql
-    ├── 20260428162629_fix_rls_policies_to_authenticated.sql
-    ├── 20260429_team_lifecycle_redesign.sql
-    ├── 20260429180000_decline_team_invite.sql
-    └── 20260430121500_fix_ambiguous_team_id_in_invite_policies.sql
+packages/cli/                # Standalone CLI tool
+├── src/index.ts            # Binary entry: dropitx
+├── src/commands/
+│   ├── login.ts
+│   ├── publish.ts
+│   ├── update.ts
+│   ├── delete.ts
+│   ├── list.ts
+│   └── whoami.ts
+
+supabase/                     # Database schema + migrations
+├── schema.sql               # Base schema (shares, user_profiles, favorites)
+├── migrations/
+│   ├── 20260423000001_add_auth_tables.sql
+│   ├── 20260424000001_add_editor_columns.sql
+│   ├── 20260424000002_add_api_keys.sql
+│   ├── 20260424000003_private_search_filter.sql
+│   ├── 20260425000001_add_share_password.sql
+│   ├── 20260425045621_rate-limits-supabase.sql
+│   ├── 20260426000001_share_views.sql
+│   ├── 20260426000002_teams.sql
+│   ├── 20260428000001-000005_fix_team_rls_issues.sql
+│   ├── 20260429_team_lifecycle_redesign.sql
+│   ├── 20260429180000_decline_team_invite.sql
+│   └── 20260430121500_fix_ambiguous_team_id_in_invite_policies.sql
+└── config.toml
+
+docs/                         # Documentation
+├── project-overview-pdr.md
+├── system-architecture.md
+├── codebase-summary.md
+├── code-standards.md
+├── deployment-guide.md
+├── design-guidelines.md
+├── project-roadmap.md
+└── project-changelog.md
+
+public/                       # Static assets (favicon, icons, images)
+.env.example, next.config.ts, tsconfig.json, tailwind.config.ts, package.json
 ```
 
-## Key Architectural Patterns
+## Core Features
 
-### Client-Server Architecture (v2.3.0)
-- **Next.js (Vercel)**: Pure frontend — no API routes (except OG image)
-- **FastAPI (Render)**: All API logic — uploads, shares, auth, teams, analytics
-- **Communication**: `authFetch()` from `lib/api-client.ts` injects JWT Bearer token
-- **Auth**: Supabase JWT sent as Bearer token to FastAPI; FastAPI validates via JWKS
+### File Sharing
+- **Upload**: Drag-drop HTML/Markdown (up to 50 MB per file)
+- **Share Links**: Short nanoid slugs (`/s/abc123`)
+- **Custom Slugs**: Optional vanity URLs (`handle/my-doc`)
+- **Auto-expire**: Default 30-day expiration (customizable via expiration-select)
+- **Delete Token**: Anonymous deletion for file-upload shares
 
-### Dual Authentication Model
-- **JWT Session**: Browser users with OAuth/email auth via Supabase → JWT sent to FastAPI
-- **API Key**: Programmatic access with SHA-256 hash lookup (FastAPI-side)
+### Editor & Markdown
+- **In-Browser Editor**: CodeMirror 6 with Markdown support
+- **Live Preview**: React-markdown + Shiki syntax highlighting
+- **Slash Commands**: `/image`, `/heading`, `/code`, `/link`, `/list` etc.
+- **Image Drag-Drop**: Inline preview + upload to Storage
+- **Auto-Draft**: localStorage persistence with dirty-state warning
+- **Editor Publish**: Title, custom slug, privacy toggle
 
-### Team Invite System Architecture
-- **Single Invite**: Role-based invite with email validation and server-side verification
-- **Bulk Invite**: Batch processing with progress tracking and error handling
-- **Invite Resend**: Secure token-based resend functionality with rate limiting
-- **Accept Flow**: Secure token-based acceptance with automatic team membership
-- **RPC Client**: Type-safe server communication for team operations
-- **Token Security**: Secure invite token generation, validation, and management
+### Privacy & Security
+- **Password Protection**: bcryptjs hash (never sent to client)
+- **Share Access Cookie**: HMAC-SHA256 signed HttpOnly (24 h TTL)
+- **End-to-End Encryption**: AES-256-GCM client-side, key in URL fragment
+- **Private Shares**: Hidden from search, owner-only access (RLS enforced)
+- **Rate Limiting**: 10 req/min per IP (upload/API); 5 attempts/10 min per IP (password)
 
-### Component Architecture
-- **UI Primitives**: Reusable components in `components/ui/` using shadcn/ui patterns
-- **Landing Page**: Compound sections — `HeroSection` + `HeroCanvas`, `ProofCards`, `WorkflowSteps`, `CtaSection`, `LandingFooter`
-- **Dashboard**: Sidebar layout with `DashboardSidebarNav` (desktop) + `DashboardMobileNav` (mobile) + `DashboardToolbar`
-- **Feature Components**: Organized by domain (auth, team, editor, share, analytics)
-- **Compound Components**: Header system with `HeaderBar`, `HeaderNav`, `HeaderMobileDrawer`
-- **Hooks**: Custom hooks for state management, validation, and side effects
+### Advanced Features
+- **Burn-After-Reading**: Share self-destructs on first view
+- **Version History**: Track revisions, restore previous versions
+- **Comments**: Thread discussion on shared content
+- **Multi-File Support**: Multiple files per share (tabs + sidebar)
+- **QR Code Generation**: Auto-generate + download QR for share URLs
+- **Expiration Select**: Configurable expiry (5min to forever)
 
-### Database Architecture
-- **8 Core Tables**: `shares`, `user_profiles`, `favorites`, `api_keys`, `team_workspaces`, `workspace_members`, `workspace_shares`, `analytics_events`
-- **RLS Policies**: Row-level security for data access control
-- **RPC Functions**: `search_shares`, `increment_view_count`, `get_user_workspaces`, etc.
-- **Event Sourcing**: Team lifecycle tracking with `team_events` table
+### Analytics
+- **Page Views**: Automatic tracking on share view
+- **Custom Events**: document_uploaded, content_published, share_viewed
+- **Geographic**: IP-based location tracking
+- **Referrer Tracking**: Where traffic originates
+- **Vercel Analytics**: Web Vitals, page views, device breakdowns
+- **Per-Share Dashboard**: Individual share metrics
 
-### Security Patterns
-- **Input Validation**: Client and server-side validation with comprehensive error handling
-- **Rate Limiting**: Upstash Redis sliding window (10 req/min, 5 attempts/10 min for passwords)
-- **Password Protection**: bcryptjs hash with HMAC-SHA256 access cookies
-- **API Key Security**: SHA-256 hash storage with soft-revocation via `revoked_at`
-- **CSRF Protection**: Next.js middleware with Supabase auth integration
-- **Content Security**: CSP headers for HTML rendering, sandboxed iframes
+### Team Collaboration
+- **Workspaces**: Owner creates, invites members
+- **Shared Content**: Assign shares to workspace
+- **Role-Based Access**: owner vs. member roles
+- **Invite System**: Single + bulk invite, token-based accept/decline
+- **Activity Feed**: Team events tracking
 
-### Performance Patterns
-- **CodeMirror SSR Guard**: Editor loaded via `next/dynamic { ssr: false }`
-- **Auto-Draft**: `useEditorAutoSave` persists to localStorage with dirty-state warning
-- **Image Optimization**: Next.js Image component with optimized loading
-- **Search Optimization**: Postgres TSVECTOR + GIN index with ranking
-- **Lazy Loading**: Dynamic imports for heavy components (MarkdownViewer, analytics charts)
+### Programmatic Access
+- **REST API v1**: `/api/v1/documents`, `/api/v1/keys` (Bearer auth)
+- **CLI Tool**: `dropitx` binary (publish, update, delete, list, login)
+- **API Keys**: SHA-256 hashed, soft-revokable
+- **oEmbed**: Standardized content embedding for WordPress/Medium
+
+## Authentication & Authorization
+
+### Session Auth (Browser)
+- **OAuth**: Google + GitHub via Supabase Auth
+- **Email/Password**: Signup + confirmation + password reset (PKCE flow)
+- **Session**: Supabase SSR cookies (HttpOnly, SameSite=Lax)
+- **JWT**: Sent to FastAPI backend as Bearer token
+
+### API Key Auth (Programmatic)
+- **Key Format**: `shk_` prefix + 48 hex chars
+- **Storage**: SHA-256 hash only (plaintext never stored)
+- **Revocation**: Soft-delete via `revoked_at` timestamp
+- **Rate Limit**: Same as session auth (10 req/min)
+
+### Share Access (Password-Protected)
+- **Unlock Flow**: POST `/shares/[slug]/unlock` with password
+- **Cookie**: HMAC-SHA256 signed, HttpOnly, 24h TTL
+- **Gate Order**: Owner bypass → private check → access cookie → password → login redirect
+
+## Database
+
+### Core Tables
+| Table | Purpose | Key Columns |
+|-------|---------|------------|
+| `shares` | Content storage | slug, filename, content_text, mime_type, user_id, password_hash, is_private, expires_at, view_count, encrypted, encryption_iv |
+| `user_profiles` | User metadata | display_name, avatar_url |
+| `favorites` | Bookmarked shares | user_id, share_id |
+| `api_keys` | Programmatic auth | user_id, key_hash, key_prefix, revoked_at |
+| `team_workspaces` | Team organization | name, owner_id |
+| `workspace_members` | Team members | workspace_id, user_id, role (owner/member) |
+| `workspace_shares` | Workspace content | workspace_id, share_id |
+| `analytics_events` | Usage metrics | event_type, user_id, session_id, metadata, ip_address |
+
+### RLS Policies
+- All tables enforce user-based or role-based access control
+- `is_private` shares filterable for non-owners
+- Team tables require workspace membership
+- Admin-only writes via service_role client
+
+## Migrations (16 total)
+- Auth tables + editor columns + API keys
+- Password protection + rate limiting + view tracking
+- Team workspaces + RLS fixes + team lifecycle redesign
+- Invite accept/decline + ambiguous team_id fixes
 
 ## Environment Variables
 
-| Variable | Description |
-|----------|-------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase anon/public key |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (server-only) |
-| `UPSTASH_REDIS_REST_URL` | Upstash Redis REST endpoint |
-| `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis auth token |
-| `SHARE_ACCESS_SECRET` | 32+ char secret for HMAC cookie signing (password protection) |
-| `NEXT_PUBLIC_API_URL` | FastAPI backend URL (e.g. `https://dropitx-api.onrender.com`) |
+| Variable | Purpose | Example |
+|----------|---------|---------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project endpoint | `https://xxx.supabase.co` |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Anon/public key | `eyJhbG...` |
+| `SUPABASE_SERVICE_ROLE_KEY` | Admin key (server-only) | `eyJhbG...` |
+| `UPSTASH_REDIS_REST_URL` | Redis endpoint | `https://...upstash.io` |
+| `UPSTASH_REDIS_REST_TOKEN` | Redis auth token | `xxx` |
+| `SHARE_ACCESS_SECRET` | 32+ char secret for HMAC signing | (random string) |
+| `NEXT_PUBLIC_API_URL` | FastAPI backend | `https://dropitx-api.onrender.com` |
 
-## Development Commands
+## Recent Changes (v1.4.1 — 2026-04-26)
+
+### Bug Fixes
+- Fixed search page blank/stuck when navigating from dashboard while logged in
+- Replaced unreliable `searchParams` Promise prop with `useSearchParams()` hook
+- Added `AbortController` to cancel stale fetches on rapid input
+
+### v1.4.0 (2026-04-26)
+- Vercel Analytics integration with custom event tracking
+- PII sanitization in analytics (strips query params from URLs)
+
+### v1.3.1 (2026-04-26)
+- HeaderBar compound component system (responsive navigation)
+- Consolidated header + dashboard sidebar layout
+
+### v1.3.0 (2026-04-25)
+- **Brand Refresh**: ShareHTML → DropItX rebrand
+- **Design System**: Blue (hue 264) → Violet (hue 293), orange accents
+- **Logotype**: `[x] dropitx` in Geist Mono
+- **CLI Rename**: `share-html` → `dropitx`
+
+### v1.2.0 (2026-04-25)
+- Password-protected shares with bcryptjs
+- Rate limiting migrated from Upstash Redis to Supabase Postgres
+- Share views gated behind login or password
+
+### v1.1.0 (2026-04-24)
+- Markdown editor (CodeMirror 6) with split-pane preview
+- Inline image upload + drag-drop
+- Slash commands
+- Editor auto-save + dirty-state warning
+- REST API v1 for programmatic management
+- CLI tool (`dropitx` binary)
+- Private shares support
+- API key management UI
+
+### v1.0.0 (2026-04-23)
+- Initial MVP: file upload, search, auth, dashboard, themes
+
+## Development Workflow
 
 ```bash
-npm run dev     # Development server
-npm run build   # Production build + TypeScript check
-npm run lint    # ESLint
+# Install dependencies
+npm install
 
-# CLI:
+# Copy environment variables
+cp .env.example .env.local
+
+# Run development server
+npm run dev        # http://localhost:3000
+
+# Build for production
+npm run build
+
+# Lint
+npm lint
+
+# CLI development
 cd packages/cli && npm run build && npm link
-dropitx login
-dropitx publish README.md -t "My Doc"
 ```
 
-## Recent Development Status
+## Key Architectural Decisions
 
-### v2.4.0 (2026-05-24) - UI/UX Redesign & Design System
-- ✅ Route groups: `(public)` and `(dashboard)` for layout separation
-- ✅ Landing page: HeroSection, ProofCards, WorkflowSteps, CtaSection, LandingFooter
-- ✅ Dashboard restyle: sidebar nav, mobile nav, toolbar
-- ✅ Agentic orange design system with Playfair Display headings
-- ✅ New shared components: page-header, stat-card, empty-state-card, badge
+1. **Frontend-Only Next.js**: Pure client-side app; all API logic in FastAPI backend for scalability
+2. **Supabase for Auth + Storage**: Manages user sessions, OAuth, and file storage with RLS
+3. **CodeMirror 6 SSR Disabled**: Loaded via `next/dynamic` to avoid build-time errors
+4. **Web Crypto API**: Client-side encryption for E2E feature without server key storage
+5. **localStorage Drafts**: Offline-first editor with auto-recovery on page reload
+6. **Token-Based Invites**: Secure, shareable invite links with email validation
+7. **RLS as Primary Auth**: Database-level security enforced at Postgres layer
+8. **Vercel Analytics**: Automatic Web Vitals + custom event tracking (PII-safe)
 
-### v2.3.0 (2026-05-02) - FastAPI Migration
-- ✅ All 24 Next.js API routes removed, frontend is pure client
-- ✅ `lib/api-client.ts` with `authFetch()` + JWT Bearer + 401 retry
-- ✅ 17 client components migrated to use `authFetch()`
-- ✅ Only OG image route remains in Next.js
+## Known Gaps
 
-### v2.2.1 (2026-04-29) - Invite Accept UI
-- ✅ Invite notification bell with auto-refresh
-- ✅ Decline team invite RPC + API route
-- ✅ Auto-signup accept flow for unauthenticated users
+- **No test suite**: Zero unit/integration/E2E tests (planned for future hardening phase)
+- **No offline support**: Service Worker for offline drafts planned
+- **Limited mobile UX**: Mobile-responsive but not native app
+- **Comment moderation**: No spam filtering or content moderation tools
+- **Custom branding**: White-label/custom domain not yet supported
 
-### v2.2.0 (2026-04-29) - Team Invite Enhancement
-- ✅ Enhanced team invite system with role selection and email validation
-- ✅ Enhanced invite dialog with invite link generation and team RPC client
-- ✅ Bulk invite dialog supporting multiple email addresses
-- ✅ Invite accept flow with team join functionality
-- ✅ Team RPC client for type-safe server calls
-- ✅ Token security utilities for invite token management
-- ✅ New UI primitives: dialog, select, textarea, alert components
-- ✅ New hooks: use-email-validation, use-team, use-toast
+## Files to Start With
 
-### v2.1.0 (2026-04-29) - Email Authentication
-- ✅ Email/password authentication system with PKCE flow
-- ✅ Email confirmation and verification pages
-- ✅ Complete password reset flow
-- ✅ Split-screen login page redesign
-
-### v2.0.1 (2026-04-28) - Team RLS Hardening
-- ✅ RLS policy hardening for team workspaces
-- ✅ Fixed infinite recursion and permission errors
-- ✅ Authentication role migration from anon to authenticated
-
-### v2.0.0 (2026-04-26) - Team Workspaces & Analytics
-- ✅ Team workspaces with role-based access control
-- ✅ Analytics dashboard with real-time charts and metrics
-- ✅ oEmbed support for rich content embedding
-- ✅ Password protection for shares
-
-## Architecture Diagram
-
-```
-┌──────────────────────────────────────────────────────────────┐
-│                          Browser                             │
-│  ┌──────────┐ ┌──────────┐ ┌────────┐ ┌──────────────────┐  │
-│  │ Upload   │ │ View /s/ │ │/search │ │ /editor          │  │
-│  │ Dropzone │ │ Iframe   │ │Results │ │ EditorShell      │  │
-│  └────┬─────┘ └────┬─────┘ └───┬────┘ └────────┬─────────┘  │
-└───────┼─────────────┼───────────┼───────────────┼────────────┘
-        │             │           │               │
-        ▼             ▼           ▼               ▼
-┌──────────────────────────────────────────────────────────────┐
-│                     Next.js (Vercel)                         │
-│  Pure frontend — no API routes (except /api/og-image)        │
-│  Client components use authFetch() / fetch(getApiUrl())      │
-│  lib/api-client.ts: singleton Supabase client + 401 retry   │
-└──────────────────────────┬───────────────────────────────────┘
-                           │  JWT Bearer token
-                           ▼
-┌──────────────────────────────────────────────────────────────┐
-│                  FastAPI Backend (Render)                     │
-│  dropitx-api.onrender.com                                    │
-│                                                              │
-│  POST /api/upload     GET /api/search    POST /api/publish   │
-│  POST /api/images/upload                                   │
-│  GET/PATCH/DELETE /api/shares/{slug}                        │
-│  POST /api/shares/{slug}/unlock                              │
-│  POST /api/shares/{slug}/set-password                        │
-│  POST /api/analytics/track   GET /api/oembed                 │
-│  GET|POST /api/v1/keys    DELETE /api/v1/keys/{key_id}      │
-│  POST /api/v1/documents  GET /api/v1/documents              │
-│  CRUD /api/dashboard/teams, /api/dashboard/teams/{slug}/*   │
-│  POST /api/invite/accept   POST /api/invite/decline          │
-│                                                              │
-│  JWT validation via JWKS  ·  Rate limiting via Upstash       │
-└───────────┬──────────────────────────────────────────────────┘
-            │                      │
-            ▼                      ▼
-┌───────────────────┐  ┌──────────────────────┐
-│  Supabase         │  │  Upstash Redis       │
-│  PostgreSQL (RLS) │  │  Rate Limiting       │
-│  Storage (S3)     │  │  (10 req/min/IP)     │
-└───────────────────┘  └──────────────────────┘
-
-CLI (packages/cli/)
-────────────────────
-dropitx publish <file> [-P password]  →  POST /api/v1/documents
-dropitx list                          →  GET  /api/v1/documents
-dropitx delete <slug>                 →  DELETE /api/v1/documents/[slug]
-Config: ~/.dropitx/config.json (mode 0600)
-```
-
-## Key Design Principles
-
-- **Simplicity**: Minimal UI focused on core functionality
-- **Accessibility**: WCAG 2.1 AA compliance with keyboard navigation
-- **Consistency**: Uniform component patterns and design tokens
-- **Performance**: Optimized loading and rendering patterns
-- **Security**: Multiple layers of input validation and access control
-- **Maintainability**: Modular architecture with clear separation of concerns
-
-## Migration Strategy
-
-All schema changes are managed via timestamped SQL migrations in `supabase/migrations/`. Apply with:
-```bash
-supabase link --project-ref <your-project-ref>
-supabase db push
-```
-
-The 16 migrations cover auth, editor, API keys, password protection, rate limiting, analytics, teams, RLS fixes, and enhanced invite system.
+1. **`app/layout.tsx`** - Root layout and global setup
+2. **`components/home-page.tsx`** - Landing page orchestrator
+3. **`app/(dashboard)/dashboard/page.tsx`** - Dashboard entry
+4. **`lib/api-client.ts`** - Backend communication (JWT Bearer auth)
+5. **`components/editor-shell.tsx`** - Editor entry point (CodeMirror 6)
+6. **`components/share-page-client.tsx`** - Share viewer logic

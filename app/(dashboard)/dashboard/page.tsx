@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { DashboardShareList } from "@/components/dashboard-share-list";
+import { DashboardUpload } from "@/components/dashboard-upload";
 import type { Share } from "@/types/share";
 
 export type ShareWithPasswordFlag = Omit<Share, "password_hash"> & { has_password: boolean };
@@ -76,6 +77,8 @@ export default async function DashboardPage() {
         <StatTile label="Total Views" value={totalViews.toLocaleString()} />
         <StatTile label="Storage Used" value={formatFileSize(totalSize)} />
       </div>
+
+      <DashboardUpload />
 
       <DashboardShareList
         personalShares={shareList}

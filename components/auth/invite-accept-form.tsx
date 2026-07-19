@@ -129,7 +129,7 @@ export function InviteAcceptForm() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2" />
-          <p className="text-gray-600">Validating invite...</p>
+          <p className="text-muted-foreground">Validating invite...</p>
         </div>
       </div>
     );
@@ -158,7 +158,7 @@ export function InviteAcceptForm() {
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <AlertCircle className="h-5 w-5 text-red-500" />
+              <AlertCircle className="h-5 w-5 text-destructive" />
               Invalid Invite
             </CardTitle>
             <CardDescription>
@@ -167,22 +167,22 @@ export function InviteAcceptForm() {
           </CardHeader>
           <CardContent className="space-y-4">
             {validation.actionRequired && (
-              <div className="bg-blue-50 p-3 rounded-md">
-                <p className="text-sm text-blue-700">{validation.actionRequired}</p>
+              <div className="bg-accent/10 p-3 rounded-md">
+                <p className="text-sm text-accent">{validation.actionRequired}</p>
               </div>
             )}
 
             {validation.data?.reason && (
-              <div className="bg-gray-50 p-3 rounded-md">
-                <p className="text-sm text-gray-600">
+              <div className="bg-muted p-3 rounded-md">
+                <p className="text-sm text-muted-foreground">
                   <strong>Details:</strong> {validation.data.reason}
                 </p>
               </div>
             )}
 
             {validation.data?.expires_at && (
-              <div className="bg-yellow-50 p-3 rounded-md">
-                <p className="text-sm text-yellow-700">
+              <div className="bg-warning/10 p-3 rounded-md">
+                <p className="text-sm text-warning">
                   <strong>Expiration:</strong> {new Date(validation.data.expires_at).toLocaleString()}
                 </p>
               </div>
@@ -202,9 +202,9 @@ export function InviteAcceptForm() {
 
   // Valid invite - show acceptance form
   const roleColors = {
-    owner: 'bg-red-100 text-red-800',
-    editor: 'bg-blue-100 text-blue-800',
-    viewer: 'bg-gray-100 text-gray-800'
+    owner: 'bg-destructive/15 text-destructive',
+    editor: 'bg-accent/15 text-accent',
+    viewer: 'bg-muted text-foreground'
   };
 
   const roleIcons = {
@@ -214,7 +214,7 @@ export function InviteAcceptForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-background">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
@@ -229,9 +229,9 @@ export function InviteAcceptForm() {
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Invite Details */}
-          <div className="bg-white border rounded-lg p-4 space-y-3">
+          <div className="bg-surface-warm border rounded-lg p-4 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Team Role:</span>
+              <span className="text-sm text-muted-foreground">Team Role:</span>
               <Badge className={roleColors[validation.data?.role as keyof typeof roleColors] || roleColors.viewer}>
                 {roleIcons[validation.data?.role as keyof typeof roleIcons]} {validation.data?.role}
               </Badge>
@@ -239,15 +239,15 @@ export function InviteAcceptForm() {
 
             {validation.data?.email && (
               <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-gray-400" />
-                <span className="text-sm text-gray-600">Sent to: {validation.data.email}</span>
+                <Mail className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">Sent to: {validation.data.email}</span>
               </div>
             )}
 
             {validation.data?.expires_at && (
               <div className="flex items-center gap-2">
-                <Shield className="h-4 w-4 text-gray-400" />
-                <span className="text-sm text-gray-600">
+                <Shield className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">
                   Expires: {new Date(validation.data.expires_at).toLocaleString()}
                 </span>
               </div>
@@ -255,10 +255,10 @@ export function InviteAcceptForm() {
           </div>
 
           {/* Security Notice */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="bg-accent/10 border border-accent/20 rounded-lg p-4">
             <div className="flex items-start gap-3">
-              <Shield className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
-              <div className="text-sm text-blue-800">
+              <Shield className="h-5 w-5 text-accent mt-0.5 flex-shrink-0" />
+              <div className="text-sm text-accent">
                 <p className="font-medium mb-1">Security Notice</p>
                 <ul className="space-y-1 text-xs">
                   <li>• This invite is securely encrypted</li>
@@ -292,7 +292,7 @@ export function InviteAcceptForm() {
 
           {/* User Info */}
           {user && (
-            <div className="text-center text-sm text-gray-500">
+            <div className="text-center text-sm text-muted-foreground">
               Accepting as: {user.email}
             </div>
           )}

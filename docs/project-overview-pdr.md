@@ -1,21 +1,33 @@
-# DropItX - Project Overview & PDR
+# DropItX - Project Overview & Product Development Requirements
+
+## Executive Summary
+
+**DropItX** is a modern file sharing platform unifying instant content sharing, rich editing, and team collaboration. Users upload HTML/Markdown files, write using an integrated Markdown editor, and share via short links with optional passwords, end-to-end encryption, and burn-after-reading. Designed for developers, technical teams, and knowledge workers who need secure, frictionless sharing.
+
+**Status**: v1.4.1 (2026-04-26) — Production ready. Core features complete; hardening phase planned.
+
+**Tech**: Next.js 16 frontend (Vercel) + FastAPI backend (Render), Supabase (auth + storage), Upstash Redis (rate limiting).
 
 ## Project Vision
 
-DropItX is a modern web platform that enables users to upload HTML and Markdown files, write content in a built-in Markdown editor, and generate shareable links for easy content distribution. Features include team workspaces, analytics dashboard, password-protected shares, rich embedding via oEmbed, and programmatic access via REST API and CLI tool.
+Existing file sharing platforms excel in one dimension (simplicity, privacy, or collaboration) but lack a cohesive experience. DropItX unifies:
+- **Instant sharing**: No account required to view
+- **Rich editing**: Markdown with live preview
+- **Privacy by default**: Passwords, encryption, burn-after-reading
+- **Team workflows**: Workspaces, invites, shared content
+- **Programmatic access**: REST API + CLI
 
 ## Target Users
 
-### Primary Users
-- **Web Developers**: Share code snippets, demos, prototypes, and publish via CLI
-- **Designers**: Share mockups and design concepts via HTML
-- **Content Creators**: Distribute articles, tutorials, and guides via Markdown
-- **Teams**: Collaborate on web projects by sharing HTML/Markdown builds
+### Primary
+- **Developers**: CLI tool for sharing code, drafts, secrets without UI overhead
+- **Technical Teams**: Secure workspace for collaborative content sharing
+- **Knowledge Workers**: Quick note-taking + sharing without email friction
 
-### Secondary Users
-- **Project Stakeholders**: Review progress via shared HTML builds
-- **Clients**: Preview websites without deployment requirements
-- **Educators**: Share teaching materials and student examples
+### Secondary
+- **Project Stakeholders**: Review shared HTML/Markdown builds
+- **Educators**: Distribute teaching materials and examples
+- **Clients**: Preview website builds pre-deployment
 
 ## Core Features
 
@@ -40,6 +52,18 @@ DropItX is a modern web platform that enables users to upload HTML and Markdown 
 - **API Key Management**: Dashboard UI for generating and revoking API keys
 - **CLI Tool**: `dropitx` binary for publish/update/delete/list from the terminal
 
+### Advanced Privacy & Security
+- **Password Protection**: Bcryptjs hash with HMAC-SHA256 signed access cookies (24h TTL)
+- **End-to-End Encryption**: AES-256-GCM client-side encryption with key in URL fragment
+- **Burn-After-Reading**: Share self-destructs on first view
+- **Configurable Expiration**: Custom expiry times (5 min to indefinite) beyond default 30 days
+- **Multi-File Support**: Bundle multiple files per share with tabs and sidebar navigation
+
+### Community & Engagement
+- **Comments/Discussion**: Thread-based comments on shared content
+- **Version History**: Track content revisions and restore previous versions
+- **QR Code Generation**: Auto-generate and download QR codes for share URLs
+
 ### Platform
 - **User Auth**: Google, GitHub OAuth, and email/password via Supabase (PKCE flow)
 - **Dashboard**: Share history, stats (count, total views, storage used)
@@ -49,7 +73,6 @@ DropItX is a modern web platform that enables users to upload HTML and Markdown 
 - **Team RPC Client**: Type-safe server communication for team operations
 - **Token Security**: Utilities for invite token management and security
 - **Profile**: Edit display name and avatar
-- **Theme Support**: Light/dark mode switching
 - **Rate Limiting**: 10 requests/minute to prevent abuse
 
 ## Technical Requirements

@@ -153,7 +153,37 @@ dropitx list
 
 Config is stored at `~/.dropitx/config.json` (mode 0600). Never commit this file.
 
-## Vercel Deployment
+## Backend Deployment (FastAPI on Render)
+
+**Note**: The FastAPI backend (`dropitx-api`) is a separate repository. All business logic (uploads, shares, teams, analytics) runs on Render, not Next.js.
+
+### Render Setup
+
+1. Connect GitHub repo (`phuongddx/dropitx-api`) to Render
+2. Create new Web Service from repository
+3. **Build Command**: `pip install -r requirements.txt`
+4. **Start Command**: `gunicorn -w 4 -b 0.0.0.0:8000 main:app`
+5. Add all environment variables (see `.env.example` in dropitx-api)
+6. Deploy
+
+### Environment Variables (Render)
+
+| Variable | Value |
+|----------|-------|
+| `SUPABASE_URL` | Your Supabase project URL |
+| `SUPABASE_KEY` | Service role key |
+| `DATABASE_URL` | PostgreSQL connection string |
+| `UPSTASH_REDIS_REST_URL` | Redis endpoint |
+| `UPSTASH_REDIS_REST_TOKEN` | Redis auth token |
+| `JWKS_URL` | `https://xxx.supabase.co/auth/v1/jwks` |
+
+### Deployment
+
+Every push to `dropitx-api` main branch auto-deploys if webhook configured. Or manually trigger in Render dashboard.
+
+---
+
+## Frontend Deployment (Next.js on Vercel)
 
 ### CLI
 
@@ -166,8 +196,20 @@ npx vercel --prod
 
 1. Import GitHub repo at vercel.com/new
 2. Framework preset: Next.js (auto-detected)
-3. Add all 5 environment variables in Settings > Environment Variables
+3. Add all 7 environment variables in Settings > Environment Variables
 4. Deploy
+
+### Environment Variables (Vercel)
+
+| Variable | Value |
+|----------|-------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Anon/public key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Service role key (server-only) |
+| `UPSTASH_REDIS_REST_URL` | Redis endpoint |
+| `UPSTASH_REDIS_REST_TOKEN` | Redis auth token |
+| `SHARE_ACCESS_SECRET` | 32+ char random string for HMAC signing |
+| `NEXT_PUBLIC_API_URL` | `https://dropitx-api.onrender.com` (or your Render URL) |
 
 ### Build Config
 

@@ -9,13 +9,21 @@ Drop HTML and Markdown files, write in the built-in editor, and get short sharea
 - **Markdown**: GitHub-like rendered preview with syntax highlighting, toggle to raw source
 - **Share**: Short slug-based URLs (`/s/abc123`), optional custom slugs
 - **Private shares**: `is_private` flag hides shares from search and public listing
+- **Password Protection**: Bcryptjs hashed passwords with secure access cookies
+- **End-to-End Encryption**: AES-256-GCM client-side encryption with key in URL
+- **Burn-After-Reading**: Share self-destructs on first view
+- **Expiration**: Configurable share expiration (default 30 days)
+- **Multi-File**: Bundle multiple files per share with tabs
+- **Comments**: Thread discussion on shared content
+- **Version History**: Track and restore previous versions
+- **QR Codes**: Auto-generate QR codes for share URLs
 - **Search**: Full-text search across all content
 - **Auth**: Google and GitHub OAuth; user dashboard, profile, favorites
 - **API**: REST API v1 for programmatic document management (Bearer API key)
 - **CLI**: `dropitx` binary for publish/update/delete from the terminal
+- **Analytics**: View counts, geographic data, referrer tracking
+- **Teams**: Workspace collaboration with role-based access
 - **Security**: Sandboxed iframe viewing with CSP, rate limiting, RLS on all tables
-- **Themes**: Light/dark mode
-- **Auto-expire**: Shares expire after 30 days
 
 ## Tech Stack
 
@@ -24,7 +32,7 @@ Drop HTML and Markdown files, write in the built-in editor, and get short sharea
 - **TypeScript** (strict mode)
 - **Supabase** (PostgreSQL, Storage, Auth — Google/GitHub OAuth)
 - **CodeMirror 6** (Markdown editor, SSR-disabled)
-- **Tailwind CSS 4** + shadcn/ui (OKLCH violet accent tokens)
+- **Tailwind CSS 4** + shadcn/ui (xAI dark monochrome design system)
 - **Upstash Redis** (rate limiting)
 - **CLI**: `packages/cli/` — TypeScript ESM, binary `dropitx`
 

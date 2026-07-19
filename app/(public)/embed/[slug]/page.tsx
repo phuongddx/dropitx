@@ -33,10 +33,10 @@ export default async function EmbedPage({ params }: EmbedPageProps) {
         justifyContent: "center",
         height: "100vh",
         fontFamily: "sans-serif",
-        background: "var(--color-background, #0a0a0a)",
-        color: "var(--color-foreground, #fafafa)",
+        background: "var(--color-background, #f7eee6)",
+        color: "var(--color-foreground, #2b211c)",
       }}>
-        <p>This content is protected. <a href={`/s/${slug}`} style={{ color: "var(--color-primary, #FF5701)" }}>View on DropItX</a></p>
+        <p>This content is protected. <a href={`/s/${slug}`} style={{ color: "var(--color-primary, #b46a46)" }}>View on DropItX</a></p>
       </div>
     );
   }
@@ -57,14 +57,14 @@ export default async function EmbedPage({ params }: EmbedPageProps) {
           justifyContent: "center",
           height: "100vh",
           fontFamily: "sans-serif",
-          background: "var(--color-background, #0a0a0a)",
-          color: "var(--color-foreground, #fafafa)",
+          background: "var(--color-background, #f7eee6)",
+          color: "var(--color-foreground, #2b211c)",
           gap: "1rem",
         }}>
           <p>Sign in to view this embedded content</p>
           <a href={`/auth/login?next=/s/${slug}`} style={{
-            color: "var(--color-primary, #FF5701)",
-            border: "1px solid var(--color-primary, #FF5701)",
+            color: "var(--color-primary, #b46a46)",
+            border: "1px solid var(--color-primary, #b46a46)",
             padding: "0.5rem 1rem",
             borderRadius: "0.375rem",
             textDecoration: "none",
@@ -86,7 +86,7 @@ export default async function EmbedPage({ params }: EmbedPageProps) {
   const isMarkdown = share.mime_type === "text/markdown";
 
   return (
-    <div style={{ background: "#fff" }}>
+    <div style={{ background: "#fff8f1" }}>
       <EmbedViewedTracker slug={slug} />
       {isMarkdown ? (
         <div style={{ padding: "1rem" }}>
