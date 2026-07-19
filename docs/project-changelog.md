@@ -2,6 +2,43 @@
 
 All notable changes to DropItX.
 
+## [v2.5.0] — 2026-07-18
+
+### Added
+- **Clay Design System**: Complete redesign from Orange to warm, light-first Clay system
+  - Canvas: warm cream (#f7eee6) instead of dark charcoal
+  - Accent: terracotta (#b46a46) for primary actions and focus rings
+  - Organic radii: 14px, 22px, 34px, pill (9999px) for friendly shapes
+  - Soft elevation: Layered shadows with inset highlights for three-dimensionality
+  - Dark companion: Optional muted warm-dark palette for accessibility
+- **End-to-End Encryption**: AES-256-GCM client-side encryption (Web Crypto API)
+  - `lib/crypto.ts` utilities with Uint8Array/BufferSource compatibility fix
+  - `encryption-toggle.tsx`, `encrypted-content-viewer.tsx` components
+  - Encryption key in URL fragment, never touches server
+  - Secure share creation and decryption in browser
+- **Burn-After-Reading**: Shares self-destruct atomically on first view
+  - `burn-after-reading-toggle.tsx`, `burn-after-reading-tracker.tsx`, `burned-state.tsx` components
+  - `burn-warning-banner.tsx` for user awareness
+  - Immutable once viewed; prevents re-access; secure + user-friendly
+
+### Changed
+- **Design Tokens**: 56-token migration in `app/globals.css`
+  - All color variables now use hex for light mode (primary)
+  - Dark mode adds `.dark` selector with warm-dark companion
+  - Radius tokens hardcoded (no calc) for clarity and consistency
+- **Landing Page**: Reorganized sections for Clay aesthetic with updated spacing/shadows
+- **Dashboard**: Sidebar and card layouts refreshed with Clay styling
+- **Typography**: Refined fluid heading scales (40–76px large, 28–36px medium)
+- **Middleware**: Clarified session refresh logic to prevent cross-tab logouts
+
+### Files Modified
+- `app/globals.css` — full token replacement (56 tokens, light + dark)
+- `components/` — All components inherit Clay styling via updated tokens
+- All feature components updated to use Clay color palette
+- Design documentation updated in `docs/design-guidelines.md`
+
+---
+
 ## [v2.4.0] — 2026-05-24
 
 ### Added

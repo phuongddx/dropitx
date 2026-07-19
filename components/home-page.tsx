@@ -268,6 +268,49 @@ export function HomePage() {
         </div>
       </section>
 
+      {/* For developers */}
+      <section className="mx-auto max-w-[1120px] px-8 py-16 max-[640px]:px-4">
+        <div className="grid grid-cols-[1.05fr_0.95fr] items-center gap-12 max-[860px]:grid-cols-1 max-[860px]:gap-8">
+          <div className="max-[860px]:text-center">
+            <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-meta">For developers</p>
+            <h2 className="mt-3 font-display text-[clamp(28px,4vw,40px)] font-extrabold tracking-[-0.03em]">
+              DropItX has a CLI.
+            </h2>
+            <p className="mt-2.5 max-w-[44ch] text-[17px] leading-[1.55] text-muted-foreground max-[860px]:mx-auto">
+              Upload, share, and manage links straight from the terminal — works standalone or piped from stdin.
+            </p>
+            <div className="mt-5.5 flex flex-wrap items-center gap-3 max-[860px]:justify-center">
+              <span className="inline-flex items-center gap-2 rounded-full bg-card px-3.5 py-1.5 font-mono text-[13px] clay-raised">
+                $ pip install dropitx
+              </span>
+            </div>
+            <div className="mt-6.5 max-[860px]:flex max-[860px]:justify-center">
+              <Link
+                href="/developers"
+                className="inline-flex h-11 items-center gap-2 rounded-full bg-primary px-6 text-[15px] font-bold text-primary-foreground transition-transform hover:-translate-y-px"
+              >
+                See developer docs
+                <ArrowRight className="size-4" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Terminal mock */}
+          <div className="rounded-[22px] bg-card p-6.5 clay-raised">
+            <div className="mb-4 flex items-center gap-2" aria-hidden="true">
+              <span className="size-2.5 rounded-full bg-destructive/60" />
+              <span className="size-2.5 rounded-full bg-warning/60" />
+              <span className="size-2.5 rounded-full bg-success/60" />
+            </div>
+            <div className="flex flex-col gap-2 font-mono text-[13px] leading-[1.6]" aria-hidden="true">
+              <p>$ dropitx upload notes.md</p>
+              <p className="text-muted-foreground">uploading 45.2 KB…</p>
+              <p className="text-primary">→ dropitx.com/s/notes-9fh2</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="mx-auto max-w-[1120px] px-8 py-9 max-[640px]:px-4">
         <div className="rounded-[34px] bg-primary px-10 py-14 text-center text-primary-foreground clay-raised">

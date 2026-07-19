@@ -80,29 +80,29 @@
   --surface-warm: #ead6c7;            /* Clay --surface-warm */
 
   /* --- Accent (terracotta clay) --- */
-  --primary: #b46a46;                 /* Clay --accent */
+  --primary: #9a5b3c;                 /* Clay --accent */
   --primary-foreground: #ffffff;      /* Clay --accent-on */
   --secondary: #ead6c7;               /* surface-warm as secondary */
   --secondary-foreground: #2b211c;
   --muted: #eaded4;                   /* Clay --border-soft */
-  --muted-foreground: #8a7a70;        /* Clay --muted */
-  --accent: #b46a46;
+  --muted-foreground: #766860;        /* Clay --muted */
+  --accent: #9a5b3c;
   --accent-foreground: #ffffff;
   --accent-soft: #ead6c7;
   --accent-line: #dac8b9;
 
   /* --- Text shades --- */
   --fg-soft: #5a4b43;                 /* Clay --fg-2 */
-  --meta: #b46a46;                    /* Clay --meta */
+  --meta: #9a5b3c;                    /* Clay --meta */
 
   /* --- Border --- */
   --border: #dac8b9;                  /* Clay --border */
   --border-soft: #eaded4;             /* Clay --border-soft */
   --input: #dac8b9;
-  --ring: #b46a46;                    /* terracotta focus */
+  --ring: #9a5b3c;                    /* terracotta focus */
 
   /* --- Semantic --- */
-  --success: #4d8f5a;
+  --success: #468352;
   --success-foreground: #ffffff;
   --warning: #c88735;
   --destructive: #b84c4c;
@@ -121,23 +121,23 @@
   /* --- Sidebar (cream) --- */
   --sidebar: #fff8f1;
   --sidebar-foreground: #2b211c;
-  --sidebar-primary: #b46a46;
+  --sidebar-primary: #9a5b3c;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #ead6c7;
   --sidebar-accent-foreground: #2b211c;
   --sidebar-border: #dac8b9;
-  --sidebar-ring: #b46a46;
+  --sidebar-ring: #9a5b3c;
 
   /* --- Clay elevation: multi-layer with inset highlight --- */
   --shadow: 8px 10px 24px rgba(128, 92, 70, 0.18), -8px -8px 20px rgba(255, 255, 255, 0.70);
   --elev-flat: none;
   --elev-ring: 0 0 0 1px var(--border);
   --elev-raised: 8px 10px 24px rgba(128, 92, 70, 0.18), -8px -8px 20px rgba(255, 255, 255, 0.70);
-  --focus-ring: 0 0 0 4px rgba(180, 106, 70, 0.24);
+  --focus-ring: 0 0 0 4px rgba(154, 91, 60, 0.24);
 
   /* --- Upload pulse (terracotta-tinted) --- */
-  --upload-pulse-dim: rgba(180, 106, 70, 0.20);
-  --upload-pulse-bright: rgba(180, 106, 70, 0.50);
+  --upload-pulse-dim: rgba(154, 91, 60, 0.20);
+  --upload-pulse-bright: rgba(154, 91, 60, 0.50);
 
   /* --- Motion (Clay timings) --- */
   --motion-fast: 150ms;
@@ -329,8 +329,8 @@
 
 /* CTA glow pulse (terracotta-tinted) */
 @keyframes cta-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(180, 106, 70, 0%); }
-  50% { box-shadow: 0 0 24px 0 rgba(180, 106, 70, 25%); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(154, 91, 60, 0%); }
+  50% { box-shadow: 0 0 24px 0 rgba(154, 91, 60, 25%); }
 }
 .cta-glow {
   animation: cta-glow 3s ease-in-out infinite;

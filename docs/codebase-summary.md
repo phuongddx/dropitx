@@ -13,7 +13,7 @@
 | **Frontend Framework** | Next.js 16 (App Router), React 19, TypeScript 5 (strict) |
 | **Editor** | CodeMirror 6 + markdown extensions (loaded via `next/dynamic` with SSR disabled) |
 | **Viewer** | `react-markdown` + `remark-gfm` + Shiki syntax highlighting |
-| **Styling** | Tailwind CSS 4 + shadcn/ui + xAI dark monochrome tokens (OKLCH) |
+| **Styling** | Tailwind CSS 4 + shadcn/ui + Clay design system (light-first, warm cream, terracotta accent) |
 | **Database** | Supabase PostgreSQL with Row-Level Security (RLS), S3-compatible Storage |
 | **Auth** | Supabase Auth (Google OAuth, GitHub OAuth, email/password with PKCE) |
 | **Backend API** | FastAPI (Python) on Render — all business logic except OG image generation |
@@ -174,7 +174,13 @@ public/                       # Static assets (favicon, icons, images)
 ### Privacy & Security
 - **Password Protection**: bcryptjs hash (never sent to client)
 - **Share Access Cookie**: HMAC-SHA256 signed HttpOnly (24 h TTL)
-- **End-to-End Encryption**: AES-256-GCM client-side, key in URL fragment
+- **End-to-End Encryption**: AES-256-GCM client-side (Web Crypto API), key in URL fragment
+  - **Crypto utilities**: `lib/crypto.ts` provides symmetric encryption/decryption with Uint8Array support
+  - **Encryption UI**: Toggle in editor/share flow; encrypted shares use `EncryptedContentViewer`
+  - **Secure key exchange**: Encryption key never touches server, shared via URL fragment only
+- **Burn-After-Reading**: Share self-destructs atomically on first view
+  - **UI components**: `burn-after-reading-toggle.tsx`, `burn-after-reading-tracker.tsx`, `burned-state.tsx`
+  - **Immutable once viewed**: View flag prevents re-access, secure + user-friendly
 - **Private Shares**: Hidden from search, owner-only access (RLS enforced)
 - **Rate Limiting**: 10 req/min per IP (upload/API); 5 attempts/10 min per IP (password)
 

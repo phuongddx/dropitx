@@ -2,76 +2,86 @@
 
 ## Overview
 
-DropItX uses Tailwind CSS 4 + shadcn/ui for styling. Design tokens defined in `app/globals.css` via CSS custom properties with OKLCH color space. The **DropItX Orange design system** features a deep warm-charcoal canvas, signature amber-orange primary, hairline borders, no shadows, and pill-shaped buttons with Geist Mono labels — energetic and developer-first.
+DropItX uses the **Clay design system** — a light-first, warm design language with Tailwind CSS 4 + shadcn/ui. Tokens defined in `app/globals.css` via CSS custom properties and hex colors. Clay features a warm cream canvas (#f7eee6), terracotta accent (#9a5b3c), generous organic border radii (14–34px), layered soft shadows, and art-directed typography. The system bridges tactile warmth with modern clarity.
 
 ## Design Principles
 
-- **Dark-first**: Deep warm charcoal (#1E1B17) as default, orange as accent
-- **Minimal**: No shadows, no gradients (exception: hero heading gradient text), hairline borders only
-- **Orange as the only chromatic color**: All UI accents use the orange primary; everything else is neutral gray
-- **Energy where it matters**: Orange highlights CTAs, active states, focus rings, and key metrics only
-- **Accessibility**: WCAG 2.1 AA contrast, keyboard nav, semantic HTML
-- **Pill shapes**: Rounded buttons and badges (8px border radius)
+- **Light-first**: Warm cream (#f7eee6) as default canvas; optional dark companion for assistive needs
+- **Warm neutrals**: Near-black brown (#2b211c) for text, warm beige (#dac8b9) for borders
+- **Terracotta accent**: Single chromatic color (#9a5b3c) for primary actions, focus rings, and data viz
+- **Organic shapes**: Generous border radii (14px, 22px, 34px) create friendly, inviting surfaces
+- **Soft elevation**: Layered shadows with both dark (depth) and light (inset highlight) for three-dimensionality
+- **Accessibility**: WCAG 2.1 AA contrast, keyboard nav, semantic HTML, focus rings on all interactive elements
+- **Typography-forward**: Fluid heading scales (clamp 28–76px), geometric sans (Inter), structured hierarchy with mono (Geist Mono) for accents
 
 ## Color System
 
-All theme variables in `app/globals.css` using `oklch()`. The Orange system uses warm amber-orange (hue 55) as the signature primary on a warm-charcoal canvas.
+Clay tokens in `app/globals.css` use hex colors for light mode (default) with warm, tactile harmonies. A dark companion palette exists for accessibility but light is primary.
+
+### Light Mode (Default)
 
 | Token | Value | Purpose |
 |-------|-------|---------|
-| `--background` | `oklch(0.15 0.005 56)` (#1E1B17) | Page canvas — deep warm charcoal |
-| `--foreground` | `oklch(0.97 0.003 56)` (#F8F6F2) | Primary ink — warm white |
-| `--card` | `oklch(0.19 0.006 56)` (#26221D) | Card surface |
-| `--card-foreground` | `oklch(0.97 0.003 56)` (#F8F6F2) | Card text |
-| `--primary` | `oklch(0.75 0.17 55)` (#F59E0B) | Buttons, CTAs, active states — signature orange |
-| `--primary-foreground` | `oklch(0.15 0.005 56)` (#1E1B17) | Text on orange |
-| `--secondary` | `oklch(0.22 0.007 56)` (#2B2722) | Secondary surfaces |
-| `--muted` | `oklch(0.22 0.007 56)` | Muted backgrounds |
-| `--muted-foreground` | `oklch(0.65 0.01 56)` (#8A847A) | Muted text |
-| `--border` | `oklch(0.27 0.008 56)` (#353029) | Hairline borders |
-| `--input` | `oklch(0.22 0.007 56)` | Input backgrounds |
-| `--accent` | `oklch(0.75 0.17 55)` | Surface accent (same as primary) |
-| `--destructive` | `oklch(0.62 0.22 27)` | Error/danger (red) |
-| `--success` | `oklch(0.70 0.16 155)` | Success (green) |
-| `--warning` | `oklch(0.80 0.15 85)` | Warning (amber-yellow) |
-| `--ring` | `oklch(0.75 0.17 55)` | Focus rings — orange |
-| `--radius` | `0.5rem` (8px) | Border radius — pill shapes |
+| `--background` | #f7eee6 | Page canvas — warm cream |
+| `--foreground` | #2b211c | Primary ink — near-black brown |
+| `--card` | #fff8f1 | Card surface — lighter cream |
+| `--card-foreground` | #2b211c | Card text |
+| `--primary` | #9a5b3c | Buttons, CTAs, focus rings — terracotta |
+| `--primary-foreground` | #ffffff | Text on terracotta |
+| `--secondary` | #ead6c7 | Secondary surfaces — warm beige |
+| `--secondary-foreground` | #2b211c | Secondary text |
+| `--muted` | #eaded4 | Muted backgrounds |
+| `--muted-foreground` | #766860 | Muted text — medium brown |
+| `--accent` | #9a5b3c | Accent (same as primary) |
+| `--accent-soft` | #ead6c7 | Hover/disabled states |
+| `--accent-line` | #dac8b9 | Subtle dividers |
+| `--fg-soft` | #5a4b43 | Secondary text |
+| `--border` | #dac8b9 | Standard borders |
+| `--border-soft` | #eaded4 | Soft dividers |
+| `--input` | #dac8b9 | Input backgrounds |
+| `--ring` | #9a5b3c | Focus rings — terracotta |
+| `--destructive` | #b84c4c | Error/danger — clay red |
+| `--success` | #468352 | Success — matcha green |
+| `--warning` | #c88735 | Warning — lemon gold |
 
-### Extended Tokens
+### Dark Companion Palette
 
-- `--accent-soft`: Secondary surface for hover states
-- `--accent-line`: `oklch(0.32 0.01 56)` — lighter canvas for borders and dividers
-- `--fg-soft`: `oklch(0.90 0.003 56)` — off-white for hover fills
-- `--surface`: Card surface for nested components
-- `--shadow`: `0 0 0 0 transparent` — no drop shadows
-- `--upload-pulse-dim/bright`: Orange-tinted pulse for upload animation
+A muted warm-dark exists (activated via `.dark` class) for users who need dark mode. Primary colors soften, surfaces darken, but the warm terracotta tone persists.
 
 ### Data Visualization Palette
 
-Charts use distinct hues for pie/bar slices — led by the orange primary.
+Charts use vivid, distinct hues inspired by Clay's warmth:
 
 | Token | Value | Purpose |
 |-------|-------|---------|
-| `--chart-1` | `oklch(0.75 0.17 55)` | Orange (primary) |
-| `--chart-2` | `oklch(0.65 0.17 155)` | Green |
-| `--chart-3` | `oklch(0.70 0.15 250)` | Blue |
-| `--chart-4` | `oklch(0.80 0.15 85)` | Amber-yellow |
-| `--chart-5` | `oklch(0.65 0.17 300)` | Purple |
+| `--chart-1` | #b46a46 | Terracotta (primary) |
+| `--chart-2` | #4d8f5a | Matcha green |
+| `--chart-3` | #5b9bd5 | Blueberry |
+| `--chart-4` | #c88735 | Lemon gold |
+| `--chart-5` | #8b5cf6 | Ube purple |
 
-No light mode override — the Orange system is dark-only. All components render in dark mode by default (`dark` class always present on `<html>`).
+### Extended Tokens
+
+- `--surface`: #fff8f1 — Card surface for nested components
+- `--surface-warm`: #ead6c7 — Warm surface for layering
+- `--meta`: #9a5b3c — Metadata/label color (terracotta)
+- `--shadow`: Layered elevation (dark inset + light drop) for three-dimensionality
+- `--upload-pulse-dim/bright`: Terracotta-tinted animation for upload states
 
 ## Typography
 
-- **Body font**: Inter (`--font-sans`) — weights 300, 400, 500, 600, 700 — for all body text and headings
-- **Mono font**: Geist Mono (`--font-mono`) — weights 400, 500, 600 — for labels, eyebrows, code, metadata
-- `--font-display` aliased to `--font-sans` for consistency (no display-specific typeface)
-- Type scale: 11px (eyebrow), 12px (meta), 14px (body), 16px (default), 18px, 24px, 32px (lg heading), 40px+ (fluid)
-- **Tracking (letter-spacing)**:
-  - `.eyebrow`: 0.0875em (uppercase labels)
-  - `.meta`: 0.075em (small text)
-  - `.heading-fluid-lg`: -0.025em (large headings with negative tracking)
-  - `.heading-fluid-md`: -0.0125em (medium headings)
-- Fluid headings: `.heading-fluid-lg` (clamp 40–96px) and `.heading-fluid-md` (clamp 28–48px)
+- **Body font**: Inter (`--font-sans`) — weights 300–700 — for all body text and structured hierarchy
+- **Mono font**: Geist Mono (`--font-mono`) — weights 400–600 — for accents, metadata, code, labels
+- **Type scale**: Fluid clamps from mobile → desktop
+  - `.eyebrow`: 11px, uppercase, mono, 0.0875em tracking
+  - `.meta`: 12px, mono, 0.075em tracking, terracotta (#9a5b3c)
+  - **Body**: 14–16px (default)
+  - **Headings**: Fluid scales via `.heading-fluid-lg` (40–76px) and `.heading-fluid-md` (28–36px)
+- **Fluid headings**:
+  - `.heading-fluid-lg`: `clamp(40px, 6vw, 76px)` — H1, hero text
+  - `.heading-fluid-md`: `clamp(28px, 4vw, 36px)` — H2, section headers
+  - Negative tracking (letter-spacing) for visual tightness
+- Line height: 1.06 (headings, tight), 1.5–1.6 (body, readable)
 
 ## Component Library
 
@@ -133,9 +143,42 @@ No light mode override — the Orange system is dark-only. All components render
 - **InviteStatusCard**: Invite status tracking and management
 - **CopyButton**: Copy-to-clipboard component for share links
 
-## Spacing
+## Spacing & Radius
 
-8pt grid convention: use even Tailwind spacing values (2=8px, 4=16px, 6=24px, 8=32px, 12=48px, 16=64px). Consistent `p-4`/`p-6` padding for cards. `gap-6`/`gap-8` for layouts.
+### Spacing
+
+8pt grid convention: Tailwind spacing values 2–16 (`8px` → `64px`). Standard padding: `p-4` (16px) or `p-6` (24px) on cards. Gap for flexbox: `gap-6` (24px) or `gap-8` (32px).
+
+### Border Radius (Clay Organic)
+
+Clay uses generous, friendly radii — no sharp corners:
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--radius-sm` | 14px | Small buttons, badges, subtle curves |
+| `--radius-md` | 22px | Standard radius for cards, inputs, buttons |
+| `--radius-lg` | 34px | Large sections, hero sections, prominent cards |
+| `--radius-card` | 22px | Card containers |
+| `--radius-section` | 34px | Page sections, blocks |
+| `--radius-pill` | 9999px | Fully rounded (pills, toggles) |
+
+### Elevation & Shadows
+
+Clay uses **soft, layered shadows** for three-dimensionality:
+
+```css
+/* Raised elevation: shadow from below + light inset highlight */
+--shadow: 8px 10px 24px rgba(128, 92, 70, 0.18), 
+          -8px -8px 20px rgba(255, 255, 255, 0.70);
+
+/* Focus ring: soft terracotta glow */
+--focus-ring: 0 0 0 4px rgba(154, 91, 60, 0.24);
+
+/* Flat (no shadow) */
+--elev-flat: none;
+```
+
+This creates a subtle, warm, inviting appearance without harsh contrast.
 
 ## Responsive Design
 

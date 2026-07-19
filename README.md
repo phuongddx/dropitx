@@ -32,7 +32,7 @@ Drop HTML and Markdown files, write in the built-in editor, and get short sharea
 - **TypeScript** (strict mode)
 - **Supabase** (PostgreSQL, Storage, Auth — Google/GitHub OAuth)
 - **CodeMirror 6** (Markdown editor, SSR-disabled)
-- **Tailwind CSS 4** + shadcn/ui (xAI dark monochrome design system)
+- **Tailwind CSS 4** + shadcn/ui (Clay design system — light-first, warm cream, terracotta accent, organic radii)
 - **Upstash Redis** (rate limiting)
 - **CLI**: `packages/cli/` — TypeScript ESM, binary `dropitx`
 

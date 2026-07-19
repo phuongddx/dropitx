@@ -145,12 +145,13 @@ Never use the admin client in client components — server-only.
 - Token naming: `--{namespace}-{property}-{variant}` (e.g., `--primary`, `--accent-soft`, `--sidebar-ring`)
 - `cn()` from `lib/utils.ts` for conditional class merging (clsx + tailwind-merge)
 - Component variants via `class-variance-authority`
-- Dark mode: `dark` class always present on `<html>` — xAI system is dark-only by design
+- **Light-first default**: Clay system uses warm cream (#f7eee6) canvas with optional `.dark` companion for accessibility
 - **Font usage**: `font-sans` (Inter) for all text/headings, `font-mono` (Geist Mono) for labels/code/metadata
-- **Chart colors**: Use `--chart-1` through `--chart-5` tokens for data visualization — distinct hues, not monochrome
-- **WARNING**: `bg-purple-500` uses Tailwind's default color palette, NOT CSS variables. Always use `bg-primary` (white) for accents
-- xAI dark monochrome design system — `--primary` is white (`oklch(1 0 0)`), `--background` is near-black (`oklch(0.04 0 0)`)
-- **No shadows**: `--shadow` is transparent; use borders instead (`--border` for hairline dividers)
+- **Chart colors**: Use `--chart-1` through `--chart-5` tokens for data visualization — terracotta, matcha, blueberry, lemon, ube
+- **Token colors**: All CSS variables in `app/globals.css` use hex for light mode (primary), `.dark` selector for dark companion
+- **Primary accent**: `--primary` is terracotta (#9a5b3c), `--background` is warm cream (#f7eee6)
+- **Radius tokens**: Clay uses generous, organic radii (14px, 22px, 34px, pill 9999px) — hardcoded, no calc
+- **Shadows**: `--shadow` uses layered elevation (dark drop + light inset highlight) for three-dimensionality
 - 8pt spacing grid: use even Tailwind spacing values
 
 ## Security

@@ -52,11 +52,11 @@ export async function GET(
             justifyContent: "space-between",
             marginTop: 40,
             fontSize: 20,
-            color: "#8a7a70",
+            color: "#766860",
           }}
         >
           <span>{share.view_count ?? 0} views</span>
-          <span style={{ color: "#b46a46" }}>DropItX</span>
+          <span style={{ color: "#9a5b3c" }}>DropItX</span>
         </div>
       </div>
     ),

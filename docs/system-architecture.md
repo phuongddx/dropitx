@@ -2,7 +2,7 @@
 
 ## Overview
 
-DropItX is a Next.js 16 application (App Router) deployed on Vercel as a pure frontend. All API logic runs on a FastAPI backend (`dropitx-api.onrender.com`) with Supabase (PostgreSQL + Storage) and Upstash Redis (rate limiting). Features include team workspaces, analytics dashboard, password-protected shares, end-to-end encryption, burn-after-reading, version history, multi-file support, comments, QR code generation, rich embedding via oEmbed, and programmatic access via REST API. Supports two auth models: JWT Bearer token (browser) and API key (programmatic). Latest release features xAI dark monochrome design system.
+DropItX is a Next.js 16 application (App Router) deployed on Vercel as a pure frontend. All API logic runs on a FastAPI backend (`dropitx-api.onrender.com`) with Supabase (PostgreSQL + Storage) and Upstash Redis (rate limiting). Features include team workspaces, analytics dashboard, password-protected shares, end-to-end encryption (AES-256-GCM), burn-after-reading, version history, multi-file support, comments, QR code generation, rich embedding via oEmbed, and programmatic access via REST API. Supports two auth models: JWT Bearer token (browser) and API key (programmatic). Latest design system: Clay (light-first, warm cream canvas, terracotta accent, organic radii).
 
 ## Architecture Diagram
 
@@ -146,6 +146,14 @@ POST /api/shares/[slug]/unlock { password }
   → On match: HMAC-SHA256 signed cookie (SHARE_ACCESS_SECRET)
   → Set-Cookie: share_access_{slug}=<signed>; HttpOnly; SameSite=Lax; Max-Age=86400
 ```
+
+### Session Management & Cross-Tab Sync
+
+`middleware.ts` runs on every request to maintain session freshness and prevent cross-tab logouts:
+- Calls `updateSession()` to validate JWT and refresh expired access tokens
+- Rewrites rotated auth cookies to **both request and response** so the browser always receives them
+- This ensures tabs stay in sync; if one tab refreshes the token, all tabs see the new cookie
+- Returns the modified response (with refreshed headers) — critical to prevent stale token reuse
 
 ### Auth Layers
 | Layer | Implementation |

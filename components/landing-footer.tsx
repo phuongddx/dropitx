@@ -8,6 +8,7 @@ const FOOTER = [
       { label: "Pricing", href: "#" },
       { label: "Explore", href: "/search" },
       { label: "Changelog", href: "#" },
+      { label: "Developers", href: "/developers" },
     ],
   },
   {
