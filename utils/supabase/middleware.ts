@@ -17,6 +17,10 @@ export const updateSession = async (request: NextRequest) => {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
+      // Share the session cookie across the apex domain and `www` — without
+      // this it's host-only, so a Vercel apex/www redirect after login drops
+      // the session on the other host.
+      cookieOptions: { domain: ".dropitx.site" },
       cookies: {
         getAll() {
           return request.cookies.getAll();
