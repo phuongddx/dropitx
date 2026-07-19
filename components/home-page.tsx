@@ -91,7 +91,7 @@ export function HomePage() {
             </span>
             Drop<span className="text-primary">ItX</span>
           </Link>
-          <div className="ml-3.5 hidden gap-1.5 max-[860px]:hidden">
+          <div className="ml-3.5 hidden gap-1.5 min-[860px]:flex">
             <Link href="#features" className="rounded-full px-3.5 py-2 text-sm font-semibold text-fg-soft transition-colors hover:bg-card hover:text-foreground">Features</Link>
             <Link href="#how" className="rounded-full px-3.5 py-2 text-sm font-semibold text-fg-soft transition-colors hover:bg-card hover:text-foreground">How it works</Link>
             <Link href="#pricing" className="rounded-full px-3.5 py-2 text-sm font-semibold text-fg-soft transition-colors hover:bg-card hover:text-foreground">Pricing</Link>
