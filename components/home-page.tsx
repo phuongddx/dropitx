@@ -115,7 +115,7 @@ export function HomePage() {
       </nav>
 
       {/* Hero */}
-      <header className="mx-auto grid max-w-[1120px] gap-12 px-8 py-18 max-[860px]:grid-cols-1 max-[860px]:gap-8 max-[640px]:px-4">
+      <header className="mx-auto grid max-w-[1120px] grid-cols-[1.05fr_0.95fr] gap-12 px-8 py-18 max-[860px]:grid-cols-1 max-[860px]:gap-8 max-[640px]:px-4">
         <div className="max-[860px]:text-center">
           <span className="inline-flex items-center gap-2 rounded-full bg-card px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.08em] text-meta clay-raised mb-5.5">
             <span className="size-[7px] rounded-full bg-success" />
@@ -183,7 +183,7 @@ export function HomePage() {
             Every link is fast, private by default, and tells you exactly who&apos;s reading.
           </p>
         </div>
-        <div className="grid grid-cols-1 gap-5 max-[860px]:grid-cols-1">
+        <div className="grid grid-cols-3 gap-5 max-[860px]:grid-cols-1">
           {FEATURES.map((f) => (
             <div key={f.title} className="rounded-[22px] bg-card p-6.5 clay-raised">
               <div className="mb-4 grid size-[46px] place-items-center rounded-[14px] bg-primary/16 text-primary clay-raised">
@@ -204,7 +204,7 @@ export function HomePage() {
             From file to link in seconds.
           </h2>
         </div>
-        <div className="grid grid-cols-1 gap-5 max-[860px]:grid-cols-1">
+        <div className="grid grid-cols-3 gap-5 max-[860px]:grid-cols-1">
           {STEPS.map((s) => (
             <div key={s.num} className="rounded-[22px] bg-card p-6 clay-raised">
               <div className="mb-3.5 grid size-7.5 place-items-center rounded-full bg-primary font-mono text-xs font-bold text-primary-foreground">
@@ -225,7 +225,7 @@ export function HomePage() {
             Start free. Grow when you do.
           </h2>
         </div>
-        <div className="grid grid-cols-1 items-start gap-5 max-[860px]:grid-cols-1">
+        <div className="grid grid-cols-3 items-start gap-5 max-[860px]:grid-cols-1">
           {PRICING.map((p) => (
             <div
               key={p.name}
