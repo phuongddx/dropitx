@@ -70,7 +70,7 @@ export function DashboardShell({ user, teams, children }: DashboardShellProps) {
               className={cn(
                 "flex items-center gap-2.5 rounded-md border-l-2 px-2.5 py-2 text-[13.5px] font-medium transition-colors",
                 active
-                  ? "border-primary bg-accent text-primary"
+                  ? "border-primary bg-accent text-accent-foreground"
                   : "border-transparent text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
@@ -94,7 +94,7 @@ export function DashboardShell({ user, teams, children }: DashboardShellProps) {
                   className={cn(
                     "flex items-center gap-2.5 rounded-md border-l-2 px-2.5 py-2 text-[13.5px] font-medium transition-colors",
                     active
-                      ? "border-primary bg-accent text-primary"
+                      ? "border-primary bg-accent text-accent-foreground"
                       : "border-transparent text-muted-foreground hover:bg-muted hover:text-foreground"
                   )}
                 >
@@ -118,7 +118,7 @@ export function DashboardShell({ user, teams, children }: DashboardShellProps) {
               className={cn(
                 "flex items-center gap-2.5 rounded-md border-l-2 px-2.5 py-2 text-[13.5px] font-medium transition-colors",
                 active
-                  ? "border-primary bg-accent text-primary"
+                  ? "border-primary bg-accent text-accent-foreground"
                   : "border-transparent text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >

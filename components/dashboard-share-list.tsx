@@ -212,7 +212,7 @@ export function DashboardShareList({
                   onClick={() => setSelectedId(r.id)}
                   className={cn(
                     "relative grid w-full grid-cols-[30px_1fr_auto] items-center gap-3 border-b border-border px-3.5 py-3 text-left transition-colors last:border-b-0",
-                    isSel ? "bg-accent" : "hover:bg-muted/60"
+                    isSel ? "bg-accent text-accent-foreground" : "hover:bg-muted/60 text-foreground"
                   )}
                 >
                   {isSel && (
