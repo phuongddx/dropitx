@@ -1,6 +1,13 @@
+"use client";
+
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { LogOut, LayoutDashboard } from "lucide-react";
+import { useAuthUser } from "@/lib/use-auth-user";
+import { createClient } from "@/utils/supabase/client";
 
 const NAV = [
   { label: "Product", href: "#features" },
@@ -8,6 +15,60 @@ const NAV = [
   { label: "Pricing", href: "#pricing" },
   { label: "Docs", href: "#" },
 ];
+
+function PublicNavAuth() {
+  const user = useAuthUser();
+  const router = useRouter();
+
+  const handleSignOut = useCallback(async () => {
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      router.push("/");
+    } catch (err) {
+      console.error("Sign out failed", err);
+    }
+  }, [router]);
+
+  if (user) {
+    return (
+      <div className="ml-auto flex items-center gap-2">
+        <Link
+          href="/dashboard"
+          className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
+        >
+          <LayoutDashboard className="mr-1.5 size-4" />
+          Dashboard
+        </Link>
+        <button
+          type="button"
+          onClick={handleSignOut}
+          className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
+        >
+          <LogOut className="mr-1.5 size-4" />
+          Sign out
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="ml-auto flex items-center gap-2">
+      <Link
+        href="/auth/login"
+        className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
+      >
+        Log in
+      </Link>
+      <Link
+        href="/auth/login"
+        className={cn(buttonVariants({ size: "sm" }))}
+      >
+        Sign up
+      </Link>
+    </div>
+  );
+}
 
 export function PublicNav() {
   return (
@@ -34,20 +95,7 @@ export function PublicNav() {
           ))}
         </nav>
 
-        <div className="ml-auto flex items-center gap-2">
-          <Link
-            href="/auth/login"
-            className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
-          >
-            Log in
-          </Link>
-          <Link
-            href="/auth/login"
-            className={cn(buttonVariants({ size: "sm" }))}
-          >
-            Sign up
-          </Link>
-        </div>
+        <PublicNavAuth />
       </div>
     </header>
   );

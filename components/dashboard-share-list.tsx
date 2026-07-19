@@ -2,9 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { FileText, Upload, Lock, Copy, QrCode } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { FileText, Upload, Lock, Copy, QrCode, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { authFetch } from "@/lib/api-client";
 import type { Share } from "@/types/share";
 
 export type ShareWithPasswordFlag = Omit<Share, "password_hash"> & {
@@ -88,6 +91,8 @@ export function DashboardShareList({
   const [selectedId, setSelectedId] = useState<string | null>(
     personalShares[0]?.id ?? null
   );
+  const [deleting, setDeleting] = useState(false);
+  const router = useRouter();
 
   const tabs = [
     { id: "personal", label: "Personal", count: personalShares.length },
@@ -140,6 +145,33 @@ export function DashboardShareList({
           }));
 
   const selected = rows.find((r) => r.id === selectedId) ?? rows[0] ?? null;
+
+  const handleDelete = async () => {
+    if (!selected) return;
+    if (
+      !window.confirm(
+        `Delete "${selected.title || selected.filename}"? This cannot be undone.`
+      )
+    ) {
+      return;
+    }
+    setDeleting(true);
+    try {
+      const res = await authFetch(`/api/shares/${selected.slug}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Failed to delete");
+      }
+      toast.success("Share deleted");
+      router.refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to delete");
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   return (
     <div className="space-y-5">
@@ -294,6 +326,16 @@ export function DashboardShareList({
                 >
                   View analytics
                 </Link>
+                {filter === "personal" && (
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={handleDelete}
+                    disabled={deleting}
+                  >
+                    <Trash2 className="size-3.5" /> Delete
+                  </Button>
+                )}
               </div>
             </div>
           )}
