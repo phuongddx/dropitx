@@ -1,6 +1,6 @@
 import { createClient } from "@/utils/supabase/client";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://overcome-sterling-senator-clinics.trycloudflare.com";
 
 let _supabase: ReturnType<typeof createClient> | null = null;
 function getSupabase() {
