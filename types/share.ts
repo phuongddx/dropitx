@@ -50,3 +50,17 @@ export interface SearchResult {
   snippet: string;
   rank: number;
 }
+
+export interface Folder {
+  id: string;
+  name: string;
+  parentId: string | null;
+  shareCount?: number;
+}
+
+export interface Tag {
+  id: string;
+  name: string;
+  color?: string;
+  share_count?: number;
+}
